@@ -4,6 +4,7 @@ import MxGrammar.MxParser;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import java.io.*;
+
 import AbstractSyntaxTree.ASTMaker;
 import AbstractSyntaxTree.ASTPrinter;
 
@@ -12,7 +13,12 @@ public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
 		//try {
-			InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\test1.mx"); // or System.in;
+
+			//InputStream is = new FileInputStream("program.txt"); // or System.in;
+			InputStream is = System.in;
+
+			//BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("C:\\Users\\qydyx\\Desktop\\test.mx"), "ISO-8859-4"));
+			//BufferedReader reader = Files.newBufferedReader(Paths.get("C:\\Users\\qydyx\\Desktop\\test.mx"), StandardCharsets.UTF_16);
 			ANTLRInputStream input = new ANTLRInputStream(is);
 			MxLexer lexer = new MxLexer(input);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
