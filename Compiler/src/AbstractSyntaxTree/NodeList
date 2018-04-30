@@ -1,0 +1,53 @@
+ASTNode
+|- ASTRootNode (ProgSecNode* (Class, Func, Vari Only))
+|- ProgSecNode
+    |- ClassDeclNode (id + ProgSecNode*(Func, Vari Only))
+    |- FuncDeclNode (TypeNode + id + ParamDeclListNode? + haveParamDeclList = false + BlockStmtNode)
+    |- VariDeclNode (TypeNode + VariInitNode*)
+    |- StmtNode
+        |- BlockStmtNode (ProgSecNode* (Vari, Stmt Only))
+        |- ExprStmtNode (empty = true, ExprNode?)
+        |- SlctStmtNode ((if)ExprNode + StmtNode + (elif)(ExprNode + StmtNode)* + (else)(StmtNode)? + haveElse = false)
+        |- IterStmtNode
+            |- ForInitNode (VariDeclNode + ExprNode? + ExprNode? + StmtNode + haveCond = false + haveStep = false)
+            |- ForNode (ExprNode? + ExprNode? + ExprNode? + StmtNode + haveInit = false + haveCond = false + haveStep = false)
+            |- WhileNode (ExprNode + StmtNode)
+        |- JumpStmtNode
+            |- BreakNode
+            |- ContinueNode
+            |- ReturnNode (ExprNode)
+
+|- CreatorNode
+    |- CreatorArrayNode (SingleTypeNode + ExprNode* + emptyDimNum = 0)
+    |- CreatorSingleNode (SingleTypeNode)
+
+|- TypeNode (SingleType + dimNum)
+|- SingleTypeNode (type = "null")
+
+|- ParamDeclListNode (ParamDeclNode*)
+|- ParamDeclNode (TypeNode + id)    (Used for FuncDecl)
+
+|- VariInitNode (id + assign = false + ExprNode)
+
+|- ParamListNode (ExprNode*)
+
+|- ExprNode
+    |- SuffixIncDecNode (ExprNode + op)
+    |- FuncCallNode (ExprNode + ParamListNode? + haveParamList = false)
+    |- IndexNode (arrayExprNode + indexExprNode)
+    |- MemberNode (ExprNode + IdNode)
+
+    |- PrefixIncDecNode (op + ExprNode)
+    |- PosNegNode (op + ExprNode)
+    |- NotNode (op + ExprNode)
+    |- NewNode (op + CreatorNode)
+
+    |- BinaryNode (ExprNode + op + ExprNode)
+
+    |- AssignNode (ExprNode + ExprNode)
+    |- IdNode (id)
+    |- ConstNode (type)
+    |- SubExprNode (ExprNode)
+
+
+
