@@ -143,11 +143,41 @@ public class ScopeChecker
 			LocalScope localScope = new LocalScope();
 			localScope.fatherScope = father;
 			localScope.fatherScope.childScope.add(localScope);
+			int s = ((BlockStmtNode) now).progSecNode.size() - 1;
+			if(s == -1 && !((FuncScope)father).singleRtnType.equals("void"))
+			{
+				System.err.printf("Function \"%s\" should have a return statement.\n", ((FuncScope) father).name);
+				System.exit(1);
+			}
 			for (ASTNode node : ((BlockStmtNode) now).progSecNode) {
 				Scope temp = check(node, localScope);
+				if(node == ((BlockStmtNode) now).progSecNode.get(s))
+				{
+					if(!(node instanceof ReturnNode)) {
+						if (father instanceof FuncScope && !(((FuncScope) father).singleRtnType.equals("void"))) {
+							System.err.printf("Function \"%s\" should have a return statement.\n", ((FuncScope) father).name);
+							System.exit(1);
+						}
+					}
+				}
 			}
 			return localScope;
-		} else if (now instanceof ExprStmtNode) {
+		}
+		else if (now instanceof ReturnNode)
+		{
+			Scope temp = check(((ReturnNode) now).exprNode, father);
+			String singleType = ((FuncScope)father.fatherScope).singleRtnType;
+			int dimNum = ((FuncScope) father.fatherScope).rtnDimNum;
+			String rtnType = ((ExprScope)temp).type;
+			int rtnDimNum = ((ExprScope) temp).dimNum;
+			if( !(singleType.equals(rtnType))
+					|| dimNum != rtnDimNum)
+			{
+				System.err.printf("Wrong returned type or dimension.\n");
+				System.exit(1);
+			}
+		}
+		else if (now instanceof ExprStmtNode) {
 			if (!((ExprStmtNode) now).empty) {
 				return check(((ExprStmtNode) now).exprNode, father);
 			}
