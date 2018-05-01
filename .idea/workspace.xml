@@ -31,23 +31,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="PreScopeChecker.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="168" column="36" lean-forward="true" selection-start-line="168" selection-start-column="36" selection-end-line="168" selection-end-column="36" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="269">
-              <caret line="424" column="39" lean-forward="true" selection-start-line="424" selection-start-column="39" selection-end-line="424" selection-end-column="39" />
+            <state relative-caret-position="311">
+              <caret line="723" column="56" selection-start-line="723" selection-start-column="42" selection-end-line="723" selection-end-column="56" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -109,10 +97,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>visit</find>
-      <find>visitId</find>
-      <find>visitIdentifier</find>
-      <find>err</find>
       <find>IdNode</find>
       <find>id</find>
       <find>Expr</find>
@@ -139,6 +123,10 @@
       <find>blockStmtNode</find>
       <find>4</find>
       <find>kind = 1</find>
+      <find>kind = 0</find>
+      <find>cannot be</find>
+      <find>err</find>
+      <find>is not defined</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -186,7 +174,6 @@
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/SlctStmtScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/VariInitScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Instances/VariIns.java" />
-        <option value="$PROJECT_DIR$/MxGrammar/Mx.g4" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/SuffixScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/FuncCallScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopePrinter.java" />
@@ -196,8 +183,9 @@
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/ConstNode.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/PrefixIncDecNode.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
+        <option value="$PROJECT_DIR$/MxGrammar/Mx.g4" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
       </list>
     </option>
@@ -250,13 +238,6 @@
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
               <item name="Compiler" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="AbstractSyntaxTree" type="462c0819:PsiDirectoryNode" />
-              <item name="Nodes" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Compiler" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="ScopeCheck" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -265,10 +246,6 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="ScopeCheck" type="462c0819:PsiDirectoryNode" />
               <item name="Scopes" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MxGrammar" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -415,12 +392,12 @@
       <workItem from="1525061849578" duration="397000" />
       <workItem from="1525062529280" duration="2422000" />
       <workItem from="1525094639642" duration="11922000" />
-      <workItem from="1525141819427" duration="52300000" />
+      <workItem from="1525141819427" duration="54610000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="138485000" />
+    <option name="totallyTimeSpent" value="140795000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -509,7 +486,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="14" />
+      <option name="time" value="15" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -768,13 +745,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2224">
-          <caret line="16" column="7" lean-forward="true" selection-start-line="16" selection-start-column="7" selection-end-line="16" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/ConstNode.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="84">
@@ -810,33 +780,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1113">
-          <caret line="53" lean-forward="true" selection-start-line="53" selection-end-line="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="168" column="36" lean-forward="true" selection-start-line="168" selection-start-column="36" selection-end-line="168" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="9" column="36" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopePrinter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1029">
@@ -851,16 +794,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="384">
           <caret line="327" column="22" selection-start-line="327" selection-start-column="22" selection-end-line="327" selection-end-column="22" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="424" column="39" lean-forward="true" selection-start-line="424" selection-start-column="39" selection-end-line="424" selection-end-column="39" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -894,6 +827,50 @@
             <element signature="e#11185#11423#0" />
             <element signature="e#11426#11714#0" />
             <element signature="e#11717#12118#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="168" column="36" lean-forward="true" selection-start-line="168" selection-start-column="36" selection-end-line="168" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1113">
+          <caret line="53" lean-forward="true" selection-start-line="53" selection-end-line="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="9" column="36" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="140" lean-forward="true" selection-start-line="140" selection-end-line="140" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="723" column="56" selection-start-line="723" selection-start-column="42" selection-end-line="723" selection-end-column="56" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

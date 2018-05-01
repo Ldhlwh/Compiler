@@ -154,7 +154,7 @@ ELIF : 'else if';
 ELSE : 'else';
 FOR : 'for';
 WHILE : 'while';
-BREAK : 'BREAK';
+BREAK : 'break';
 CONTINUE : 'continue';
 RETURN : 'return';
 NEW : 'new';

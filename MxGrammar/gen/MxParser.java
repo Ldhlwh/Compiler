@@ -41,7 +41,7 @@ public class MxParser extends Parser {
 	private static final String[] _LITERAL_NAMES = {
 		null, "'{'", "'}'", "'('", "')'", "','", "';'", "'['", "']'", "'.'", "'bool'", 
 		"'int'", "'char'", "'string'", "'null'", "'void'", "'if'", "'else if'", 
-		"'else'", "'for'", "'while'", "'BREAK'", "'continue'", "'return'", "'new'", 
+		"'else'", "'for'", "'while'", "'break'", "'continue'", "'return'", "'new'", 
 		"'class'", "'this'", "'+'", "'-'", "'*'", "'/'", "'%'", "'++'", "'--'", 
 		"'='", "'<'", "'>'", "'=='", "'!='", "'<='", "'>='", "'&&'", "'||'", "'!'", 
 		"'<<'", "'>>'", "'~'", "'|'", "'^'", "'&'"

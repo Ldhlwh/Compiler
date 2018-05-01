@@ -8,6 +8,8 @@ import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
 import org.w3c.dom.ls.LSException;
 
+import java.awt.*;
+
 
 public class ScopeChecker
 {
@@ -216,7 +218,6 @@ public class ScopeChecker
 			localScope.fatherScope = father;
 			localScope.fatherScope.childScope.add(localScope);
 			localScope.jumpable = true;
-			System.err.println(localScope);
 			check(((ForInitNode) now).variDeclNode, localScope);
 			Scope temp = check(((ForInitNode) now).stmtNode, localScope);
 			return localScope;
@@ -243,8 +244,6 @@ public class ScopeChecker
 			ExprScope expr = new ExprScope();
 			expr.fatherScope = father;
 			Scope temp = check(((SuffixIncDecNode) now).exprNode, father);
-			System.err.println(((ExprScope)temp).kind);
-			System.err.println(((ExprScope) temp).type);
 			if(((ExprScope)temp).kind != 0 || !(((ExprScope) temp).type.equals("int")))
 			{
 				System.err.printf("\"%s\" cannot do the INC / DEC operation.\n", ((ExprScope) temp).id);
@@ -302,6 +301,8 @@ public class ScopeChecker
 				for(int i = 0; i < ((FuncCallNode) now).paramListNode.exprNode.size(); i++)
 				{
 					temp = check(((FuncCallNode) now).paramListNode.exprNode.get(i), father);
+					System.err.println(func.param.get(i).dimNum);
+					System.err.println(((ExprScope)temp).dimNum);
 					if(!(func.param.get(i).singleType.equals(((ExprScope)temp).type))
 						|| func.param.get(i).dimNum != ((ExprScope) temp).dimNum)
 					{
@@ -319,20 +320,21 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((IndexNode) now).arrayExprNode, father);
 			Scope Rtemp = check(((IndexNode) now).indexExprNode,father);
-			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 4)
+			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 3)
 			{
 				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
 				System.exit(1);
 			}
+			/*
 			if(((ExprScope) ltemp).dimNum >= ((ExprScope) ltemp).maxDimNum)
 			{
 				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
 				System.exit(1);
-			}
+			}*/
 			expr.id = null;
 			expr.type = ((ExprScope) ltemp).type;
 			expr.source = ((ExprScope) ltemp).source;
-			expr.dimNum = ((ExprScope) ltemp).dimNum + 1;
+			expr.dimNum = ((ExprScope) ltemp).dimNum - 1;
 			expr.maxDimNum = ((ExprScope) ltemp).maxDimNum;
 			expr.kind = 0;
 			return expr;
@@ -424,7 +426,7 @@ public class ScopeChecker
 			expr.type = rtemp.type;
 			expr.dimNum = rtemp.dimNum;
 			expr.source = null;
-			expr.kind = 0;
+			expr.kind = rtemp.kind;
 			return expr;
 		}
 		else if(now instanceof PrefixIncDecNode)
@@ -661,9 +663,9 @@ public class ScopeChecker
 								|| ins.singleType.equals("string")
 								|| ins.singleType.equals("char")
 								|| ins.singleType.equals("void"))
-							expr.kind = 0;
+							expr.kind = 1;
 						else
-							expr.kind = 3;
+							expr.kind = 1;
 						break;
 					}
 				}
@@ -702,7 +704,7 @@ public class ScopeChecker
 								|| ins.singleType.equals("void"))
 							expr.kind = 1;
 						else
-							expr.kind = 3;
+							expr.kind = 1;
 						break;
 					}
 					else if(((TopScope) nowScope).classMap.containsKey(id))
