@@ -16,7 +16,7 @@ import AbstractSyntaxTree.ASTPrinter;
 public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
-		//try {
+		try {
 			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\T677.mx"); // or System.in;
 			InputStream is = System.in;
 
@@ -61,12 +61,12 @@ public class Compiler {
 			Evaluator evalByListener = new Evaluator();
 			walker.walk(evalByListener, tree);
 			*/
-			/*
+
 		}
 		catch (Exception ex)
 		{
 			System.exit(1);
 		}
-		*/
+
 	}
 }
