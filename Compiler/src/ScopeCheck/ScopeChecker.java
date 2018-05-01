@@ -6,10 +6,6 @@ import ScopeCheck.Instances.FuncIns;
 import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
-import com.sun.corba.se.spi.orbutil.fsm.FSM;
-import org.stringtemplate.v4.misc.STNoSuchAttributeException;
-
-import javax.swing.text.html.CSS;
 
 
 public class ScopeChecker

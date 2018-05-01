@@ -16,8 +16,8 @@ import AbstractSyntaxTree.ASTPrinter;
 public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
-			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\T677.mx"); // or System.in;
-			InputStream is = System.in;
+			InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\T720.mx"); // or System.in;
+			//InputStream is = System.in;
 
 			ANTLRInputStream input = new ANTLRInputStream(is);
 			MxLexer lexer = new MxLexer(input);
@@ -29,20 +29,25 @@ public class Compiler {
 			ASTMaker maker = new ASTMaker();
 			ASTNode rootNode = maker.visit(tree);
 
-
+			/*
 			ASTPrinter printer = new ASTPrinter();
 			printer.print(rootNode);
+			*/
 
 			System.err.println("------PreScopeCheck------");
 			PreScopeChecker preScopeChecker = new PreScopeChecker();
 			Scope rootScope = preScopeChecker.check(rootNode, new EmptyScope());
+
+			System.err.println("------ScopePrint------");
+			ScopePrinter scopePrinter = new ScopePrinter();
+			scopePrinter.print(rootScope);
 
 			System.err.println("------ScopeCheck------");
 			ScopeChecker scopeChecker = new ScopeChecker();
 			scopeChecker.checkRoot(rootNode, rootScope);
 
 			System.err.println("------ScopePrint------");
-			ScopePrinter scopePrinter = new ScopePrinter();
+			scopePrinter = new ScopePrinter();
 			scopePrinter.print(rootScope);
 	}
 }
