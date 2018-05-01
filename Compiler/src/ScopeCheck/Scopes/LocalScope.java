@@ -7,5 +7,6 @@ import java.util.Map;
 
 public class LocalScope extends Scope
 {
+	public boolean jumpable = false;
 	public Map<String, VariIns> variMap = new HashMap<>();
 }

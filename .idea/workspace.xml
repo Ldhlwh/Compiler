@@ -43,11 +43,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="404">
-              <caret line="159" column="25" lean-forward="true" selection-start-line="159" selection-start-column="25" selection-end-line="159" selection-end-column="25" />
+            <state relative-caret-position="440">
+              <caret line="226" column="38" selection-start-line="226" selection-start-column="38" selection-end-line="226" selection-end-column="38" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LocalScope.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="189">
+              <caret line="9" column="36" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -67,7 +79,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="378">
@@ -183,7 +195,6 @@
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/VariDeclScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/EmptyScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/TopScope.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/Scope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ParseErrorListener.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Instances/ParamIns.java" />
@@ -202,8 +213,9 @@
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/ConstNode.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
       </list>
     </option>
   </component>
@@ -256,6 +268,13 @@
               <item name="Compiler" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="ScopeCheck" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Compiler" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="ScopeCheck" type="462c0819:PsiDirectoryNode" />
+              <item name="Scopes" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
@@ -406,12 +425,12 @@
       <workItem from="1525061849578" duration="397000" />
       <workItem from="1525062529280" duration="2422000" />
       <workItem from="1525094639642" duration="11922000" />
-      <workItem from="1525141819427" duration="48638000" />
+      <workItem from="1525141819427" duration="49500000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="134823000" />
+    <option name="totallyTimeSpent" value="135685000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -444,9 +463,9 @@
       <window_info id="Image Layers" order="1" />
       <window_info anchor="right" id="Capture Analysis" order="5" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.23154363" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.23154363" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32997763" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.15831557" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.15831557" />
       <window_info id="设计器" order="3" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32997763" />
       <window_info anchor="right" id="Theme Preview" order="9" />
@@ -610,16 +629,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/VariScope.java" />
-    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="9" column="57" selection-start-line="9" selection-start-column="57" selection-end-line="9" selection-end-column="57" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/ParamDeclScope.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="273">
@@ -872,20 +881,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
+    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="404">
-          <caret line="159" column="25" lean-forward="true" selection-start-line="159" selection-start-column="25" selection-end-line="159" selection-end-column="25" />
+        <state relative-caret-position="378">
+          <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
+    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
+        <state relative-caret-position="189">
+          <caret line="9" column="36" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="226" column="38" selection-start-line="226" selection-start-column="38" selection-end-line="226" selection-end-column="38" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

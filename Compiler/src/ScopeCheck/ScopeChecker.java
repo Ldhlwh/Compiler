@@ -163,6 +163,14 @@ public class ScopeChecker
 			}
 			return localScope;
 		}
+		else if(now instanceof BreakNode)
+		{
+			if()
+		}
+		else if(now instanceof ContinueNode)
+		{
+
+		}
 		else if (now instanceof ReturnNode)
 		{
 			Scope temp = check(((ReturnNode) now).exprNode, father);
@@ -197,21 +205,27 @@ public class ScopeChecker
 			LocalScope localScope = new LocalScope();
 			localScope.fatherScope = father;
 			localScope.fatherScope.childScope.add(localScope);
+			localScope.jumpable = true;
 			check(((ForInitNode) now).variDeclNode, localScope);
 			Scope temp = check(((ForInitNode) now).stmtNode, localScope);
 			return localScope;
 		}
 		else if (now instanceof ForNode)
 		{
-			if (father instanceof LocalScope) {
-				Scope temp = check(((ForNode) now).stmtNode, father);;
-				return temp;
-			}
-		} else if (now instanceof WhileNode) {
-			if (father instanceof LocalScope) {
-				Scope temp = check(((WhileNode) now).stmtNode, father);
-				return temp;
-			}
+			LocalScope localScope = new LocalScope();
+			localScope.fatherScope = father;
+			localScope.fatherScope.childScope.add(localScope);
+			localScope.jumpable = true;
+			Scope temp = check(((ForInitNode) now).stmtNode, localScope);
+			return localScope;
+		}
+		else if (now instanceof WhileNode) {
+			LocalScope localScope = new LocalScope();
+			localScope.fatherScope = father;
+			localScope.fatherScope.childScope.add(localScope);
+			localScope.jumpable = true;
+			Scope temp = check(((WhileNode) now).stmtNode, localScope);
+			return localScope;
 		}
 		else if(now instanceof SuffixIncDecNode)
 		{
