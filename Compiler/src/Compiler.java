@@ -18,11 +18,9 @@ public class Compiler {
 	{
 		//try {
 
-			InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\mytest.mx"); // or System.in;
-			//InputStream is = System.in;
+			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\mytest.mx"); // or System.in;
+			InputStream is = System.in;
 
-			//BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("C:\\Users\\qydyx\\Desktop\\test.mx"), "ISO-8859-4"));
-			//BufferedReader reader = Files.newBufferedReader(Paths.get("C:\\Users\\qydyx\\Desktop\\test.mx"), StandardCharsets.UTF_16);
 			ANTLRInputStream input = new ANTLRInputStream(is);
 			MxLexer lexer = new MxLexer(input);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);

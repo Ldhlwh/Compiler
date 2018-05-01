@@ -43,7 +43,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="105">
@@ -52,11 +52,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1008">
-              <caret line="48" column="42" lean-forward="true" selection-start-line="48" selection-start-column="42" selection-end-line="48" selection-end-column="42" />
+            <state relative-caret-position="483">
+              <caret line="23" selection-start-line="23" selection-end-line="23" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -157,11 +157,11 @@
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Instances/VariIns.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopePrinter.java" />
         <option value="$PROJECT_DIR$/MxGrammar/Mx.g4" />
-        <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/SuffixScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/FuncCallScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
       </list>
     </option>
   </component>
@@ -180,7 +180,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-188" />
     <option name="y" value="-17" />
     <option name="width" value="1846" />
@@ -361,12 +361,12 @@
       <workItem from="1525061849578" duration="397000" />
       <workItem from="1525062529280" duration="2422000" />
       <workItem from="1525094639642" duration="11922000" />
-      <workItem from="1525141819427" duration="23481000" />
+      <workItem from="1525141819427" duration="23621000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="109666000" />
+    <option name="totallyTimeSpent" value="109806000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -817,16 +817,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1008">
-          <caret line="48" column="42" lean-forward="true" selection-start-line="48" selection-start-column="42" selection-end-line="48" selection-end-column="42" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="168">
@@ -841,6 +831,16 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="5" column="37" lean-forward="true" selection-start-line="5" selection-start-column="37" selection-end-line="5" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="483">
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -861,7 +861,7 @@
       </state>
       <state key="FacetStructureConfigurable.UI">
         <settings>
-          <last-edited />
+          <last-edited>No facets are configured</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
