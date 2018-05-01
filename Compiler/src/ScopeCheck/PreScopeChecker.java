@@ -6,6 +6,7 @@ import ScopeCheck.Instances.FuncIns;
 import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
+import sun.security.timestamp.TSRequest;
 
 
 public class PreScopeChecker
@@ -22,6 +23,11 @@ public class PreScopeChecker
 				{
 					for(Scope scope : ((VariDeclScope) temp).variInitScope)
 					{
+						if(topScope.variMap.containsKey(((VariInitScope)scope).name))
+						{
+							System.err.printf("Variable \"%s\" has already been defined.\n", ((VariInitScope) scope).name);
+							System.exit(1);
+						}
 						topScope.variMap.put(((VariInitScope)scope).name, new VariIns(((VariDeclScope) temp).singleType, ((VariDeclScope) temp).dimNum, ((VariInitScope)scope).name, ((VariInitScope) scope).initValue));
 					}
 				}
@@ -36,6 +42,11 @@ public class PreScopeChecker
 			classScope.name = ((ClassDeclNode) now).id;
 			if(classScope.fatherScope instanceof TopScope)
 			{
+				if(((TopScope) classScope.fatherScope).classMap.containsKey(classScope.name))
+				{
+					System.err.printf("Class \"%s\" has already been defined.\n", classScope.name);
+					System.exit(1);
+				}
 				((TopScope) classScope.fatherScope).classMap.put(classScope.name, new ClassIns(classScope.name));
 			}
 			return classScope;
@@ -55,12 +66,22 @@ public class PreScopeChecker
 				for(Scope scope : ((ParamDeclListScope)temp).paramDeclScope)
 				{
 					ParamIns newParam = new ParamIns(((ParamDeclScope) scope).singleType, ((ParamDeclScope) scope).dimNum, ((ParamDeclScope) scope).name);
+					if(funcScope.paramMap.containsKey(((ParamDeclScope) scope).name))
+					{
+						System.err.printf("Paramter \"%s\" has already been declared.\n", ((ParamDeclScope) scope).name);
+						System.exit(1);
+					}
 					funcScope.paramMap.put(((ParamDeclScope) scope).name, newParam);
 					newIns.param.add(newParam);
 				}
 			}
 			if(funcScope.fatherScope instanceof TopScope)
 			{
+				if(((TopScope)funcScope.fatherScope).funcMap.containsKey(funcScope.name))
+				{
+					System.err.printf("Function \"%s\" has already been defined.\n", funcScope.name);
+					System.exit(1);
+				}
 				((TopScope) funcScope.fatherScope).funcMap.put(funcScope.name, newIns);
 			}
 			return funcScope;
@@ -92,9 +113,14 @@ public class PreScopeChecker
 			{
 				temp = check(node, variDeclScope);
 				variDeclScope.variInitScope.add(temp);
-				if(variDeclScope.fatherScope instanceof TopScope)
+				if(variDeclScope.fatherScope instanceof LocalScope)
 				{
 					VariIns put = new VariIns(variDeclScope.singleType, variDeclScope.dimNum, ((VariInitScope) temp).name);
+					if(((LocalScope) variDeclScope.fatherScope).variMap.containsKey(((VariInitScope) temp).name))
+					{
+						System.err.printf("Variable \"%s\" has already been defined.\n", ((VariInitScope) temp).name);
+						System.exit(1);
+					}
 					((TopScope) variDeclScope.fatherScope).variMap.put(((VariInitScope)temp).name, put);
 				}
 			}

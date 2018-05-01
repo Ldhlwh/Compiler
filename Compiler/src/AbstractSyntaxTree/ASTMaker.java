@@ -518,7 +518,13 @@ public class ASTMaker extends MxBaseVisitor<ASTNode>
 			System.out.println("ConstNode : " + ctx.type.getText());
 		}
 		ConstNode constNode = new ConstNode();
-		constNode.type = ctx.type.getText();
+		String mid = ctx.type.getText();
+		if(mid.equals("true") || mid.equals("false"))
+			constNode.type = "bool";
+		else if(mid.length() >= 2 && mid.substring(1,2).equals("\""))
+			constNode.type = "string";
+		else
+			constNode.type = "int";
 		return constNode;
 	}
 

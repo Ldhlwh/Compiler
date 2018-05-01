@@ -6,12 +6,19 @@ import ScopeCheck.Instances.FuncIns;
 import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
+import com.sun.corba.se.spi.orbutil.fsm.FSM;
+import org.stringtemplate.v4.misc.STNoSuchAttributeException;
+
+import javax.swing.text.html.CSS;
 
 
 public class ScopeChecker
 {
+	public TopScope realRoot;
+
 	public Scope checkRoot(ASTNode now, Scope root)
 	{
+		realRoot = (TopScope)root;
 		for(ASTNode node : ((ASTRootNode)now).progSecNode)
 		{
 			Scope temp = check(node, root);
@@ -36,6 +43,11 @@ public class ScopeChecker
 				classScope.childScope.add(temp);
 				if (temp instanceof VariDeclScope) {
 					for (Scope scope : ((VariDeclScope) temp).variInitScope) {
+						if(classScope.variMap.containsKey(((VariInitScope)scope).name))
+						{
+							System.err.printf("Variable \"%s\" has already been defined.\n", ((VariInitScope) scope).name);
+							System.exit(1);
+						}
 						classScope.variMap.put(((VariInitScope) scope).name, new VariIns(((VariDeclScope) temp).singleType, ((VariDeclScope) temp).dimNum, ((VariInitScope) scope).name, ((VariInitScope) scope).initValue));
 					}
 				}
@@ -53,11 +65,21 @@ public class ScopeChecker
 				temp = check(((FuncDeclNode) now).paramDeclListNode, funcScope);
 				for (Scope scope : ((ParamDeclListScope) temp).paramDeclScope) {
 					ParamIns newParam = new ParamIns(((ParamDeclScope) scope).singleType, ((ParamDeclScope) scope).dimNum, ((ParamDeclScope) scope).name);
+					if(funcScope.paramMap.containsKey(((ParamDeclScope) scope).name))
+					{
+						System.err.printf("Parameter \"%s\" has already been declared.\n", ((ParamDeclScope) scope).name);
+						System.exit(1);
+					}
 					funcScope.paramMap.put(((ParamDeclScope) scope).name, newParam);
 					newIns.param.add(newParam);
 				}
 			}
 			if (funcScope.fatherScope instanceof ClassScope) {
+				if(((ClassScope) funcScope.fatherScope).funcMap.containsKey(funcScope.name))
+				{
+					System.err.printf("Function \"%s\" has already been defined.\n", funcScope.name);
+					System.exit(1);
+				}
 				((ClassScope) funcScope.fatherScope).funcMap.put(funcScope.name, newIns);
 			}
 			temp = check(((FuncDeclNode) now).blockStmtNode, funcScope);
@@ -86,6 +108,11 @@ public class ScopeChecker
 				variDeclScope.variInitScope.add(temp);
 				VariIns put = new VariIns(variDeclScope.singleType, variDeclScope.dimNum, ((VariInitScope) temp).name);
 				if (variDeclScope.fatherScope instanceof LocalScope) {
+					if(((LocalScope) variDeclScope.fatherScope).variMap.containsKey(((VariInitScope) temp).name))
+					{
+						System.err.printf("Variable \"%s\" has already been defined.\n", ((VariInitScope) temp).name);
+						System.exit(1);
+					}
 					((LocalScope) (variDeclScope.fatherScope)).variMap.put(((VariInitScope) temp).name, put);
 				}
 			}
@@ -94,7 +121,6 @@ public class ScopeChecker
 			VariInitScope variInitScope = new VariInitScope();
 			variInitScope.fatherScope = father;
 			variInitScope.name = ((VariInitNode) now).id;
-
 			if (((VariInitNode) now).assign)
 			{
 				Scope temp = check(((VariInitNode) now).exprNode, variInitScope);
@@ -158,72 +184,361 @@ public class ScopeChecker
 			if (temp instanceof LocalScope)
 				localScope.childScope.add(temp);
 			return localScope;
-		} else if (now instanceof ForNode) {
+		}
+		else if (now instanceof ForNode)
+		{
 			if (father instanceof LocalScope) {
 				Scope temp = check(((ForNode) now).stmtNode, father);
 				if (temp instanceof LocalScope)
 					father.childScope.add(temp);
+				return temp;
 			}
 		} else if (now instanceof WhileNode) {
 			if (father instanceof LocalScope) {
 				Scope temp = check(((WhileNode) now).stmtNode, father);
 				if (temp instanceof LocalScope)
 					father.childScope.add(temp);
+				return temp;
 			}
 		}
 		else if(now instanceof SuffixIncDecNode)
 		{
-			check(((SuffixIncDecNode) now).exprNode, father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope temp = check(((SuffixIncDecNode) now).exprNode, father);
+			if(((ExprScope)temp).kind != 0 || !(((ExprScope) temp).type.equals("int")))
+			{
+				System.err.printf("\"%s\" cannot do the INC / DEC operation.\n", ((ExprScope) temp).id);
+				System.exit(1);
+			}
+			expr.kind = 2;
+			expr.type = "int";
+			expr.source = null;
+			expr.dimNum = expr.maxDimNum = 0;
+			expr.id = null;
+			return expr;
 		}
 		else if(now instanceof FuncCallNode)
 		{
-			check(((FuncCallNode) now).exprNode, father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope temp = check(((FuncCallNode) now).exprNode, father);
+			if(((ExprScope)temp).kind != 1)
+			{
+				System.err.printf("\"%s\" is not a function.\n", ((ExprScope) temp).id);
+				System.exit(1);
+			}
+			expr.kind = 1;
+			expr.type = ((ExprScope) temp).type;
+			expr.source = ((ExprScope) temp).source;
+			expr.dimNum = ((ExprScope) temp).dimNum;
+			expr.maxDimNum = ((ExprScope) temp).maxDimNum;
+			expr.id = ((ExprScope) temp).id;
+			if(((FuncCallNode) now).haveParamList)
+			{
+				FuncIns func = new FuncIns();
+				if(((ExprScope) temp).source == null)
+				{
+					func = realRoot.funcMap.get(expr.id);
+				}
+				else
+				{
+					for(Scope scope : realRoot.childScope)
+					{
+						if(scope instanceof ClassScope)
+						{
+							if(((ClassScope) scope).name.equals(expr.source))
+							{
+								func = ((ClassScope) scope).funcMap.get(expr.id);
+								break;
+							}
+						}
+					}
+				}
+				if(func.param.size() != ((FuncCallNode) now).paramListNode.exprNode.size())
+				{
+					System.err.printf("Wrong number of parameters for function : \"%s\".\n", expr.id);
+					System.exit(1);
+				}
+				for(int i = 0; i < ((FuncCallNode) now).paramListNode.exprNode.size(); i++)
+				{
+					temp = check(((FuncCallNode) now).paramListNode.exprNode.get(i), father);
+					if(!(func.param.get(i).singleType.equals(((ExprScope)temp).type))
+						|| func.param.get(i).dimNum != ((ExprScope) temp).dimNum)
+					{
+						System.err.printf("Wrong parameter type for function : \"%s\".\n", expr.id);
+						System.exit(1);
+					}
+				}
+
+			}
+			return expr;
 		}
 		else if(now instanceof IndexNode)
 		{
-			check(((IndexNode) now).arrayExprNode, father);
-			check(((IndexNode) now).indexExprNode,father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope ltemp = check(((IndexNode) now).arrayExprNode, father);
+			Scope Rtemp = check(((IndexNode) now).indexExprNode,father);
+			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 4)
+			{
+				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
+				System.exit(1);
+			}
+			if(((ExprScope) ltemp).dimNum >= ((ExprScope) ltemp).maxDimNum)
+			{
+				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
+				System.exit(1);
+			}
+			expr.id = null;
+			expr.type = ((ExprScope) ltemp).type;
+			expr.source = ((ExprScope) ltemp).source;
+			expr.dimNum = ((ExprScope) ltemp).dimNum + 1;
+			expr.maxDimNum = ((ExprScope) ltemp).maxDimNum;
+			expr.kind = 0;
+			return expr;
 		}
 		else if(now instanceof MemberNode)
 		{
-			check(((MemberNode) now).exprNode, father);
-			check(((MemberNode) now).idNode, father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope ltemp = check(((MemberNode) now).exprNode, father);
+			//Scope rtemp = check(((MemberNode) now).idNode, father);
+			ExprScope rtemp = new ExprScope();
+			String find = ((MemberNode) now).idNode.id;
+			String type = ((ExprScope)ltemp).type;
+
+			for(Scope scope : realRoot.childScope)
+			{
+				if(scope instanceof ClassScope)
+				{
+					if(((ClassScope) scope).name.equals(type))
+					{
+						if(((ClassScope) scope).variMap.containsKey(find))
+						{
+							VariIns ins = ((ClassScope) scope).variMap.get(find);
+							rtemp.id = ins.name;
+							rtemp.type = ins.singleType;
+							rtemp.dimNum = rtemp.maxDimNum = ins.dimNum;
+							rtemp.kind = 0;
+							break;
+						}
+						for(Scope subScope : scope.childScope)
+						{
+							if(scope instanceof FuncScope)
+							{
+								if(((FuncScope)subScope).name.equals(find))
+								{
+									rtemp.id = find;
+									rtemp.type = ((FuncScope)subScope).singleRtnType;
+									rtemp.dimNum = rtemp.maxDimNum = ((FuncScope)subScope).rtnDimNum;
+									rtemp.kind = 1;
+									break;
+								}
+							}
+						}
+						System.err.printf("Class : \"%s\" does not have a member named \"%s\".", type, find);
+						System.exit(1);
+					}
+				}
+			}
+
+
+			if(((ExprScope)ltemp).type.equals("int") && ((ExprScope) ltemp).dimNum > 0)
+			{
+				if(rtemp.id.equals("size"))
+				{
+					System.err.printf("Type \"int\" do not have a function named \"%s\".\n", rtemp.id);
+					System.exit(1);
+				}
+			}
+			else if(((ExprScope) ltemp).type.equals("string"))
+			{
+				if((!(rtemp.id.equals("length")))
+						&& (!(rtemp.id.equals("substring")))
+						&& (!(rtemp.id.equals("parseInt")))
+						&& (!(((ExprScope) rtemp).id.equals("ord"))))
+				{
+					System.err.printf("Type \"string\" do not have a function named \"%s\".\n", rtemp.id);
+					System.exit(1);
+				}
+			}
+			if(rtemp.source != null)
+			{
+				if (!((ExprScope) ltemp).type.equals(rtemp.source))
+				{
+					System.err.printf("Type \"%s\" do not have a function named \"%s\".\n", ((ExprScope) ltemp).type, rtemp.id);
+					System.exit(1);
+				}
+			}
+			expr.id = null;
+			expr.type = rtemp.type;
+			expr.dimNum = rtemp.dimNum;
+			expr.source = null;
+			expr.kind = 2;
+			return expr;
 		}
 		else if(now instanceof PrefixIncDecNode)
 		{
-			check(((PrefixIncDecNode) now).exprNode, father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope temp = check(((PrefixIncDecNode) now).exprNode, father);
+			if(((ExprScope)temp).kind != 0 || !(((ExprScope) temp).type.equals("int")))
+			{
+				System.err.printf("\"%s\" cannot do the INC / DEC operation.\n", ((ExprScope) temp).id);
+				System.exit(1);
+			}
+			expr.kind = 2;
+			expr.type = "int";
+			expr.source = null;
+			expr.dimNum = expr.maxDimNum = 0;
+			expr.id = null;
+			return expr;
 		}
 		else if(now instanceof PosNegNode)
 		{
-			check(((PosNegNode) now).exprNode, father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope temp = check(((PosNegNode) now).exprNode, father);
+			if(!(((ExprScope)temp).type.equals("int")))
+			{
+				System.err.printf("\"%s\" is not an int.\n", ((ExprScope) temp).id);
+				System.exit(1);
+			}
+			expr.id = null;
+			expr.type = "int";
+			expr.source = null;
+			expr.dimNum = 0;
+			expr.maxDimNum = 0;
+			expr.kind = 2;
+			return expr;
 		}
 		else if(now instanceof NotNode)
 		{
-			check(((NotNode) now).exprNode, father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope temp = check(((NotNode) now).exprNode, father);
+			if(!(((ExprScope)temp).type.equals("int")))
+			{
+				System.err.printf("\"%s\" is not an int.\n", ((ExprScope) temp).id);
+				System.exit(1);
+			}
+			expr.id = null;
+			expr.type = "int";
+			expr.source = null;
+			expr.dimNum = 0;
+			expr.maxDimNum = 0;
+			expr.kind = 2;
+			return expr;
 		}
 		else if(now instanceof NewNode)
 		{
-			check(((NewNode) now).creatorNode, father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope temp = check(((NewNode) now).creatorNode, father);
+			expr.id = null;
+			expr.type = ((ExprScope)temp).type;
+			expr.dimNum = ((ExprScope) temp).dimNum;
+			expr.maxDimNum = ((ExprScope) temp).maxDimNum;
+			expr.source = null;
+			expr.kind = 2;
+			return expr;
 		}
 		else if(now instanceof CreatorArrayNode)
 		{
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope temp = check(((CreatorArrayNode) now).singleTypeNode, father);
+			expr.type = ((SingleTypeScope)temp).singleType;
 			for(ASTNode node : ((CreatorArrayNode) now).exprNode)
 			{
-				check(node, father);
+				temp = check(node, father);
+				if(((ExprScope)temp).kind == 3 || !(((ExprScope) temp).type.equals("int")))
+				{
+					System.err.printf("Index should be int.\n");
+					System.exit(1);
+				}
 			}
+			expr.id = null;
+			expr.source = null;
+			expr.dimNum = ((CreatorArrayNode) now).exprNode.size() + ((CreatorArrayNode) now).emptyDimNum;
+			expr.maxDimNum = expr.dimNum;
+			expr.kind = 2;
+			return expr;
+		}
+		else if(now instanceof CreatorSingleNode)
+		{
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			expr.type = ((CreatorSingleNode) now).singleTypeNode.type;
+			expr.id = null;
+			expr.source = null;
+			expr.dimNum = expr.maxDimNum = 0;
+			expr.kind = 2;
+			return expr;
 		}
 		else if(now instanceof BinaryNode)
 		{
-			check(((BinaryNode) now).leftExprNode, father);
-			check(((BinaryNode) now).rightExprNode, father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope ltemp = check(((BinaryNode) now).leftExprNode, father);
+			Scope rtemp = check(((BinaryNode) now).rightExprNode, father);
+			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
+			{
+				System.err.printf("Different types cannot do this operation.\n");
+				System.exit(1);
+			}
+			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
+			{
+				System.err.printf("Only internal classes can do this operation.\n");
+				System.exit(1);
+			}
+			if(((ExprScope) ltemp).dimNum > 1 || ((ExprScope) rtemp).dimNum > 1)
+			{
+				System.err.printf("Arrays cannot do this operation.\n");
+				System.exit(1);
+			}
+			expr.id = null;
+			expr.type = ((ExprScope) ltemp).type;
+			expr.source = null;
+			expr.dimNum = 0;
+			expr.maxDimNum = 0;
+			expr.kind = 2;
+			return expr;
 		}
 		else if(now instanceof AssignNode)
 		{
-			check(((AssignNode) now).leftExprNode, father);
-			check(((AssignNode) now).rightExprNode, father);
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			Scope ltemp = check(((AssignNode) now).leftExprNode, father);
+			Scope rtemp = check(((AssignNode) now).rightExprNode, father);
+			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
+			{
+				System.err.printf("Different types cannot do this operation.\n");
+				System.exit(1);
+			}
+			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
+			{
+				System.err.printf("Only internal classes can do this operation.\n");
+				System.exit(1);
+			}
+			if(((ExprScope) ltemp).dimNum > 1 || ((ExprScope) rtemp).dimNum > 1)
+			{
+				System.err.printf("Arrays cannot do this operation.\n");
+				System.exit(1);
+			}
+			expr.id = null;
+			expr.type = null;
+			expr.source = null;
+			expr.dimNum = 0;
+			expr.maxDimNum = 0;
+			expr.kind = 2;
+			return expr;
 		}
 		else if(now instanceof IdNode)
 		{
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
 			String id = ((IdNode) now).id;
 			boolean have = false;
 			for(Scope nowScope = father; !(nowScope instanceof EmptyScope); nowScope = nowScope.fatherScope)
@@ -231,6 +546,18 @@ public class ScopeChecker
 				if(nowScope instanceof LocalScope) {
 					if (((LocalScope) nowScope).variMap.containsKey(id)) {
 						have = true;
+						VariIns ins = ((LocalScope) nowScope).variMap.get(id);
+						expr.id = id;
+						expr.type = ins.singleType;
+						expr.source = null;
+						expr.dimNum = expr.maxDimNum = ins.dimNum;
+						if(ins.singleType.equals("bool")
+								|| ins.singleType.equals("int")
+								|| ins.singleType.equals("string")
+								|| ins.singleType.equals("char"))
+							expr.kind = 0;
+						else
+							expr.kind = 4;
 						break;
 					}
 				}
@@ -239,6 +566,18 @@ public class ScopeChecker
 					if(((FuncScope) nowScope).paramMap.containsKey(id))
 					{
 						have = true;
+						ParamIns ins = ((FuncScope) nowScope).paramMap.get(id);
+						expr.id = id;
+						expr.type = ins.singleType;
+						expr.source = null;
+						expr.dimNum = expr.maxDimNum = ins.dimNum;
+						if(ins.singleType.equals("bool")
+								|| ins.singleType.equals("int")
+								|| ins.singleType.equals("string")
+								|| ins.singleType.equals("char"))
+							expr.kind = 0;
+						else
+							expr.kind = 4;
 						break;
 					}
 				}
@@ -247,11 +586,36 @@ public class ScopeChecker
 					if(((ClassScope) nowScope).variMap.containsKey(id))
 					{
 						have = true;
+						VariIns ins = ((ClassScope) nowScope).variMap.get(id);
+						expr.id = id;
+						expr.type = ins.singleType;
+						expr.source = null;
+						expr.dimNum = expr.maxDimNum = ins.dimNum;
+						if(ins.singleType.equals("bool")
+								|| ins.singleType.equals("int")
+								|| ins.singleType.equals("string")
+								|| ins.singleType.equals("char"))
+							expr.kind = 0;
+						else
+							expr.kind = 4;
 						break;
 					}
 					else if(((ClassScope) nowScope).funcMap.containsKey(id))
 					{
 						have = true;
+						FuncIns ins = ((ClassScope) nowScope).funcMap.get(id);
+						expr.id = id;
+						expr.type = ins.singleType;
+						expr.source = null;
+						expr.dimNum = expr.maxDimNum = ins.rtnDimNum;
+						if(ins.singleType.equals("bool")
+								|| ins.singleType.equals("int")
+								|| ins.singleType.equals("string")
+								|| ins.singleType.equals("char")
+								|| ins.singleType.equals("void"))
+							expr.kind = 0;
+						else
+							expr.kind = 4;
 						break;
 					}
 				}
@@ -260,16 +624,46 @@ public class ScopeChecker
 					if(((TopScope) nowScope).variMap.containsKey(id))
 					{
 						have = true;
+						VariIns ins = ((TopScope) nowScope).variMap.get(id);
+						expr.id = id;
+						expr.type = ins.singleType;
+						expr.source = null;
+						expr.dimNum = expr.maxDimNum = ins.dimNum;
+						if(ins.singleType.equals("bool")
+								|| ins.singleType.equals("int")
+								|| ins.singleType.equals("string")
+								|| ins.singleType.equals("char"))
+							expr.kind = 0;
+						else
+							expr.kind = 4;
 						break;
 					}
 					else if(((TopScope) nowScope).funcMap.containsKey(id))
 					{
 						have = true;
+						FuncIns ins = ((TopScope) nowScope).funcMap.get(id);
+						expr.id = id;
+						expr.type = ins.singleType;
+						expr.source = null;
+						expr.dimNum = expr.maxDimNum = ins.rtnDimNum;
+						if(ins.singleType.equals("bool")
+								|| ins.singleType.equals("int")
+								|| ins.singleType.equals("string")
+								|| ins.singleType.equals("char")
+								|| ins.singleType.equals("void"))
+							expr.kind = 0;
+						else
+							expr.kind = 4;
 						break;
 					}
 					else if(((TopScope) nowScope).classMap.containsKey(id))
 					{
 						have = true;
+						expr.id = id;
+						expr.type = null;
+						expr.source = null;
+						expr.dimNum = expr.maxDimNum = 0;
+						expr.kind = 4;
 						break;
 					}
 				}
@@ -279,14 +673,27 @@ public class ScopeChecker
 				System.err.printf("\"%s\" is not defined.\n", id);
 				System.exit(1);
 			}
+			return expr;
+		}
+		else if(now instanceof ConstNode)
+		{
+			ExprScope expr = new ExprScope();
+			expr.fatherScope = father;
+			expr.id = null;
+			expr.type = ((ConstNode) now).type;
+			expr.source = null;
+			expr.dimNum = expr.maxDimNum = 0;
+			expr.kind = 2;
+			return expr;
 		}
 		else if(now instanceof SubExprNode)
 		{
-			check(((SubExprNode) now).exprNode, father);
+			return check(((SubExprNode) now).exprNode, father);
 		}
 
 		//System.err.printf("Unaccesible Node ID = %d\n", now.nodeID);
 		//System.exit(1);
+		System.err.println(now.getClass());
 		return new EmptyScope();
 	}
 }
