@@ -16,10 +16,9 @@ import AbstractSyntaxTree.ASTPrinter;
 public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
-		//try {
-
-			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\mytest.mx"); // or System.in;
-			InputStream is = System.in;
+		try {
+			InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\T677.mx"); // or System.in;
+			//InputStream is = System.in;
 
 			ANTLRInputStream input = new ANTLRInputStream(is);
 			MxLexer lexer = new MxLexer(input);
@@ -59,8 +58,10 @@ public class Compiler {
 			Evaluator evalByListener = new Evaluator();
 			walker.walk(evalByListener, tree);
 			*/
-		//} catch (Exception ex) {
-		//	System.exit(1);
-		//}
+		}
+		catch (Exception ex)
+		{
+			System.exit(1);
+		}
 	}
 }

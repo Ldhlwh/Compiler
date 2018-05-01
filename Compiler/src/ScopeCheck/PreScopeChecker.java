@@ -176,7 +176,7 @@ public class PreScopeChecker
 		((TopScope) root).funcMap.put(lengthIns.name, lengthIns);
 
 		FuncIns subStringIns = new FuncIns();
-		subStringIns.name = "subString";
+		subStringIns.name = "substring";
 		subStringIns.singleType = "string";
 		subStringIns.rtnDimNum = 0;
 		subStringIns.param.add(new ParamIns("int", 0, "left"));

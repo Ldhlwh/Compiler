@@ -9,37 +9,37 @@ public class ASTPrinter
 {
 	public void print(ASTNode now)
 	{
-		System.out.printf("ID = %d ", now.nodeID);
+		System.err.printf("ID = %d ", now.nodeID);
 		if(now instanceof ASTRootNode)
 		{
-			System.out.println("ASTRootNode");
-			System.out.print("progSecNode : ");
+			System.err.println("ASTRootNode");
+			System.err.print("progSecNode : ");
 			for(ASTNode node : ((ASTRootNode) now).progSecNode)
-				System.out.printf("%d ", node.nodeID);
-			System.out.println("\n");
+				System.err.printf("%d ", node.nodeID);
+			System.err.println("\n");
 			for(ASTNode node : ((ASTRootNode) now).progSecNode)
 				print(node);
 		}
 		else if(now instanceof ClassDeclNode)
 		{
-			System.out.println("ClassDeclNode");
-			System.out.printf("idNode : %s\n", ((ClassDeclNode) now).id);
-			System.out.print("progSecNode : ");
+			System.err.println("ClassDeclNode");
+			System.err.printf("idNode : %s\n", ((ClassDeclNode) now).id);
+			System.err.print("progSecNode : ");
 			for(ASTNode node : ((ClassDeclNode) now).progSecNode)
-				System.out.printf("%d ", node.nodeID);
-			System.out.println("\n");
+				System.err.printf("%d ", node.nodeID);
+			System.err.println("\n");
 			for(ASTNode node : ((ClassDeclNode) now).progSecNode)
 				print(node);
 		}
 		else if(now instanceof FuncDeclNode)
 		{
-			System.out.println("FuncDeclNode");
-			System.out.printf("typeNode : %d\n", ((FuncDeclNode) now).typeNode.nodeID);
-			System.out.printf("idNode : %s\n", ((FuncDeclNode) now).id);
+			System.err.println("FuncDeclNode");
+			System.err.printf("typeNode : %d\n", ((FuncDeclNode) now).typeNode.nodeID);
+			System.err.printf("idNode : %s\n", ((FuncDeclNode) now).id);
 			if(((FuncDeclNode) now).haveParamDeclListNode)
-				System.out.printf("paramDeclListNode : %d\n", ((FuncDeclNode) now).paramDeclListNode.nodeID);
-			System.out.printf("blockStmtNode : %d\n", ((FuncDeclNode) now).blockStmtNode.nodeID);
-			System.out.println("\n");
+				System.err.printf("paramDeclListNode : %d\n", ((FuncDeclNode) now).paramDeclListNode.nodeID);
+			System.err.printf("blockStmtNode : %d\n", ((FuncDeclNode) now).blockStmtNode.nodeID);
+			System.err.println("\n");
 			print(((FuncDeclNode) now).typeNode);
 			if(((FuncDeclNode) now).haveParamDeclListNode)
 				print(((FuncDeclNode) now).paramDeclListNode);
@@ -47,51 +47,51 @@ public class ASTPrinter
 		}
 		else if(now instanceof VariDeclNode)
 		{
-			System.out.println("VariDeclNode");
-			System.out.printf("typeNode : %d\n", ((VariDeclNode) now).typeNode.nodeID);
-			System.out.print("variInitNode : ");
+			System.err.println("VariDeclNode");
+			System.err.printf("typeNode : %d\n", ((VariDeclNode) now).typeNode.nodeID);
+			System.err.print("variInitNode : ");
 			for(ASTNode node : ((VariDeclNode) now).variInitNode)
-				System.out.printf("%d ", node.nodeID);
-			System.out.println("\n");
+				System.err.printf("%d ", node.nodeID);
+			System.err.println("\n");
 			print(((VariDeclNode) now).typeNode);
 			for(int i = 0; i < ((VariDeclNode) now).variInitNode.size(); i++)
 				print(((VariDeclNode) now).variInitNode.get(i));
 		}
 		else if(now instanceof BlockStmtNode)
 		{
-			System.out.println("BlockStmtNode");
-			System.out.print("progSecNode : ");
+			System.err.println("BlockStmtNode");
+			System.err.print("progSecNode : ");
 			for(ASTNode node : ((BlockStmtNode) now).progSecNode)
-				System.out.printf("%d ", node.nodeID);
-			System.out.println("\n");
+				System.err.printf("%d ", node.nodeID);
+			System.err.println("\n");
 			for(ASTNode node : ((BlockStmtNode) now).progSecNode)
 				print(node);
 		}
 		else if(now instanceof ExprStmtNode)
 		{
-			System.out.println("ExprStmtNode");
-			System.out.printf("empty : %b\n", ((ExprStmtNode) now).empty);
+			System.err.println("ExprStmtNode");
+			System.err.printf("empty : %b\n", ((ExprStmtNode) now).empty);
 			if(((ExprStmtNode) now).empty == false)
 			{
-				System.out.printf("exprNode : %d\n", ((ExprStmtNode) now).exprNode.nodeID);
+				System.err.printf("exprNode : %d\n", ((ExprStmtNode) now).exprNode.nodeID);
 			}
-			System.out.println("\n");
+			System.err.println("\n");
 			print(((ExprStmtNode) now).exprNode);
 		}
 		else if(now instanceof SlctStmtNode)
 		{
-			System.out.println("SlctStmtNode");
-			System.out.printf("ifExprNode : %d\n", ((SlctStmtNode) now).ifExprNode.nodeID);
-			System.out.printf("ifStmtNode : %d\n", ((SlctStmtNode) now).ifStmtNode.nodeID);
-			System.out.print("elifExprNode : ");
+			System.err.println("SlctStmtNode");
+			System.err.printf("ifExprNode : %d\n", ((SlctStmtNode) now).ifExprNode.nodeID);
+			System.err.printf("ifStmtNode : %d\n", ((SlctStmtNode) now).ifStmtNode.nodeID);
+			System.err.print("elifExprNode : ");
 			for(int i = 0; i < ((SlctStmtNode) now).elifExprNode.size(); i++)
-				System.out.printf("%d ", ((SlctStmtNode) now).elifExprNode.get(i).nodeID);
-			System.out.print("elifStmtNode : ");
+				System.err.printf("%d ", ((SlctStmtNode) now).elifExprNode.get(i).nodeID);
+			System.err.print("elifStmtNode : ");
 			for(int i = 0; i < ((SlctStmtNode) now).elifStmtNode.size(); i++)
-				System.out.printf("%d ", ((SlctStmtNode) now).elifStmtNode.get(i).nodeID);
+				System.err.printf("%d ", ((SlctStmtNode) now).elifStmtNode.get(i).nodeID);
 			if(((SlctStmtNode) now).haveElse)
-				System.out.printf("elseStmtNode : %d\n", ((SlctStmtNode) now).elseStmtNode.nodeID);
-			System.out.println();
+				System.err.printf("elseStmtNode : %d\n", ((SlctStmtNode) now).elseStmtNode.nodeID);
+			System.err.println();
 			print(((SlctStmtNode) now).ifExprNode);
 			print(((SlctStmtNode) now).ifStmtNode);
 			for(int i = 0; i < ((SlctStmtNode) now).elifExprNode.size(); i++)
@@ -103,13 +103,13 @@ public class ASTPrinter
 		}
 		else if(now instanceof ForInitNode)
 		{
-			System.out.println("ForInitNode");
-			System.out.printf("variDeclNode : %d\n", ((ForInitNode) now).variDeclNode.nodeID);
+			System.err.println("ForInitNode");
+			System.err.printf("variDeclNode : %d\n", ((ForInitNode) now).variDeclNode.nodeID);
 			if(((ForInitNode) now).haveCond)
-				System.out.printf("condExprNode : %d\n", ((ForInitNode) now).condExprNode.nodeID);
+				System.err.printf("condExprNode : %d\n", ((ForInitNode) now).condExprNode.nodeID);
 			if(((ForInitNode) now).haveStep)
-				System.out.printf("stepExprNode : %d\n", ((ForInitNode) now).stepExprNode.nodeID);
-			System.out.printf("stmtNode : %d\n\n", ((ForInitNode) now).stmtNode.nodeID);
+				System.err.printf("stepExprNode : %d\n", ((ForInitNode) now).stepExprNode.nodeID);
+			System.err.printf("stmtNode : %d\n\n", ((ForInitNode) now).stmtNode.nodeID);
 			print(((ForInitNode) now).variDeclNode);
 			if(((ForInitNode) now).haveCond)
 				print(((ForInitNode) now).condExprNode);
@@ -119,14 +119,14 @@ public class ASTPrinter
 		}
 		else if(now instanceof ForNode)
 		{
-			System.out.println("ForNode");
+			System.err.println("ForNode");
 			if(((ForNode) now).haveInit)
-				System.out.printf("initExprNode : %d\n", ((ForNode) now).initExprNode.nodeID);
+				System.err.printf("initExprNode : %d\n", ((ForNode) now).initExprNode.nodeID);
 			if(((ForNode) now).haveCond)
-				System.out.printf("condExprNode : %d\n", ((ForNode) now).condExprNode.nodeID);
+				System.err.printf("condExprNode : %d\n", ((ForNode) now).condExprNode.nodeID);
 			if(((ForNode) now).haveStep)
-				System.out.printf("stepExprNode : %d\n", ((ForNode) now).stepExprNode.nodeID);
-			System.out.printf("stmtNode : %d\n\n", ((ForNode) now).stmtNode.nodeID);
+				System.err.printf("stepExprNode : %d\n", ((ForNode) now).stepExprNode.nodeID);
+			System.err.printf("stmtNode : %d\n\n", ((ForNode) now).stmtNode.nodeID);
 			if(((ForNode) now).haveInit)
 				print(((ForNode) now).initExprNode);
 			if(((ForNode) now).haveCond)
@@ -137,195 +137,195 @@ public class ASTPrinter
 		}
 		else if(now instanceof WhileNode)
 		{
-			System.out.println("WhileNode");
-			System.out.printf("exprNode : %d\n", ((WhileNode) now).exprNode.nodeID);
-			System.out.printf("stmtNode : %d\n", ((WhileNode) now).stmtNode.nodeID);
+			System.err.println("WhileNode");
+			System.err.printf("exprNode : %d\n", ((WhileNode) now).exprNode.nodeID);
+			System.err.printf("stmtNode : %d\n", ((WhileNode) now).stmtNode.nodeID);
 			print(((WhileNode) now).exprNode);
 			print(((WhileNode) now).stmtNode);
 		}
 		else if(now instanceof BreakNode)
 		{
-			System.out.println("BreakNode");
+			System.err.println("BreakNode");
 		}
 		else if(now instanceof ContinueNode)
 		{
-			System.out.println("ContinueNode");
+			System.err.println("ContinueNode");
 		}
 		else if(now instanceof ReturnNode)
 		{
-			System.out.println("ReturnNode");
-			System.out.printf("exprNode : %d\n", ((ReturnNode) now).exprNode.nodeID);
+			System.err.println("ReturnNode");
+			System.err.printf("exprNode : %d\n", ((ReturnNode) now).exprNode.nodeID);
 			print(((ReturnNode) now).exprNode);
 		}
 		else if(now instanceof CreatorArrayNode)
 		{
-			System.out.println("CreatorArrayNode");
-			System.out.printf("singleTypeNode : %d\n", ((CreatorArrayNode) now).singleTypeNode.nodeID);
-			System.out.print("exprNode : ");
+			System.err.println("CreatorArrayNode");
+			System.err.printf("singleTypeNode : %d\n", ((CreatorArrayNode) now).singleTypeNode.nodeID);
+			System.err.print("exprNode : ");
 			for(int i = 0; i < ((CreatorArrayNode) now).exprNode.size(); i++)
-				System.out.printf("%d ", ((CreatorArrayNode) now).exprNode.get(i).nodeID);
-			System.out.printf("emptyDimNum : %d\n", ((CreatorArrayNode) now).emptyDimNum);
+				System.err.printf("%d ", ((CreatorArrayNode) now).exprNode.get(i).nodeID);
+			System.err.printf("emptyDimNum : %d\n", ((CreatorArrayNode) now).emptyDimNum);
 			print(((CreatorArrayNode) now).singleTypeNode);
 			for(int i = 0; i < ((CreatorArrayNode) now).exprNode.size(); i++)
 				print(((CreatorArrayNode) now).exprNode.get(i));
 		}
 		else if(now instanceof CreatorSingleNode)
 		{
-			System.out.println("CreatorSingleNode");
-			System.out.printf("singleTypeNode : %d\n", ((CreatorSingleNode) now).singleTypeNode.nodeID);
+			System.err.println("CreatorSingleNode");
+			System.err.printf("singleTypeNode : %d\n", ((CreatorSingleNode) now).singleTypeNode.nodeID);
 			print(((CreatorSingleNode) now).singleTypeNode);
 		}
 		else if(now instanceof TypeNode)
 		{
-			System.out.println("TypeNode");
-			System.out.printf("singleTypeNode : %d\n", ((TypeNode) now).singleTypeNode.nodeID);
-			System.out.printf("dimNum : %d\n", ((TypeNode) now).dimNum);
+			System.err.println("TypeNode");
+			System.err.printf("singleTypeNode : %d\n", ((TypeNode) now).singleTypeNode.nodeID);
+			System.err.printf("dimNum : %d\n", ((TypeNode) now).dimNum);
 			print(((TypeNode) now).singleTypeNode);
 		}
 		else if(now instanceof SingleTypeNode)
 		{
-			System.out.println("SingleTypeNode");
-			System.out.printf("type : %s\n", ((SingleTypeNode) now).type);
+			System.err.println("SingleTypeNode");
+			System.err.printf("type : %s\n", ((SingleTypeNode) now).type);
 		}
 		else if(now instanceof  ParamDeclListNode)
 		{
-			System.out.println("ParamDeclListNode");
-			System.out.print("paramDeclNode : ");
+			System.err.println("ParamDeclListNode");
+			System.err.print("paramDeclNode : ");
 			for(ASTNode node : ((ParamDeclListNode) now).paramDeclNode)
-				System.out.printf("%d ", node.nodeID);
-			System.out.println();
+				System.err.printf("%d ", node.nodeID);
+			System.err.println();
 			for(ASTNode node : ((ParamDeclListNode) now).paramDeclNode)
 				print(node);
 		}
 		else if(now instanceof ParamDeclNode)
 		{
-			System.out.println("ParamDeclNode");
-			System.out.printf("typeNode : %d\n", ((ParamDeclNode) now).typeNode.nodeID);
-			System.out.printf("idNode : %s\n", ((ParamDeclNode) now).id);
+			System.err.println("ParamDeclNode");
+			System.err.printf("typeNode : %d\n", ((ParamDeclNode) now).typeNode.nodeID);
+			System.err.printf("idNode : %s\n", ((ParamDeclNode) now).id);
 			print(((ParamDeclNode) now).typeNode);
 		}
 		else if(now instanceof VariInitNode)
 		{
-			System.out.println("VariInitNode");
-			System.out.printf("idNode : %s\n", ((VariInitNode) now).id);
+			System.err.println("VariInitNode");
+			System.err.printf("idNode : %s\n", ((VariInitNode) now).id);
 			if(((VariInitNode) now).assign)
 				print(((VariInitNode) now).exprNode);
 		}
 		else if(now instanceof ParamListNode)
 		{
-			System.out.println("ParamListNode");
-			System.out.print("exprNode : ");
+			System.err.println("ParamListNode");
+			System.err.print("exprNode : ");
 			for(ASTNode node : ((ParamListNode) now).exprNode)
-				System.out.printf("%d ", node.nodeID);
-			System.out.println();
+				System.err.printf("%d ", node.nodeID);
+			System.err.println();
 			for(ASTNode node : ((ParamListNode) now).exprNode)
 				print(node);
 		}
 		else if(now instanceof SuffixIncDecNode)
 		{
-			System.out.println("SuffixNode");
-			System.out.printf("exprNode : %d\n", ((SuffixIncDecNode) now).exprNode.nodeID);
-			System.out.printf("op : %s\n\n", ((SuffixIncDecNode) now).op);
+			System.err.println("SuffixNode");
+			System.err.printf("exprNode : %d\n", ((SuffixIncDecNode) now).exprNode.nodeID);
+			System.err.printf("op : %s\n\n", ((SuffixIncDecNode) now).op);
 			print(((SuffixIncDecNode) now).exprNode);
 		}
 		else if(now instanceof FuncCallNode)
 		{
-			System.out.println("FuncCallNode");
-			System.out.printf("exprNode : %d\n", ((FuncCallNode) now).exprNode.nodeID);
+			System.err.println("FuncCallNode");
+			System.err.printf("exprNode : %d\n", ((FuncCallNode) now).exprNode.nodeID);
 			if(((FuncCallNode) now).haveParamList)
-				System.out.printf("paramListNode : %d\n", ((FuncCallNode) now).paramListNode.nodeID);
-			System.out.println();
+				System.err.printf("paramListNode : %d\n", ((FuncCallNode) now).paramListNode.nodeID);
+			System.err.println();
 			print(((FuncCallNode) now).exprNode);
 			if(((FuncCallNode) now).haveParamList)
 				print(((FuncCallNode) now).paramListNode);
 		}
 		else if(now instanceof IndexNode)
 		{
-			System.out.println("IndexNode");
-			System.out.printf("arrayExpr : %d\n", ((IndexNode) now).arrayExprNode.nodeID);
-			System.out.printf("indexExpr : %d\n", ((IndexNode) now).indexExprNode.nodeID);
-			System.out.println();
+			System.err.println("IndexNode");
+			System.err.printf("arrayExpr : %d\n", ((IndexNode) now).arrayExprNode.nodeID);
+			System.err.printf("indexExpr : %d\n", ((IndexNode) now).indexExprNode.nodeID);
+			System.err.println();
 			print(((IndexNode) now).arrayExprNode);
 			print(((IndexNode) now).indexExprNode);
 		}
 		else if(now instanceof MemberNode)
 		{
-			System.out.println("MemberNode");
-			System.out.printf("exprNode : %d\n", ((MemberNode) now).exprNode.nodeID);
-			System.out.printf("idNode : %s\n", ((MemberNode) now).idNode.nodeID);
-			System.out.println();
+			System.err.println("MemberNode");
+			System.err.printf("exprNode : %d\n", ((MemberNode) now).exprNode.nodeID);
+			System.err.printf("idNode : %s\n", ((MemberNode) now).idNode.nodeID);
+			System.err.println();
 			print(((MemberNode) now).exprNode);
 			print(((MemberNode) now).idNode);
 		}
 		else if(now instanceof PrefixIncDecNode)
 		{
-			System.out.println("PrefixNode");
-			System.out.printf("op = %s\n", ((PrefixIncDecNode) now).op);
-			System.out.printf("exprNode = %d\n", ((PrefixIncDecNode) now).exprNode.nodeID);
-			System.out.println();
+			System.err.println("PrefixNode");
+			System.err.printf("op = %s\n", ((PrefixIncDecNode) now).op);
+			System.err.printf("exprNode = %d\n", ((PrefixIncDecNode) now).exprNode.nodeID);
+			System.err.println();
 			print(((PrefixIncDecNode) now).exprNode);
 		}
 		else if(now instanceof PosNegNode)
 		{
-			System.out.println("PosNegNode");
-			System.out.printf("op = %s\n", ((PosNegNode) now).op);
-			System.out.printf("exprNode = %d\n", ((PosNegNode) now).exprNode.nodeID);
-			System.out.println();
+			System.err.println("PosNegNode");
+			System.err.printf("op = %s\n", ((PosNegNode) now).op);
+			System.err.printf("exprNode = %d\n", ((PosNegNode) now).exprNode.nodeID);
+			System.err.println();
 			print(((PosNegNode) now).exprNode);
 		}
 		else if(now instanceof NotNode)
 		{
-			System.out.println("NotNode");
-			System.out.printf("op = %s\n", ((NotNode) now).op);
-			System.out.printf("exprNode = %d\n", ((NotNode) now).exprNode.nodeID);
-			System.out.println();
+			System.err.println("NotNode");
+			System.err.printf("op = %s\n", ((NotNode) now).op);
+			System.err.printf("exprNode = %d\n", ((NotNode) now).exprNode.nodeID);
+			System.err.println();
 			print(((NotNode) now).exprNode);
 		}
 		else if(now instanceof NewNode)
 		{
-			System.out.println("NewNode");
-			System.out.printf("op = %s\n", ((NewNode) now).op);
-			System.out.printf("creatorNode = %d\n", ((NewNode) now).creatorNode.nodeID);
-			System.out.println();
+			System.err.println("NewNode");
+			System.err.printf("op = %s\n", ((NewNode) now).op);
+			System.err.printf("creatorNode = %d\n", ((NewNode) now).creatorNode.nodeID);
+			System.err.println();
 			print(((NewNode) now).creatorNode);
 		}
 		else if(now instanceof BinaryNode)
 		{
-			System.out.println("BinaryNode");
-			System.out.printf("leftExpr : %d\n", ((BinaryNode) now).leftExprNode.nodeID);
-			System.out.printf("op : %s\n", ((BinaryNode) now).op);
-			System.out.printf("rightExpr : %d\n", ((BinaryNode) now).rightExprNode.nodeID);
-			System.out.println();
+			System.err.println("BinaryNode");
+			System.err.printf("leftExpr : %d\n", ((BinaryNode) now).leftExprNode.nodeID);
+			System.err.printf("op : %s\n", ((BinaryNode) now).op);
+			System.err.printf("rightExpr : %d\n", ((BinaryNode) now).rightExprNode.nodeID);
+			System.err.println();
 			print(((BinaryNode) now).leftExprNode);
 			print(((BinaryNode) now).rightExprNode);
 		}
 		else if(now instanceof AssignNode)
 		{
-			System.out.println("AssignNode");
-			System.out.printf("left : %d\n", ((AssignNode) now).leftExprNode.nodeID);
-			System.out.printf("right : %d\n", ((AssignNode) now).rightExprNode.nodeID);
-			System.out.println();
+			System.err.println("AssignNode");
+			System.err.printf("left : %d\n", ((AssignNode) now).leftExprNode.nodeID);
+			System.err.printf("right : %d\n", ((AssignNode) now).rightExprNode.nodeID);
+			System.err.println();
 			print(((AssignNode) now).leftExprNode);
 			print(((AssignNode) now).rightExprNode);
 		}
 
 		else if(now instanceof IdNode)
 		{
-			System.out.println("IdNode");
-			System.out.printf("id : %s\n", ((IdNode) now).id);
-			System.out.println();
+			System.err.println("IdNode");
+			System.err.printf("id : %s\n", ((IdNode) now).id);
+			System.err.println();
 		}
 
 		else if(now instanceof ConstNode)
 		{
-			System.out.println("ConstNode");
-			System.out.printf("type = %s\n\n", ((ConstNode) now).type);
+			System.err.println("ConstNode");
+			System.err.printf("type = %s\n\n", ((ConstNode) now).type);
 		}
 		else if(now instanceof SubExprNode)
 		{
-			System.out.println("SubExprNode");
-			System.out.printf("exprNode : %d\n", ((SubExprNode) now).exprNode.nodeID);
-			System.out.println();
+			System.err.println("SubExprNode");
+			System.err.printf("exprNode : %d\n", ((SubExprNode) now).exprNode.nodeID);
+			System.err.println();
 			print(((SubExprNode) now).exprNode);
 		}
 	}
