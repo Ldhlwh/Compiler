@@ -3,6 +3,7 @@ package AbstractSyntaxTree;
 import AbstractSyntaxTree.Nodes.*;
 import MxGrammar.MxBaseVisitor;
 import MxGrammar.MxParser;
+import ScopeCheck.Scopes.ExprScope;
 import org.stringtemplate.v4.misc.STNoSuchAttributeException;
 
 import javax.net.ssl.SNIHostName;

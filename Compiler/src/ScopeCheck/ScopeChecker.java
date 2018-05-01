@@ -243,6 +243,8 @@ public class ScopeChecker
 			ExprScope expr = new ExprScope();
 			expr.fatherScope = father;
 			Scope temp = check(((SuffixIncDecNode) now).exprNode, father);
+			System.err.println(((ExprScope)temp).kind);
+			System.err.println(((ExprScope) temp).type);
 			if(((ExprScope)temp).kind != 0 || !(((ExprScope) temp).type.equals("int")))
 			{
 				System.err.printf("\"%s\" cannot do the INC / DEC operation.\n", ((ExprScope) temp).id);
@@ -422,7 +424,7 @@ public class ScopeChecker
 			expr.type = rtemp.type;
 			expr.dimNum = rtemp.dimNum;
 			expr.source = null;
-			expr.kind = 1;
+			expr.kind = 0;
 			return expr;
 		}
 		else if(now instanceof PrefixIncDecNode)
@@ -537,6 +539,8 @@ public class ScopeChecker
 				System.err.printf("Different types cannot do this binary operation.\n");
 				System.exit(1);
 			}
+			System.err.println(((ExprScope) ltemp).kind);
+			System.err.println(((ExprScope) rtemp).kind);
 			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
 			{
 				System.err.printf("Only internal classes can do this operation.\n");
@@ -601,7 +605,7 @@ public class ScopeChecker
 								|| ins.singleType.equals("char"))
 							expr.kind = 0;
 						else
-							expr.kind = 4;
+							expr.kind = 3;
 						break;
 					}
 				}
@@ -621,7 +625,7 @@ public class ScopeChecker
 								|| ins.singleType.equals("char"))
 							expr.kind = 0;
 						else
-							expr.kind = 4;
+							expr.kind = 3;
 						break;
 					}
 				}
@@ -641,7 +645,7 @@ public class ScopeChecker
 								|| ins.singleType.equals("char"))
 							expr.kind = 0;
 						else
-							expr.kind = 4;
+							expr.kind = 3;
 						break;
 					}
 					else if(((ClassScope) nowScope).funcMap.containsKey(id))
@@ -659,7 +663,7 @@ public class ScopeChecker
 								|| ins.singleType.equals("void"))
 							expr.kind = 0;
 						else
-							expr.kind = 4;
+							expr.kind = 3;
 						break;
 					}
 				}
@@ -679,7 +683,7 @@ public class ScopeChecker
 								|| ins.singleType.equals("char"))
 							expr.kind = 0;
 						else
-							expr.kind = 4;
+							expr.kind = 3;
 						break;
 					}
 					else if(((TopScope) nowScope).funcMap.containsKey(id))
@@ -698,7 +702,7 @@ public class ScopeChecker
 								|| ins.singleType.equals("void"))
 							expr.kind = 1;
 						else
-							expr.kind = 4;
+							expr.kind = 3;
 						break;
 					}
 					else if(((TopScope) nowScope).classMap.containsKey(id))
@@ -708,7 +712,7 @@ public class ScopeChecker
 						expr.type = null;
 						expr.source = null;
 						expr.dimNum = expr.maxDimNum = 0;
-						expr.kind = 4;
+						expr.kind = 3;
 						break;
 					}
 				}

@@ -1,6 +1,8 @@
 package AbstractSyntaxTree.Nodes;
 
-public class PrefixIncDecNode extends ASTNode
+import ScopeCheck.Scopes.ExprScope;
+
+public class PrefixIncDecNode extends ExprNode
 {
 	public String op = "";
 	public ExprNode exprNode;
