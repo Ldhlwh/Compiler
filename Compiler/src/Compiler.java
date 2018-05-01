@@ -16,7 +16,6 @@ import AbstractSyntaxTree.ASTPrinter;
 public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
-		try {
 			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\T677.mx"); // or System.in;
 			InputStream is = System.in;
 
@@ -25,17 +24,15 @@ public class Compiler {
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 
 			MxParser parser = new MxParser(tokens);
-			//parser.removeErrorListeners();
-			//parser.addErrorListener(new ParseErrorListener());
-			ParseTree tree = parser.prog(); // calc is the starting rule
+			ParseTree tree = parser.prog();
 
 			ASTMaker maker = new ASTMaker();
 			ASTNode rootNode = maker.visit(tree);
 
-			/*
+
 			ASTPrinter printer = new ASTPrinter();
 			printer.print(rootNode);
-			*/
+
 			System.err.println("------PreScopeCheck------");
 			PreScopeChecker preScopeChecker = new PreScopeChecker();
 			Scope rootScope = preScopeChecker.check(rootNode, new EmptyScope());
@@ -47,26 +44,5 @@ public class Compiler {
 			System.err.println("------ScopePrint------");
 			ScopePrinter scopePrinter = new ScopePrinter();
 			scopePrinter.print(rootScope);
-
-			/*
-			System.out.println("Visitor:");
-			EvalVisitor evalByVisitor = new EvalVisitor();
-			evalByVisitor.visit(tree);
-			System.out.println();
-			*/
-
-			/*
-			System.out.println("Listener:");
-			ParseTreeWalker walker = new ParseTreeWalker();
-			Evaluator evalByListener = new Evaluator();
-			walker.walk(evalByListener, tree);
-			*/
-
-		}
-		catch (Exception ex)
-		{
-			System.exit(1);
-		}
-
 	}
 }
