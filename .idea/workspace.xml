@@ -129,21 +129,21 @@
       <find>exprNode</find>
       <find>==</find>
       <find>!=</find>
-      <find>has already been defined</find>
+      <find />
       <find>classMap</find>
-      <find>has already been define</find>
+      <find />
       <find>out</find>
       <find>exit(1)</find>
       <find>singletypenode</find>
-      <find>is not an int</find>
+      <find />
       <find>exit</find>
       <find>substring</find>
-      <find>arrays cannot</find>
+      <find />
       <find>localS</find>
       <find>LocalScope</find>
       <find>realRoot</find>
       <find>funccall</find>
-      <find>different types cannot</find>
+      <find />
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -222,7 +222,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-188" />
     <option name="y" value="-17" />
     <option name="width" value="1846" />
@@ -909,7 +909,7 @@
       </state>
       <state key="FacetStructureConfigurable.UI">
         <settings>
-          <last-edited>No facets are configured</last-edited>
+          <last-edited />
           <splitter-proportions>
             <option name="proportions">
               <list>
