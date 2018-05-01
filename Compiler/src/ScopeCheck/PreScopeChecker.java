@@ -1,0 +1,206 @@
+package ScopeCheck;
+
+import AbstractSyntaxTree.Nodes.*;
+import ScopeCheck.Instances.ClassIns;
+import ScopeCheck.Instances.FuncIns;
+import ScopeCheck.Instances.ParamIns;
+import ScopeCheck.Instances.VariIns;
+import ScopeCheck.Scopes.*;
+import com.sun.xml.internal.fastinfoset.tools.FI_DOM_Or_XML_DOM_SAX_SAXEvent;
+
+
+public class PreScopeChecker
+{
+	public Scope check(ASTNode now, Scope father)
+	{
+		if(now instanceof ASTRootNode) {
+			TopScope topScope = new TopScope();
+			topScope.fatherScope = father;
+			for (ASTNode node : ((ASTRootNode) now).progSecNode)
+			{
+				Scope temp = check(node, topScope);
+				if (temp instanceof VariDeclScope)
+				{
+					for(Scope scope : ((VariDeclScope) temp).variInitScope)
+					{
+						topScope.variMap.put(((VariInitScope)scope).name, new VariIns(((VariDeclScope) temp).singleType, ((VariDeclScope) temp).dimNum, ((VariInitScope)scope).name, ((VariInitScope) scope).initValue));
+					}
+				}
+			}
+			addInternalFunc(topScope);
+			return topScope;
+		}
+		else if(now instanceof ClassDeclNode)
+		{
+			ClassScope classScope = new ClassScope();
+			classScope.fatherScope = father;
+			classScope.name = ((ClassDeclNode) now).id;
+			if(classScope.fatherScope instanceof TopScope)
+			{
+				((TopScope) classScope.fatherScope).classMap.put(classScope.name, new ClassIns(classScope.name));
+			}
+			return classScope;
+		}
+		else if(now instanceof FuncDeclNode)
+		{
+			FuncScope funcScope = new FuncScope();
+			funcScope.fatherScope = father;
+			funcScope.name = ((FuncDeclNode) now).id;
+			Scope temp = check(((FuncDeclNode) now).typeNode, funcScope);
+			funcScope.singleRtnType = ((TypeScope)temp).singleType;
+			funcScope.rtnDimNum = ((TypeScope)temp).dimNum;
+			FuncIns newIns = new FuncIns(funcScope.singleRtnType, funcScope.rtnDimNum, funcScope.name);
+			if(((FuncDeclNode) now).haveParamDeclListNode)
+			{
+				temp = check(((FuncDeclNode) now).paramDeclListNode, funcScope);
+				for(Scope scope : ((ParamDeclListScope)temp).paramDeclScope)
+				{
+					ParamIns newParam = new ParamIns(((ParamDeclScope) scope).singleType, ((ParamDeclScope) scope).dimNum, ((ParamDeclScope) scope).name);
+					funcScope.paramMap.put(((ParamDeclScope) scope).name, newParam);
+					newIns.param.add(newParam);
+				}
+			}
+			if(funcScope.fatherScope instanceof TopScope)
+			{
+				((TopScope) funcScope.fatherScope).funcMap.put(funcScope.name, newIns);
+			}
+			return funcScope;
+		}
+		else if(now instanceof TypeNode)
+		{
+			TypeScope typeScope = new TypeScope();
+			typeScope.fatherScope = father;
+			Scope temp = check(((TypeNode) now).singleTypeNode, typeScope);
+			typeScope.singleType = ((SingleTypeScope)temp).singleType;
+			typeScope.dimNum = ((TypeNode) now).dimNum;
+			return typeScope;
+		}
+		else if(now instanceof SingleTypeNode)
+		{
+			SingleTypeScope singleTypeScope = new SingleTypeScope();
+			singleTypeScope.fatherScope = father;
+			singleTypeScope.singleType = ((SingleTypeNode) now).type;
+			return singleTypeScope;
+		}
+		else if(now instanceof VariDeclNode)
+		{
+			VariDeclScope variDeclScope = new VariDeclScope();
+			variDeclScope.fatherScope = father;
+			Scope temp = check(((VariDeclNode) now).typeNode, variDeclScope);
+			variDeclScope.singleType = ((TypeScope)temp).singleType;
+			variDeclScope.dimNum = ((TypeScope)temp).dimNum;
+			for(ASTNode node : ((VariDeclNode) now).variInitNode)
+			{
+				temp = check(node, variDeclScope);
+				variDeclScope.variInitScope.add(temp);
+				if(variDeclScope.fatherScope instanceof TopScope)
+				{
+					VariIns put = new VariIns(variDeclScope.singleType, variDeclScope.dimNum, ((VariInitScope) temp).name);
+					((TopScope) variDeclScope.fatherScope).variMap.put(((VariInitScope)temp).name, put);
+				}
+			}
+			return variDeclScope;
+		}
+		else if(now instanceof VariInitNode)
+		{
+			VariInitScope variInitScope = new VariInitScope();
+			variInitScope.fatherScope = father;
+			variInitScope.name = ((VariInitNode) now).id;
+			variInitScope.initValue = null;
+			return variInitScope;
+		}
+		else if(now instanceof ParamDeclListNode)
+		{
+			ParamDeclListScope paramDeclListScope = new ParamDeclListScope();
+			paramDeclListScope.fatherScope = father;
+			for(ASTNode node : ((ParamDeclListNode) now).paramDeclNode)
+			{
+				Scope temp = check(node, paramDeclListScope);
+				paramDeclListScope.paramDeclScope.add(temp);
+			}
+			return paramDeclListScope;
+		}
+		else if(now instanceof ParamDeclNode)
+		{
+			ParamDeclScope paramDeclScope = new ParamDeclScope();
+			paramDeclScope.fatherScope = father;
+			Scope temp = check(((ParamDeclNode) now).typeNode, paramDeclScope);
+			paramDeclScope.singleType = ((TypeScope)temp).singleType;
+			paramDeclScope.dimNum = ((TypeScope) temp).dimNum;
+			paramDeclScope.name = ((ParamDeclNode) now).id;
+			return paramDeclScope;
+		}
+		System.err.printf("Unaccesible Node ID = %d\n", now.nodeID);
+		System.exit(1);
+		return new EmptyScope();
+	}
+
+	void addInternalFunc(Scope root)
+	{
+		FuncIns printIns = new FuncIns();
+		printIns.name = "print";
+		printIns.singleType = "void";
+		printIns.rtnDimNum = 0;
+		printIns.param.add(new ParamIns("string", 0, "str"));
+		((TopScope)root).funcMap.put(printIns.name, printIns);
+
+		FuncIns printlnIns = new FuncIns();
+		printlnIns.name = "println";
+		printlnIns.singleType = "void";
+		printlnIns.rtnDimNum = 0;
+		printlnIns.param.add(new ParamIns("string", 0, "str"));
+		((TopScope)root).funcMap.put(printlnIns.name, printlnIns);
+
+		FuncIns getStringIns = new FuncIns();
+		getStringIns.name = "getString";
+		getStringIns.singleType = "string";
+		getStringIns.rtnDimNum = 0;
+		((TopScope)root).funcMap.put(getStringIns.name, getStringIns);
+
+		FuncIns getIntIns = new FuncIns();
+		getIntIns.name = "getInt";
+		getIntIns.singleType = "int";
+		getIntIns.rtnDimNum = 0;
+		((TopScope) root).funcMap.put(getIntIns.name, getIntIns);
+
+		FuncIns toStringIns = new FuncIns();
+		toStringIns.name = "toString";
+		toStringIns.singleType = "string";
+		toStringIns.rtnDimNum = 0;
+		toStringIns.param.add(new ParamIns("int", 0, "i"));
+		((TopScope) root).funcMap.put(toStringIns.name, toStringIns);
+
+		FuncIns lengthIns = new FuncIns();
+		lengthIns.name = "length";
+		lengthIns.singleType = "int";
+		lengthIns.rtnDimNum = 0;
+		((TopScope) root).funcMap.put(lengthIns.name, lengthIns);
+
+		FuncIns subStringIns = new FuncIns();
+		subStringIns.name = "subString";
+		subStringIns.singleType = "string";
+		subStringIns.rtnDimNum = 0;
+		subStringIns.param.add(new ParamIns("int", 0, "left"));
+		subStringIns.param.add(new ParamIns("int", 0, "right"));
+		((TopScope) root).funcMap.put(subStringIns.name, subStringIns);
+
+		FuncIns parseIntIns = new FuncIns();
+		parseIntIns.name = "parseInt";
+		parseIntIns.singleType = "int";
+		parseIntIns.rtnDimNum = 0;
+		((TopScope) root).funcMap.put(parseIntIns.name, parseIntIns);
+
+		FuncIns ordIns = new FuncIns();
+		ordIns.name = "ord";
+		ordIns.singleType = "int";
+		ordIns.rtnDimNum = 0;
+		ordIns.param.add(new ParamIns("int", 0, "pos"));
+		((TopScope) root).funcMap.put(ordIns.name, ordIns);
+
+		FuncIns sizeIns = new FuncIns();
+		sizeIns.name = "size";
+		sizeIns.singleType = "int";
+		sizeIns.rtnDimNum = 0;
+		((TopScope) root).funcMap.put(sizeIns.name, sizeIns);
+	}
+}

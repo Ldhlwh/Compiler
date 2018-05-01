@@ -84,7 +84,7 @@ slctStmt
 	;
 	
 iterStmt
-	: FOR '(' declInit = variDecl ';' cond = expr? ';' step = expr? ')'	stmt 	# forInit
+	: FOR '(' declInit = variDecl  cond = expr? ';' step = expr? ')'	stmt 	# forInit
 	| FOR '(' init = expr? ';' cond = expr? ';' step = expr? ')' stmt 			# for
 	| WHILE '(' expr ')' stmt													# while	
 	;

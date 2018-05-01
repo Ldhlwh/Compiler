@@ -1,6 +1,10 @@
 import AbstractSyntaxTree.Nodes.*;
 import MxGrammar.MxLexer;
 import MxGrammar.MxParser;
+import ScopeCheck.PreScopeChecker;
+import ScopeCheck.ScopeChecker;
+import ScopeCheck.ScopePrinter;
+import ScopeCheck.Scopes.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import java.io.*;
@@ -14,8 +18,8 @@ public class Compiler {
 	{
 		//try {
 
-			//InputStream is = new FileInputStream("program.txt"); // or System.in;
-			InputStream is = System.in;
+			InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\mytest.mx"); // or System.in;
+			//InputStream is = System.in;
 
 			//BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("C:\\Users\\qydyx\\Desktop\\test.mx"), "ISO-8859-4"));
 			//BufferedReader reader = Files.newBufferedReader(Paths.get("C:\\Users\\qydyx\\Desktop\\test.mx"), StandardCharsets.UTF_16);
@@ -34,6 +38,15 @@ public class Compiler {
 
 			ASTPrinter printer = new ASTPrinter();
 			printer.print(rootNode);
+
+			PreScopeChecker preScopeChecker = new PreScopeChecker();
+			Scope rootScope = preScopeChecker.check(rootNode, new EmptyScope());
+
+			ScopeChecker scopeChecker = new ScopeChecker();
+			scopeChecker.checkRoot(rootNode, rootScope);
+
+			ScopePrinter scopePrinter = new ScopePrinter();
+			scopePrinter.print(rootScope);
 
 			/*
 			System.out.println("Visitor:");
