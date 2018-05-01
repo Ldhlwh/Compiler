@@ -477,7 +477,9 @@ public class ScopeChecker
 			Scope rtemp = check(((BinaryNode) now).rightExprNode, father);
 			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
 			{
-				System.err.printf("Different types cannot do this operation.\n");
+				System.err.println(((ExprScope)ltemp).type);
+				System.err.println(((ExprScope)rtemp).type);
+				System.err.printf("Different types cannot do this binary operation.\n");
 				System.exit(1);
 			}
 			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
@@ -506,7 +508,7 @@ public class ScopeChecker
 			Scope rtemp = check(((AssignNode) now).rightExprNode, father);
 			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
 			{
-				System.err.printf("Different types cannot do this operation.\n");
+				System.err.printf("Different types cannot do this assign operation.\n");
 				System.exit(1);
 			}
 			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
@@ -629,6 +631,7 @@ public class ScopeChecker
 					{
 						have = true;
 						FuncIns ins = ((TopScope) nowScope).funcMap.get(id);
+						System.err.println(id);
 						expr.id = id;
 						expr.type = ins.singleType;
 						expr.source = null;
@@ -638,7 +641,7 @@ public class ScopeChecker
 								|| ins.singleType.equals("string")
 								|| ins.singleType.equals("char")
 								|| ins.singleType.equals("void"))
-							expr.kind = 0;
+							expr.kind = 1;
 						else
 							expr.kind = 4;
 						break;
