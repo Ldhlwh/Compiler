@@ -6,6 +6,7 @@ import ScopeCheck.Instances.FuncIns;
 import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
+import org.w3c.dom.ls.LSException;
 
 
 public class ScopeChecker
@@ -144,7 +145,7 @@ public class ScopeChecker
 			localScope.fatherScope = father;
 			localScope.fatherScope.childScope.add(localScope);
 			int s = ((BlockStmtNode) now).progSecNode.size() - 1;
-			if(s == -1 && !((FuncScope)father).singleRtnType.equals("void"))
+			if((father instanceof FuncScope) && s == -1 && !((FuncScope)father).singleRtnType.equals("void"))
 			{
 				System.err.printf("Function \"%s\" should have a return statement.\n", ((FuncScope) father).name);
 				System.exit(1);
@@ -165,22 +166,31 @@ public class ScopeChecker
 		}
 		else if(now instanceof BreakNode)
 		{
-			if()
+			if(!(father.fatherScope instanceof LocalScope)
+					|| !((LocalScope)father.fatherScope).jumpable)
+			{
+				System.err.printf("Cannot break here.\n");
+				System.exit(1);
+			}
 		}
 		else if(now instanceof ContinueNode)
 		{
-
+			if(!(father.fatherScope instanceof LocalScope)
+					|| !((LocalScope)father.fatherScope).jumpable)
+			{
+				System.err.printf("Cannot continue here.\n");
+				System.exit(1);
+			}
 		}
 		else if (now instanceof ReturnNode)
 		{
 			Scope temp = check(((ReturnNode) now).exprNode, father);
 			String singleType = ((FuncScope)father.fatherScope).singleRtnType;
 			int dimNum = ((FuncScope) father.fatherScope).rtnDimNum;
-			String rtnType = ((ExprScope)temp).type;
+			String rtnType = ((ExprScope) temp).type;
 			int rtnDimNum = ((ExprScope) temp).dimNum;
-			if( !(singleType.equals(rtnType))
-					|| dimNum != rtnDimNum)
-			{
+			if (!(singleType.equals(rtnType))
+					|| dimNum != rtnDimNum) {
 				System.err.printf("Wrong returned type or dimension.\n");
 				System.exit(1);
 			}
@@ -206,6 +216,7 @@ public class ScopeChecker
 			localScope.fatherScope = father;
 			localScope.fatherScope.childScope.add(localScope);
 			localScope.jumpable = true;
+			System.err.println(localScope);
 			check(((ForInitNode) now).variDeclNode, localScope);
 			Scope temp = check(((ForInitNode) now).stmtNode, localScope);
 			return localScope;
@@ -216,7 +227,7 @@ public class ScopeChecker
 			localScope.fatherScope = father;
 			localScope.fatherScope.childScope.add(localScope);
 			localScope.jumpable = true;
-			Scope temp = check(((ForInitNode) now).stmtNode, localScope);
+			Scope temp = check(((ForNode) now).stmtNode, localScope);
 			return localScope;
 		}
 		else if (now instanceof WhileNode) {
