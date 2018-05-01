@@ -17,8 +17,8 @@ public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
 		try {
-			InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\T677.mx"); // or System.in;
-			//InputStream is = System.in;
+			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\T720.mx"); // or System.in;
+			InputStream is = System.in;
 
 			ANTLRInputStream input = new ANTLRInputStream(is);
 			MxLexer lexer = new MxLexer(input);
