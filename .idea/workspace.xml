@@ -34,29 +34,8 @@
       <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1895">
-              <caret line="327" selection-start-line="327" selection-end-line="327" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ExprScope.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/ExprScope.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="168">
-              <caret line="8" column="70" selection-start-line="8" selection-start-column="70" selection-end-line="8" selection-end-column="70" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LocalScope.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="9" column="36" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
+            <state relative-caret-position="4578">
+              <caret line="218" lean-forward="true" selection-start-line="218" selection-end-line="218" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -68,19 +47,10 @@
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="420">
-              <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
+              <caret line="20" column="81" selection-start-line="20" selection-start-column="81" selection-end-line="20" selection-end-column="81" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Mx.g4" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="20" column="4" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -96,8 +66,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>here</find>
-      <find>exprNode</find>
       <find>==</find>
       <find>!=</find>
       <find>has already been defined</find>
@@ -126,6 +94,8 @@
       <find>returnnode</find>
       <find>wrong returned</find>
       <find>is not dete</find>
+      <find>cannot be access with</find>
+      <find>return</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -392,12 +362,12 @@
       <workItem from="1525062529280" duration="2422000" />
       <workItem from="1525094639642" duration="11922000" />
       <workItem from="1525141819427" duration="58924000" />
-      <workItem from="1525222209474" duration="1365000" />
+      <workItem from="1525222209474" duration="2419000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="146474000" />
+    <option name="totallyTimeSpent" value="147528000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -794,16 +764,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="9" column="36" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="420">
@@ -818,6 +778,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="9" column="36" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/ExprScope.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="168">
@@ -827,8 +797,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1895">
-          <caret line="327" selection-start-line="327" selection-end-line="327" />
+        <state relative-caret-position="4578">
+          <caret line="218" lean-forward="true" selection-start-line="218" selection-end-line="218" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -838,7 +808,7 @@
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="420">
-          <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
+          <caret line="20" column="81" selection-start-line="20" selection-start-column="81" selection-end-line="20" selection-end-column="81" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

@@ -146,14 +146,17 @@ public class ScopeChecker
 			LocalScope localScope = new LocalScope();
 			localScope.fatherScope = father;
 			localScope.fatherScope.childScope.add(localScope);
+			/*
 			int s = ((BlockStmtNode) now).progSecNode.size() - 1;
 			if((father instanceof FuncScope) && s == -1 && !((FuncScope)father).singleRtnType.equals("void"))
 			{
 				System.err.printf("Function \"%s\" should have a return statement.\n", ((FuncScope) father).name);
 				System.exit(1);
 			}
+			*/
 			for (ASTNode node : ((BlockStmtNode) now).progSecNode) {
 				Scope temp = check(node, localScope);
+				/*
 				if(node == ((BlockStmtNode) now).progSecNode.get(s))
 				{
 					if(!(node instanceof ReturnNode)) {
@@ -163,6 +166,7 @@ public class ScopeChecker
 						}
 					}
 				}
+				*/
 			}
 			return localScope;
 		}
@@ -199,7 +203,7 @@ public class ScopeChecker
 				}
 				if(scope instanceof TopScope)
 				{
-					System.err.printf("Wrong returned type or 1dimension.\n");
+					System.err.printf("Wrong returned type or dimension.\n");
 					System.exit(1);
 				}
 			}
@@ -207,7 +211,7 @@ public class ScopeChecker
 			{
 				if(!(singleType.equals(className)))
 				{
-					System.err.printf("Wrong returned type or 2dimension.\n");
+					System.err.printf("Wrong returned type or dimension.\n");
 					System.exit(1);
 				}
 				return new EmptyScope();
@@ -218,7 +222,7 @@ public class ScopeChecker
 			int rtnDimNum = ((ExprScope) temp).dimNum;
 			if (!(singleType.equals(rtnType))
 					|| dimNum != rtnDimNum) {
-				System.err.printf("Wrong returned type or 3dimension.\n");
+				System.err.printf("Wrong returned type or dimension.\n");
 				System.exit(1);
 			}
 		}
@@ -740,7 +744,8 @@ public class ScopeChecker
 						expr.id = id;
 						expr.type = ins.singleType;
 						expr.source = null;
-						expr.dimNum = expr.maxDimNum = ins.dimNum;
+						expr.dimNum = 0;
+						expr.maxDimNum = ins.dimNum;
 						if(ins.singleType.equals("bool")
 								|| ins.singleType.equals("int")
 								|| ins.singleType.equals("string")
