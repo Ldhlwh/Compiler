@@ -10,13 +10,32 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DockManager">
+    <window id="1">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="NodeList" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="378">
+                    <caret line="18" column="33" selection-start-line="18" selection-start-column="33" selection-end-line="18" selection-end-column="33" />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
+  </component>
   <component name="FileEditorManager">
     <leaf>
       <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="836" column="42" selection-start-line="836" selection-start-column="34" selection-end-line="836" selection-end-column="42" />
+            <state relative-caret-position="183">
+              <caret line="983" selection-start-line="983" selection-end-line="983" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -27,8 +46,8 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
+            <state relative-caret-position="378">
+              <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -47,8 +66,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>NewNode</find>
-      <find>creator</find>
       <find>is not defined</find>
       <find>creatorNode</find>
       <find>&quot;null&quot;</find>
@@ -77,6 +94,8 @@
       <find>is not detected</find>
       <find>.kind =</find>
       <find>.kind ==</find>
+      <find>1index</find>
+      <find>parameter type for fun</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -179,6 +198,12 @@
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
               <item name="Compiler" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Compiler" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="AbstractSyntaxTree" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
@@ -339,12 +364,12 @@
       <workItem from="1525141819427" duration="58924000" />
       <workItem from="1525222209474" duration="54753000" />
       <workItem from="1525283270079" duration="154000" />
-      <workItem from="1525283467354" duration="4033000" />
+      <workItem from="1525283467354" duration="5165000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="204049000" />
+    <option name="totallyTimeSpent" value="205181000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -747,13 +772,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="18" column="33" selection-start-line="18" selection-start-column="33" selection-end-line="18" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="126">
@@ -771,10 +789,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="18" column="33" selection-start-line="18" selection-start-column="33" selection-end-line="18" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="836" column="42" selection-start-line="836" selection-start-column="34" selection-end-line="836" selection-end-column="42" />
+        <state relative-caret-position="183">
+          <caret line="983" selection-start-line="983" selection-end-line="983" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -783,8 +808,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
+        <state relative-caret-position="378">
+          <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

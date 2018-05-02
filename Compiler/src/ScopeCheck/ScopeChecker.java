@@ -481,19 +481,27 @@ public class ScopeChecker
 					if(!(func.param.get(i).singleType.equals(((ExprScope)temp).type))
 						|| func.param.get(i).dimNum != ((ExprScope) temp).dimNum)
 					{
-						if(((ExprScope) temp).type.equals("null")) {
+						if(((ExprScope) temp).type.equals("null"))
+						{
 							if (func.param.get(i).singleType.equals("int")
 									|| func.param.get(i).singleType.equals("bool")
-									|| func.param.get(i).singleType.equals("string")) {
+									|| func.param.get(i).singleType.equals("string"))
+							{
 								if (func.param.get(i).dimNum == 0)
 								{
-									System.err.printf("Wrong parameter type for function : \"%s\".\n", expr.id);
+									System.err.printf("Wrong parameter type for 1function : \"%s\".\n", expr.id);
 									System.exit(1);
 								}
 							}
 						}
-						else {
-							System.err.printf("Wrong parameter type for function : \"%s\".\n", expr.id);
+						else
+						{
+							System.err.println("------");
+							System.err.println(func.param.get(i).singleType);
+							System.err.println(((ExprScope) temp).type);
+							System.err.println(func.param.get(i).dimNum);
+							System.err.println(((ExprScope) temp).dimNum);
+							System.err.printf("Wrong parameter type for 2function : \"%s\".\n", expr.id);
 							System.exit(1);
 						}
 					}
@@ -514,7 +522,7 @@ public class ScopeChecker
 				System.err.println("Access failed because the dimension of the array is undeclared.");
 				System.exit(1);
 			}
-			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 3)
+			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 2 && ((ExprScope) ltemp).kind != 3)
 			{
 				System.err.println(((ExprScope) ltemp).kind);
 				System.err.printf("\"%s\" cannot be access with 1index.\n", ((ExprScope) ltemp).id);
@@ -973,7 +981,7 @@ public class ScopeChecker
 					System.err.println(scope);
 					if((scope instanceof FuncScope) && scope.fatherScope instanceof ClassScope)
 					{
-						expr.type = ((FuncScope) scope).name;
+						expr.type = ((ClassScope) scope.fatherScope).name;
 						expr.kind = 3;
 						expr.dimNum = expr.maxDimNum = expr.emptyDimNum = 0;
 						expr.source = null;
@@ -982,7 +990,7 @@ public class ScopeChecker
 					}
 					if((scope instanceof ConstructorScope) && scope.fatherScope instanceof ClassScope)
 					{
-						expr.type = ((ConstructorScope) scope).name;
+						expr.type = ((ClassScope) scope.fatherScope).name;
 						expr.kind = 3;
 						expr.dimNum = expr.maxDimNum = expr.emptyDimNum = 0;
 						expr.source = null;
