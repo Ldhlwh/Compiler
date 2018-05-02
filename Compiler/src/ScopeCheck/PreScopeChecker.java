@@ -163,16 +163,25 @@ public class PreScopeChecker
 			for(ASTNode node : ((VariDeclNode) now).variInitNode)
 			{
 				temp = check(node, variDeclScope);
-				variDeclScope.variInitScope.add(temp);
-				if(variDeclScope.fatherScope instanceof LocalScope)
+				if(variDeclScope.fatherScope instanceof TopScope)
 				{
-					VariIns put = new VariIns(variDeclScope.singleType, variDeclScope.dimNum, ((VariInitScope) temp).name);
-					if(((LocalScope) variDeclScope.fatherScope).variMap.containsKey(((VariInitScope) temp).name))
+					VariIns put = new VariIns(variDeclScope.singleType, variDeclScope.dimNum, ((VariInitScope) temp).name, null, insID++);
+					if(((TopScope) variDeclScope.fatherScope).variMap.containsKey(((VariInitScope) temp).name))
 					{
 						System.err.printf("Variable \"%s\" has already been defined.\n", ((VariInitScope) temp).name);
 						System.exit(1);
 					}
 					((TopScope) variDeclScope.fatherScope).variMap.put(((VariInitScope)temp).name, put);
+				}
+				else if(variDeclScope.fatherScope instanceof ClassScope)
+				{
+					VariIns put = new VariIns(variDeclScope.singleType, variDeclScope.dimNum, ((VariInitScope) temp).name);
+					if(((TopScope) variDeclScope.fatherScope.fatherScope).classMap.get(((ClassScope)variDeclScope.fatherScope).name).variMap.containsKey(((VariInitScope) temp).name))
+					{
+						System.err.printf("Variable \"%s\" has already been defined.\n", ((VariInitScope) temp).name);
+						System.exit(1);
+					}
+					((TopScope) variDeclScope.fatherScope.fatherScope).classMap.get(((ClassScope)variDeclScope.fatherScope).name).variMap.put(((VariInitScope)temp).name, put);
 				}
 			}
 			return variDeclScope;

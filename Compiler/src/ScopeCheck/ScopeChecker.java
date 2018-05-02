@@ -47,18 +47,6 @@ public class ScopeChecker
 			{
 				Scope temp = check(node, classScope);
 				classScope.childScope.add(temp);
-				if (temp instanceof VariDeclScope)
-				{
-					for (Scope scope : ((VariDeclScope) temp).variInitScope)
-					{
-						if(classScope.variMap.containsKey(((VariInitScope)scope).name))
-						{
-							System.err.printf("Variable \"%s\" has already been defined.\n", ((VariInitScope) scope).name);
-							System.exit(1);
-						}
-						classScope.variMap.put(((VariInitScope) scope).name, new VariIns(((VariDeclScope) temp).singleType, ((VariDeclScope) temp).dimNum, ((VariInitScope) scope).name, ((VariInitScope) scope).initValue, 0));
-					}
-				}
 			}
 			return classScope;
 		}
