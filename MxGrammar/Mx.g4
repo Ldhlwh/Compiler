@@ -242,7 +242,7 @@ EscapeSeq
 	;
 
 Brackets
-    : '[' ']'
+    : '['WS?']'
     ;
 
 // Constants

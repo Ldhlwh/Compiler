@@ -78,16 +78,7 @@ public class ScopeChecker
 					&& !funcScope.singleRtnType.equals("bool")
 					&& !funcScope.singleRtnType.equals("void"))
 			{
-				boolean flag = false;
-				for(Scope scope : realRoot.childScope)
-				{
-					if((scope instanceof ClassScope) && ((ClassScope) scope).name.equals(funcScope.singleRtnType))
-					{
-						flag = true;
-						break;
-					}
-				}
-				if(!flag)
+				if(!realRoot.classMap.containsKey(funcScope.singleRtnType))
 				{
 					System.err.printf("Return type \"%s\" is undefined.", funcScope.singleRtnType);
 					System.exit(1);
@@ -452,7 +443,7 @@ public class ScopeChecker
 				System.err.printf("\"%s\" is not a function.\n", ((ExprScope) temp).id);
 				System.exit(1);
 			}
-			expr.kind = 2;
+			expr.kind = 0;
 			expr.type = ((ExprScope) temp).type;
 			expr.source = ((ExprScope) temp).source;
 			expr.dimNum = ((ExprScope) temp).dimNum;
@@ -525,13 +516,14 @@ public class ScopeChecker
 			}
 			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 3)
 			{
-				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
+				System.err.println(((ExprScope) ltemp).kind);
+				System.err.printf("\"%s\" cannot be access with 1index.\n", ((ExprScope) ltemp).id);
 				System.exit(1);
 			}
 
 			if(((ExprScope) ltemp).dimNum == 0)
 			{
-				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
+				System.err.printf("\"%s\" cannot be access with 2index.\n", ((ExprScope) ltemp).id);
 				System.exit(1);
 			}
 			/*
@@ -618,54 +610,51 @@ public class ScopeChecker
 				rtemp.source = null;
 				rtemp.kind = 1;
 			}
-			else {
-				boolean flag = false;
-				for (Scope scope : realRoot.childScope)
+			else
+			{
+				if(realRoot.classMap.containsKey(type))
 				{
-					if (scope instanceof ClassScope)
+					if(!realRoot.classMap.get(type).variMap.containsKey(find) && !realRoot.classMap.get(type).funcMap.containsKey(find))
 					{
-						if (((ClassScope) scope).name.equals(type))
-						{
-							if (((ClassScope) scope).variMap.containsKey(find))
-							{
-								VariIns ins = ((ClassScope) scope).variMap.get(find);
-								rtemp.id = ins.name;
-								rtemp.type = ins.singleType;
-								rtemp.dimNum = rtemp.maxDimNum = ins.dimNum;
-								rtemp.kind = 0;
-								rtemp.source = ((ClassScope) scope).name;
-								flag = true;
-								break;
-							}
-							if (((ClassScope) scope).funcMap.containsKey(find)) {
-								FuncIns ins = ((ClassScope) scope).funcMap.get(find);
-								rtemp.id = ins.name;
-								rtemp.type = ins.singleType;
-								rtemp.dimNum = rtemp.maxDimNum = ins.rtnDimNum;
-								rtemp.kind = 1;
-								rtemp.source = ((ClassScope) scope).name;
-								flag = true;
-								break;
-							}
-
-							System.err.printf("Class : \"%s\" does not have a member named \"%s\".", type, find);
-							System.exit(1);
-						}
+						System.err.printf("Class : \"%s\" does not have a member named \"%s\".", type, find);
+						System.exit(1);
 					}
-					else if (scope instanceof FuncScope)
+					if(realRoot.classMap.get(type).variMap.containsKey(find)) {
+						VariIns ins = realRoot.classMap.get(type).variMap.get(find);
+						rtemp.id = ins.name;
+						rtemp.type = ins.singleType;
+						rtemp.dimNum = rtemp.maxDimNum = ins.dimNum;
+						rtemp.kind = 0;
+						rtemp.source = realRoot.classMap.get(type).name;
+					}
+					else if(realRoot.classMap.get(type).funcMap.containsKey(find))
 					{
-						if (((FuncScope) scope).name.equals(find))
-						{
-							rtemp.id = find;
-							rtemp.type = ((FuncScope) scope).singleRtnType;
-							rtemp.dimNum = rtemp.maxDimNum = ((FuncScope) scope).rtnDimNum;
-							rtemp.kind = 1;
-							rtemp.source = null;
-							break;
-						}
+						FuncIns ins = realRoot.classMap.get(type).funcMap.get(find);
+						rtemp.id = ins.name;
+						rtemp.type = ins.singleType;
+						rtemp.dimNum = rtemp.maxDimNum = ins.rtnDimNum;
+						rtemp.kind = 1;
+						rtemp.source = realRoot.classMap.get(type).name;
 					}
 				}
-				if (!flag) {
+				/*
+				else if (realRoot.funcMap.containsKey(type))
+				{
+					if (((FuncScope) scope).name.equals(find))
+					{
+						rtemp.id = find;
+						rtemp.type = ((FuncScope) scope).singleRtnType;
+						rtemp.dimNum = rtemp.maxDimNum = ((FuncScope) scope).rtnDimNum;
+						rtemp.kind = 1;
+						rtemp.source = null;
+						break;
+					}
+				}*/
+				else
+				{
+					//System.err.printf("------\n");
+					//System.err.println(type);
+					//System.err.println(find);
 					System.err.printf("\"%s\" is not detected.\n", find);
 					System.exit(1);
 				}
@@ -981,7 +970,8 @@ public class ScopeChecker
 				boolean flag = false;
 				for(Scope scope = father; !(scope.fatherScope instanceof EmptyScope); scope = scope.fatherScope)
 				{
-					if(scope instanceof FuncScope && scope.fatherScope instanceof ClassScope)
+					System.err.println(scope);
+					if((scope instanceof FuncScope) && scope.fatherScope instanceof ClassScope)
 					{
 						expr.type = ((FuncScope) scope).name;
 						expr.kind = 3;
@@ -990,7 +980,15 @@ public class ScopeChecker
 						flag = true;
 						break;
 					}
-
+					if((scope instanceof ConstructorScope) && scope.fatherScope instanceof ClassScope)
+					{
+						expr.type = ((ConstructorScope) scope).name;
+						expr.kind = 3;
+						expr.dimNum = expr.maxDimNum = expr.emptyDimNum = 0;
+						expr.source = null;
+						flag = true;
+						break;
+					}
 				}
 				if(!flag) {
 					System.err.println("THIS cannot be used in non-class function.");
