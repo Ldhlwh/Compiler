@@ -203,7 +203,7 @@ public class ScopeChecker
 					System.exit(1);
 				}
 			}
-			if(((ExprScope)temp).id.equals("this"))
+			if((((ExprScope)temp).id != null) && ((ExprScope)temp).id.equals("this"))
 			{
 				if(!(singleType.equals(className)))
 				{
@@ -372,7 +372,7 @@ public class ScopeChecker
 			//Scope rtemp = check(((MemberNode) now).idNode, father);
 			ExprScope rtemp = new ExprScope();
 
-			if(((ExprScope)ltemp).id.equals("this"))
+			if((((ExprScope)ltemp).id != null) && ((ExprScope)ltemp).id.equals("this"))
 			{
 				for(Scope scope = father; !(scope.fatherScope instanceof EmptyScope); scope = scope.fatherScope)
 				{
