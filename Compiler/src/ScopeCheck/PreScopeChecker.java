@@ -81,7 +81,7 @@ public class PreScopeChecker
 				}
 				FuncIns newIns = new FuncIns(null, 0, constructorScope.name, insID++);
 				newIns.name = constructorScope.name;
-				((TopScope) constructorScope.fatherScope.fatherScope).classMap.get(className).funcMap.containsKey(constructorScope.name);
+				((TopScope) constructorScope.fatherScope.fatherScope).classMap.get(className).funcMap.put(constructorScope.name, newIns);
 			}
 			return constructorScope;
 		}
