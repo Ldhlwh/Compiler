@@ -473,8 +473,6 @@ public class ScopeChecker
 				for(int i = 0; i < ((FuncCallNode) now).paramListNode.exprNode.size(); i++)
 				{
 					temp = check(((FuncCallNode) now).paramListNode.exprNode.get(i), father);
-					System.err.printf("Type : Exp : %s \t Real : %s\n", func.param.get(i).singleType, ((ExprScope)temp).type);
-					System.err.printf("DimN : Exp : %s \t Real : %s\n", func.param.get(i).dimNum, ((ExprScope)temp).dimNum);
 					if(!(func.param.get(i).singleType.equals(((ExprScope)temp).type))
 						|| func.param.get(i).dimNum != ((ExprScope) temp).dimNum)
 					{
@@ -506,6 +504,11 @@ public class ScopeChecker
 			Scope ltemp = check(((IndexNode) now).arrayExprNode, father);
 			Scope Rtemp = check(((IndexNode) now).indexExprNode,father);
 			System.err.println(((ExprScope)ltemp).kind);
+			if(((ExprScope) ltemp).dimNum == ((ExprScope) ltemp).emptyDimNum)
+			{
+				System.err.println("Access failed because the dimension of the array is undeclared.");
+				System.exit(1);
+			}
 			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 3)
 			{
 				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
@@ -517,11 +520,24 @@ public class ScopeChecker
 				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
 				System.exit(1);
 			}
+			/*
+			if(((ExprScope) ltemp).dimNum == ((ExprScope) ltemp).emptyDimNum + 1)
+			{
+				expr.id = null;
+				expr.type = "null";
+				expr.source = null;
+				expr.dimNum = ((ExprScope) ltemp).dimNum - 1;
+				expr.maxDimNum = ((ExprScope) ltemp).maxDimNum;
+				expr.emptyDimNum = ((ExprScope) ltemp).emptyDimNum;
+				expr.kind = 4;
+				return expr;
+			}*/
 			expr.id = null;
 			expr.type = ((ExprScope) ltemp).type;
 			expr.source = ((ExprScope) ltemp).source;
 			expr.dimNum = ((ExprScope) ltemp).dimNum - 1;
 			expr.maxDimNum = ((ExprScope) ltemp).maxDimNum;
+			expr.emptyDimNum = ((ExprScope) ltemp).emptyDimNum;
 			expr.kind = 0;
 			return expr;
 		}
@@ -713,6 +729,7 @@ public class ScopeChecker
 			expr.type = ((ExprScope)temp).type;
 			expr.dimNum = ((ExprScope) temp).dimNum;
 			expr.maxDimNum = ((ExprScope) temp).maxDimNum;
+			expr.emptyDimNum = ((ExprScope) temp).emptyDimNum;
 			expr.source = null;
 			expr.kind = 0;
 			return expr;
@@ -737,6 +754,7 @@ public class ScopeChecker
 			expr.source = null;
 			expr.dimNum = ((CreatorArrayNode) now).exprNode.size() + ((CreatorArrayNode) now).emptyDimNum;
 			expr.maxDimNum = expr.dimNum;
+			expr.emptyDimNum = ((CreatorArrayNode) now).emptyDimNum;
 			expr.kind = 0;
 			return expr;
 		}
@@ -869,6 +887,11 @@ public class ScopeChecker
 			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
 			{
 				System.err.printf("Different types cannot do this assign operation.\n");
+				System.exit(1);
+			}
+			if(((ExprScope) ltemp).dimNum != ((ExprScope) rtemp).dimNum)
+			{
+				System.err.printf("Types with different dimensions cannot do this assign operation.\n");
 				System.exit(1);
 			}
 			if(((ExprScope) ltemp).kind == 2)
