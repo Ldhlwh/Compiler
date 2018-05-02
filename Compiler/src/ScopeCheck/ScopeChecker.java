@@ -6,6 +6,7 @@ import ScopeCheck.Instances.FuncIns;
 import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
+import sun.invoke.empty.Empty;
 
 
 public class ScopeChecker
@@ -168,6 +169,17 @@ public class ScopeChecker
 			variDeclScope.dimNum = ((TypeScope) temp).dimNum;
 			for (ASTNode node : ((VariDeclNode) now).variInitNode) {
 				temp = check(node, variDeclScope);
+				if(((VariInitScope)temp).kind == 4 && (((VariInitScope) temp).initValue.equals("null")))
+				{
+					if(variDeclScope.singleType.equals("int")
+							|| variDeclScope.singleType.equals("string")
+							|| variDeclScope.singleType.equals("bool")) {
+						if (variDeclScope.dimNum == 0) {
+							System.err.println("NULL cannot be initiated to non-array variable.");
+							System.exit(1);
+						}
+					}
+				}
 				if(((VariInitScope)temp).kind == 4 && !(((VariInitScope) temp).initValue.equals("null")))
 				{
 					System.err.println("Type name cannot give initial value.");
@@ -222,6 +234,9 @@ public class ScopeChecker
 		} else if (now instanceof BlockStmtNode) {
 			LocalScope localScope = new LocalScope();
 			localScope.fatherScope = father;
+			if(father instanceof LocalScope) {
+				localScope.jumpable = ((LocalScope) father).jumpable;
+			}
 			localScope.fatherScope.childScope.add(localScope);
 			/*
 			int s = ((BlockStmtNode) now).progSecNode.size() - 1;
@@ -249,8 +264,7 @@ public class ScopeChecker
 		}
 		else if(now instanceof BreakNode)
 		{
-			if(!(father.fatherScope instanceof LocalScope)
-					|| !((LocalScope)father.fatherScope).jumpable)
+			if(!((LocalScope)father).jumpable)
 			{
 				System.err.printf("Cannot break here.\n");
 				System.exit(1);
@@ -258,8 +272,7 @@ public class ScopeChecker
 		}
 		else if(now instanceof ContinueNode)
 		{
-			if(!(father.fatherScope instanceof LocalScope)
-					|| !((LocalScope)father.fatherScope).jumpable)
+			if(!((LocalScope)father).jumpable)
 			{
 				System.err.printf("Cannot continue here.\n");
 				System.exit(1);
@@ -268,6 +281,10 @@ public class ScopeChecker
 		else if (now instanceof ReturnNode)
 		{
 			Scope temp = check(((ReturnNode) now).exprNode, father);
+			if(temp instanceof EmptyScope)
+			{
+				return new EmptyScope();
+			}
 			String rtnType = ((ExprScope) temp).type;
 			int rtnDimNum = ((ExprScope) temp).dimNum;
 			if(rtnType.equals("void"))
@@ -305,13 +322,15 @@ public class ScopeChecker
 				System.err.printf("Wrong returned type or dimension.\n");
 				System.exit(1);
 			}
+			return new EmptyScope();
 		}
 		else if (now instanceof ExprStmtNode) {
 			if (!((ExprStmtNode) now).empty) {
 				return check(((ExprStmtNode) now).exprNode, father);
 			}
 			return new EmptyScope();
-		} else if (now instanceof SlctStmtNode)
+		}
+		else if (now instanceof SlctStmtNode)
 		{
 			if (father instanceof LocalScope)
 			{
@@ -321,7 +340,7 @@ public class ScopeChecker
 					System.err.printf("Bool type expected in the 1condition.\n");
 					System.exit(1);
 				}
-				temp = check(((SlctStmtNode) now).ifStmtNode, father);
+				check(((SlctStmtNode) now).ifStmtNode, father);
 				for(ASTNode node : ((SlctStmtNode) now).elifExprNode)
 				{
 					temp = check(node, father);
@@ -341,7 +360,8 @@ public class ScopeChecker
 				}
 			}
 			return new EmptyScope();
-		} else if (now instanceof ForInitNode) {
+		}
+		else if (now instanceof ForInitNode) {
 			LocalScope localScope = new LocalScope();
 			localScope.fatherScope = father;
 			localScope.fatherScope.childScope.add(localScope);
@@ -419,10 +439,6 @@ public class ScopeChecker
 				System.err.printf("\"%s\" is not a function.\n", ((ExprScope) temp).id);
 				System.exit(1);
 			}
-			if(((ExprScope) temp).id.equals("calc"));
-			{
-				int a = 3 + 3;
-			}
 			expr.kind = 2;
 			expr.type = ((ExprScope) temp).type;
 			expr.source = ((ExprScope) temp).source;
@@ -458,11 +474,26 @@ public class ScopeChecker
 				for(int i = 0; i < ((FuncCallNode) now).paramListNode.exprNode.size(); i++)
 				{
 					temp = check(((FuncCallNode) now).paramListNode.exprNode.get(i), father);
+					System.err.printf("Type : Exp : %s \t Real : %s\n", func.param.get(i).singleType, ((ExprScope)temp).type);
+					System.err.printf("DimN : Exp : %s \t Real : %s\n", func.param.get(i).dimNum, ((ExprScope)temp).dimNum);
 					if(!(func.param.get(i).singleType.equals(((ExprScope)temp).type))
 						|| func.param.get(i).dimNum != ((ExprScope) temp).dimNum)
 					{
-						System.err.printf("Wrong parameter type for function : \"%s\".\n", expr.id);
-						System.exit(1);
+						if(((ExprScope) temp).type.equals("null")) {
+							if (func.param.get(i).singleType.equals("int")
+									|| func.param.get(i).singleType.equals("bool")
+									|| func.param.get(i).singleType.equals("string")) {
+								if (func.param.get(i).dimNum == 0)
+								{
+									System.err.printf("Wrong parameter type for function : \"%s\".\n", expr.id);
+									System.exit(1);
+								}
+							}
+						}
+						else {
+							System.err.printf("Wrong parameter type for function : \"%s\".\n", expr.id);
+							System.exit(1);
+						}
 					}
 				}
 
@@ -994,6 +1025,7 @@ public class ScopeChecker
 					{
 						have = true;
 						VariIns ins = ((TopScope) nowScope).variMap.get(id);
+						System.err.printf("scopeName : %s\n", scopeName);
 						if(scopeIsFunc && (ins.insID > realRoot.funcMap.get(scopeName).insID))
 						{
 							System.err.printf("\"%s\" is defined after the current function.\n", id);
@@ -1081,7 +1113,7 @@ public class ScopeChecker
 
 		//System.err.printf("Unaccesible Node ID = %d\n", now.nodeID);
 		//System.exit(1);
-		System.err.println(now.getClass());
+		//System.err.println(now.getClass());
 		return new EmptyScope();
 	}
 }
