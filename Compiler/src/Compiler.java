@@ -18,7 +18,7 @@ public class Compiler {
 	{
 			InputStream is = new FileInputStream("program.txt"); // or System.in;
 			//InputStream is = System.in;
-			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\testcase\\T688.mx"); // or System.in;
+			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\testcase\\T639.mx"); // or System.in;
 
 			ANTLRInputStream input = new ANTLRInputStream(is);
 			MxLexer lexer = new MxLexer(input);
@@ -30,10 +30,10 @@ public class Compiler {
 			ASTMaker maker = new ASTMaker();
 			ASTNode rootNode = maker.visit(tree);
 
-
+			/*
 			ASTPrinter printer = new ASTPrinter();
 			printer.print(rootNode);
-
+			*/
 
 			System.err.println("------PreScopeCheck------");
 			PreScopeChecker preScopeChecker = new PreScopeChecker();
