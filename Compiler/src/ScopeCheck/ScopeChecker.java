@@ -6,9 +6,6 @@ import ScopeCheck.Instances.FuncIns;
 import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
-import org.w3c.dom.ls.LSException;
-
-import java.awt.*;
 
 
 public class ScopeChecker
@@ -171,7 +168,7 @@ public class ScopeChecker
 			variDeclScope.dimNum = ((TypeScope) temp).dimNum;
 			for (ASTNode node : ((VariDeclNode) now).variInitNode) {
 				temp = check(node, variDeclScope);
-				if(((VariInitScope)temp).kind == 4)
+				if(((VariInitScope)temp).kind == 4 && !(((VariInitScope) temp).initValue.equals("null")))
 				{
 					System.err.println("Type name cannot give initial value.");
 					System.exit(1);
@@ -200,7 +197,7 @@ public class ScopeChecker
 			if (((VariInitNode) now).assign)
 			{
 				Scope temp = check(((VariInitNode) now).exprNode, variInitScope);
-				variInitScope.initValue = ((ExprScope)temp).id;
+				variInitScope.initValue = ((ExprScope)temp).type;
 				variInitScope.kind = ((ExprScope) temp).kind;
 			}
 			else
@@ -270,43 +267,44 @@ public class ScopeChecker
 		}
 		else if (now instanceof ReturnNode)
 		{
-			/*
 			Scope temp = check(((ReturnNode) now).exprNode, father);
-			System.err.println(((ExprScope)temp).id);
-			String singleType = ((FuncScope)father.fatherScope).singleRtnType;
-			String className = "";
-			for(Scope scope = father; !(scope.fatherScope instanceof EmptyScope); scope = scope.fatherScope)
+			String rtnType = ((ExprScope) temp).type;
+			int rtnDimNum = ((ExprScope) temp).dimNum;
+			if(rtnType.equals("void"))
 			{
-				if(scope instanceof ClassScope)
-				{
-					className = ((ClassScope) scope).name;
-					break;
-				}
-				if(scope instanceof TopScope)
-				{
-					System.err.printf("Wrong returned type or dimension.\n");
-					System.exit(1);
-				}
+				System.err.println("Cannot return void.");
+				System.exit(1);
 			}
-			if((((ExprScope)temp).id != null) && ((ExprScope)temp).id.equals("this"))
+			String className = "";
+			if(((ExprScope)temp).id != null && ((ExprScope) temp).id.equals("this"))
 			{
-				if(!(singleType.equals(className)))
+				for(Scope scope = father; !(scope.fatherScope instanceof EmptyScope); scope = scope.fatherScope)
 				{
-					System.err.printf("Wrong returned type or dimension.\n");
-					System.exit(1);
+					if(scope instanceof ClassScope)
+					{
+						className = ((ClassScope) scope).name;
+						break;
+					}
+					if(scope instanceof TopScope)
+					{
+						System.err.printf("Wrong returned type or dimension.\n");
+						System.exit(1);
+					}
 				}
 				return new EmptyScope();
 			}
+			Scope scope;
+			for(scope = father;
+				!(scope.fatherScope instanceof ClassScope) && !(scope.fatherScope instanceof TopScope);
+				scope = scope.fatherScope);
 
-			int dimNum = ((FuncScope) father.fatherScope).rtnDimNum;
-			String rtnType = ((ExprScope) temp).type;
-			int rtnDimNum = ((ExprScope) temp).dimNum;
-			if (!(singleType.equals(rtnType))
-					|| dimNum != rtnDimNum) {
+			int expDimNum = ((FuncScope)scope).rtnDimNum;
+			String expSingleType = ((FuncScope) scope).singleRtnType;
+			if (!(expSingleType.equals(rtnType))
+					|| expDimNum != rtnDimNum) {
 				System.err.printf("Wrong returned type or dimension.\n");
 				System.exit(1);
 			}
-			*/
 		}
 		else if (now instanceof ExprStmtNode) {
 			if (!((ExprStmtNode) now).empty) {
@@ -318,9 +316,6 @@ public class ScopeChecker
 			if (father instanceof LocalScope)
 			{
 				Scope temp = check(((SlctStmtNode) now).ifExprNode, father);
-				System.err.printf("-" + ((ExprScope)temp).id);
-				System.err.printf("-" + ((ExprScope)temp).type);
-				System.err.printf("-" + ((ExprScope)temp).kind);
 				if(!((ExprScope)temp).type.equals("bool"))
 				{
 					System.err.printf("Bool type expected in the 1condition.\n");
@@ -418,10 +413,15 @@ public class ScopeChecker
 			ExprScope expr = new ExprScope();
 			expr.fatherScope = father;
 			Scope temp = check(((FuncCallNode) now).exprNode, father);
+			System.err.printf("Current Function : %s\n", ((ExprScope)temp).id);
 			if(((ExprScope)temp).kind != 1)
 			{
 				System.err.printf("\"%s\" is not a function.\n", ((ExprScope) temp).id);
 				System.exit(1);
+			}
+			if(((ExprScope) temp).id.equals("calc"));
+			{
+				int a = 3 + 3;
 			}
 			expr.kind = 2;
 			expr.type = ((ExprScope) temp).type;
@@ -434,9 +434,7 @@ public class ScopeChecker
 				FuncIns func = new FuncIns();
 				if(((ExprScope) temp).source == null)
 				{
-					System.err.println("here");
 					func = realRoot.funcMap.get(expr.id);
-					System.err.printf("1");
 				}
 				else
 				{
@@ -452,7 +450,6 @@ public class ScopeChecker
 						}
 					}
 				}
-				System.err.printf("func.param.size = %d\n", func.param.size());
 				if(func.param.size() != ((FuncCallNode) now).paramListNode.exprNode.size())
 				{
 					System.err.printf("Wrong number of parameters for function : \"%s\".\n", expr.id);
@@ -461,8 +458,6 @@ public class ScopeChecker
 				for(int i = 0; i < ((FuncCallNode) now).paramListNode.exprNode.size(); i++)
 				{
 					temp = check(((FuncCallNode) now).paramListNode.exprNode.get(i), father);
-					System.err.println(func.param.get(i).dimNum);
-					System.err.println(((ExprScope)temp).dimNum);
 					if(!(func.param.get(i).singleType.equals(((ExprScope)temp).type))
 						|| func.param.get(i).dimNum != ((ExprScope) temp).dimNum)
 					{
@@ -520,7 +515,6 @@ public class ScopeChecker
 			}
 			String find = ((MemberNode) now).idNode.id;
 			String type = ((ExprScope)ltemp).type;
-			System.err.printf("Type : %s\n", ((ExprScope) ltemp).type);
 			if(realRoot.funcMap.containsKey(find))
 			{
 				FuncIns ins = realRoot.funcMap.get(find);
@@ -536,7 +530,6 @@ public class ScopeChecker
 				{
 					if (scope instanceof ClassScope)
 					{
-						System.err.printf("scopeName : %s\n", ((ClassScope) scope).name);
 						if (((ClassScope) scope).name.equals(type))
 						{
 							if (((ClassScope) scope).variMap.containsKey(find))
@@ -587,7 +580,6 @@ public class ScopeChecker
 
 			if(((ExprScope)ltemp).type.equals("int") && ((ExprScope) ltemp).dimNum > 0)
 			{
-				System.err.println(rtemp.id);
 				if(!(rtemp.id.equals("size")))
 				{
 					System.err.printf("Type \"int\" do not have a function named \"%s\".\n", rtemp.id);
@@ -733,10 +725,24 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((BinaryNode) now).leftExprNode, father);
 			Scope rtemp = check(((BinaryNode) now).rightExprNode, father);
+			System.err.printf("left type %s\nright type %s\n", ((ExprScope)ltemp).type, ((ExprScope)rtemp).type);
+			if(((ExprScope) ltemp).type.equals("int")
+					|| ((ExprScope) ltemp).type.equals("string")
+					|| ((ExprScope) ltemp).type.equals("bool"))
+			{
+				if(((ExprScope) ltemp).dimNum == 0 && ((ExprScope) rtemp).type.equals("null"))
+				{
+					System.err.printf("Null cannot be initiated to non-array variable.\n");
+					System.exit(1);
+				}
+			}
 			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
 			{
-				System.err.printf("Different types cannot do this binary operation.\n");
-				System.exit(1);
+				if(!((ExprScope) rtemp).type.equals("null"))
+				{
+					System.err.printf("Different types cannot do this binary operation.\n");
+					System.exit(1);
+				}
 			}
 			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
 			{
@@ -766,7 +772,6 @@ public class ScopeChecker
 					System.exit(1);
 				}
 				expr.type = ((ExprScope) ltemp).type;
-				System.err.printf("OP1\n");
 			}
 			else
 			{
@@ -781,7 +786,6 @@ public class ScopeChecker
 					}
 				}
 				expr.type = "bool";
-				System.err.printf("OP2\n");
 			}
 			expr.source = null;
 			expr.dimNum = 0;
@@ -795,11 +799,21 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((AssignNode) now).leftExprNode, father);
 			Scope rtemp = check(((AssignNode) now).rightExprNode, father);
-			System.err.println(((ExprScope)ltemp).type);
-			System.err.println(((ExprScope)rtemp).type);
 			if(((ExprScope) rtemp).type.equals("null"))
 			{
 				if(((ExprScope) ltemp).dimNum > 0)
+				{
+					expr.id = null;
+					expr.type = null;
+					expr.source = null;
+					expr.dimNum = ((ExprScope) ltemp).dimNum;
+					expr.maxDimNum = ((ExprScope) ltemp).maxDimNum;
+					expr.kind = 2;
+					return expr;
+				}
+				else if(!((ExprScope) ltemp).type.equals("int")
+						|| !((ExprScope) ltemp).type.equals("string")
+						|| !((ExprScope) ltemp).type.equals("bool"))
 				{
 					expr.id = null;
 					expr.type = null;
@@ -855,7 +869,6 @@ public class ScopeChecker
 				return expr;
 			}
 			boolean have = false;
-			System.err.println(id);
 			if(id.equals("int")
 					|| id.equals("string")
 					|| id.equals("bool")
@@ -962,7 +975,7 @@ public class ScopeChecker
 						FuncIns ins = ((ClassScope) nowScope).funcMap.get(id);
 						expr.id = id;
 						expr.type = ins.singleType;
-						expr.source = null;
+						expr.source = ((ClassScope) nowScope).name;
 						expr.dimNum = expr.maxDimNum = ins.rtnDimNum;
 						if(ins.singleType.equals("bool")
 								|| ins.singleType.equals("int")
@@ -1014,7 +1027,6 @@ public class ScopeChecker
 					{
 						have = true;
 						FuncIns ins = ((TopScope) nowScope).funcMap.get(id);
-						System.err.println(id);
 						expr.id = id;
 						expr.type = ins.singleType;
 						expr.source = null;
