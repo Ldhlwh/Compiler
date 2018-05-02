@@ -55,7 +55,33 @@ public class PreScopeChecker
 				}
 				((TopScope) classScope.fatherScope).classMap.put(classScope.name, new ClassIns(classScope.name, insID++));
 			}
+			for(ASTNode node : ((ClassDeclNode) now).progSecNode)
+			{
+				Scope temp = check(node, classScope);
+			}
 			return classScope;
+		}
+		else if(now instanceof ConstructorNode)
+		{
+			ConstructorScope constructorScope = new ConstructorScope();
+			constructorScope.fatherScope = father;
+			constructorScope.name = ((ConstructorNode) now).id;
+			if (constructorScope.fatherScope instanceof ClassScope) {
+				if(((ClassScope) constructorScope.fatherScope).funcMap.containsKey(constructorScope.name))
+				{
+					System.err.printf("Constructor \"%s\" has already been defined.\n", constructorScope.name);
+					System.exit(1);
+				}
+				if(!((ClassScope) constructorScope.fatherScope).name.equals(constructorScope.name))
+				{
+					System.err.printf("Constructor must have the same name as that of the class.\n", constructorScope.name);
+					System.exit(1);
+				}
+				FuncIns newIns = new FuncIns();
+				newIns.name = constructorScope.name;
+				((ClassScope) constructorScope.fatherScope).funcMap.put(constructorScope.name, newIns);
+			}
+			return constructorScope;
 		}
 		else if(now instanceof FuncDeclNode)
 		{
@@ -96,6 +122,15 @@ public class PreScopeChecker
 					System.exit(1);
 				}
 				((TopScope) funcScope.fatherScope).funcMap.put(funcScope.name, newIns);
+			}
+			if(funcScope.fatherScope instanceof ClassScope)
+			{
+				if(((ClassScope)funcScope.fatherScope).funcMap.containsKey(funcScope.name))
+				{
+					System.err.printf("Function \"%s\" has already been defined.\n", funcScope.name);
+					System.exit(1);
+				}
+				((ClassScope) funcScope.fatherScope).funcMap.put(funcScope.name, newIns);
 			}
 			return funcScope;
 		}

@@ -34,32 +34,8 @@
       <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="37">
-              <caret line="1122" column="25" selection-start-line="1122" selection-start-column="25" selection-end-line="1122" selection-end-column="25" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ASTMaker.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4249">
-              <caret line="329" column="34" selection-start-line="329" selection-start-column="34" selection-end-line="329" selection-end-column="34" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ASTPrinter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTPrinter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3290">
-              <caret line="327" column="22" selection-start-line="327" selection-start-column="22" selection-end-line="327" selection-end-column="22" />
+            <state relative-caret-position="155">
+              <caret line="67" column="74" selection-start-line="67" selection-start-column="74" selection-end-line="67" selection-end-column="74" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -70,8 +46,8 @@
       <file leaf-file-name="PreScopeChecker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4473">
-              <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+            <state relative-caret-position="225">
+              <caret line="70" column="17" lean-forward="true" selection-start-line="70" selection-start-column="17" selection-end-line="70" selection-end-column="17" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -79,22 +55,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ExprScope.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/ExprScope.java">
+      <file leaf-file-name="ASTMaker.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="42">
-              <caret line="2" selection-start-line="2" selection-end-line="2" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Scope.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/Scope.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="273">
-              <caret line="13" selection-start-line="13" selection-end-line="13" />
+            <state relative-caret-position="168">
+              <caret line="8" column="39" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
               <folding>
-                <element signature="e#264#265#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -103,11 +70,20 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
+            <state relative-caret-position="399">
+              <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Mx.g4" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="371">
+              <caret line="231" lean-forward="true" selection-start-line="231" selection-end-line="231" />
             </state>
           </provider>
         </entry>
@@ -123,11 +99,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>idNode</find>
-      <find>NULL can only</find>
-      <find>ReturnNode</find>
-      <find>variinit</find>
-      <find>wrong parameter</find>
       <find>jumpable</find>
       <find>slct</find>
       <find>LocalScope</find>
@@ -153,6 +124,11 @@
       <find>only internal</find>
       <find>err</find>
       <find>scopeName</find>
+      <find>Constructor</find>
+      <find>FuncDecl</find>
+      <find>member</find>
+      <find>constructor</find>
+      <find>unaccesib</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -205,13 +181,13 @@
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Instances/ClassIns.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/ConstructorNode.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/ConstructorScope.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/ExprScope.java" />
-        <option value="$PROJECT_DIR$/MxGrammar/Mx.g4" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/StraightReturnNode.java" />
+        <option value="$PROJECT_DIR$/MxGrammar/Mx.g4" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
       </list>
     </option>
@@ -254,6 +230,12 @@
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
               <item name="Compiler" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Compiler" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="AbstractSyntaxTree" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
@@ -406,12 +388,12 @@
       <workItem from="1525062529280" duration="2422000" />
       <workItem from="1525094639642" duration="11922000" />
       <workItem from="1525141819427" duration="58924000" />
-      <workItem from="1525222209474" duration="46659000" />
+      <workItem from="1525222209474" duration="50318000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="191768000" />
+    <option name="totallyTimeSpent" value="195427000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -426,28 +408,29 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32997763" />
       <window_info anchor="bottom" id="Tool Output" order="14" weight="0.18008949" />
-      <window_info anchor="bottom" id="调试" order="7" weight="0.50111854" />
-      <window_info anchor="bottom" id="Messages" order="15" weight="0.32885906" />
-      <window_info anchor="right" id="Palette&#9;" order="4" />
-      <window_info id="Image Layers" order="1" />
-      <window_info anchor="right" id="Capture Analysis" order="5" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" weight="0.3293348" />
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.29418343" />
       <window_info anchor="right" id="调色板" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.15991472" />
-      <window_info id="设计器" order="3" />
       <window_info anchor="right" id="Database" order="8" />
       <window_info anchor="bottom" x="0" y="23" width="1920" height="1017" id="ANTLR Preview" order="14" type="WINDOWED" weight="0.5156599" />
       <window_info anchor="right" id="Structure" order="1" sideWeight="0.46410686" side_tool="true" weight="0.20255864" />
       <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
       <window_info id="UI Designer" order="4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32997763" />
+      <window_info anchor="bottom" id="调试" order="7" weight="0.50111854" />
+      <window_info anchor="bottom" id="Messages" order="15" weight="0.32885906" />
+      <window_info anchor="right" id="Palette&#9;" order="4" />
+      <window_info id="Image Layers" order="1" />
+      <window_info anchor="right" id="Capture Analysis" order="5" />
+      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.23713647" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32997763" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.15991472" />
+      <window_info id="设计器" order="3" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32997763" />
       <window_info anchor="right" id="Theme Preview" order="9" />
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
@@ -456,7 +439,6 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32997763" />
     </layout>
     <layout-to-restore>
       <window_info anchor="bottom" id="Messages" order="14" weight="0.32885906" />
@@ -500,14 +482,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java</url>
-          <line>1115</line>
-          <properties />
-          <option name="timeStamp" value="34" />
-        </line-breakpoint>
-      </breakpoints>
       <option name="time" value="35" />
     </breakpoint-manager>
   </component>
@@ -737,13 +711,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="99" column="31" selection-start-line="99" selection-start-column="31" selection-end-line="99" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/StraightReturnNode.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="63">
@@ -813,13 +780,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="18" column="33" selection-start-line="18" selection-start-column="33" selection-end-line="18" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/ExprScope.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="42">
@@ -839,7 +799,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTPrinter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3290">
+        <state relative-caret-position="6867">
           <caret line="327" column="22" selection-start-line="327" selection-start-column="22" selection-end-line="327" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -847,20 +807,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java">
+    <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4473">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="371">
+          <caret line="231" lean-forward="true" selection-start-line="231" selection-end-line="231" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="18" column="33" selection-start-line="18" selection-start-column="33" selection-end-line="18" selection-end-column="33" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4249">
-          <caret line="329" column="34" selection-start-line="329" selection-start-column="34" selection-end-line="329" selection-end-column="34" />
+        <state relative-caret-position="168">
+          <caret line="8" column="39" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -869,8 +833,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="37">
-          <caret line="1122" column="25" selection-start-line="1122" selection-start-column="25" selection-end-line="1122" selection-end-column="25" />
+        <state relative-caret-position="155">
+          <caret line="67" column="74" selection-start-line="67" selection-start-column="74" selection-end-line="67" selection-end-column="74" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="70" column="17" lean-forward="true" selection-start-line="70" selection-start-column="17" selection-end-line="70" selection-end-column="17" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -879,8 +853,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
+        <state relative-caret-position="399">
+          <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

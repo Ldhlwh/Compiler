@@ -30,10 +30,10 @@ public class Compiler {
 			ASTMaker maker = new ASTMaker();
 			ASTNode rootNode = maker.visit(tree);
 
-			/*
+
 			ASTPrinter printer = new ASTPrinter();
 			printer.print(rootNode);
-			*/
+
 
 			System.err.println("------PreScopeCheck------");
 			PreScopeChecker preScopeChecker = new PreScopeChecker();

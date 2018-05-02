@@ -66,16 +66,6 @@ public class ScopeChecker
 			constructorScope.fatherScope = father;
 			constructorScope.name = ((ConstructorNode) now).id;
 			constructorScope.fatherScope.childScope.add(constructorScope);
-			if (constructorScope.fatherScope instanceof ClassScope) {
-				if(((ClassScope) constructorScope.fatherScope).funcMap.containsKey(constructorScope.name))
-				{
-					System.err.printf("Function \"%s\" has already been defined.\n", constructorScope.name);
-					System.exit(1);
-				}
-				FuncIns newIns = new FuncIns();
-				newIns.name = constructorScope.name;
-				((ClassScope) constructorScope.fatherScope).funcMap.put(constructorScope.name, newIns);
-			}
 			Scope temp = check(((ConstructorNode) now).blockStmtNode, constructorScope);
 			constructorScope.childScope.add(temp);
 			return constructorScope;
@@ -84,6 +74,11 @@ public class ScopeChecker
 			FuncScope funcScope = new FuncScope();
 			funcScope.fatherScope = father;
 			funcScope.name = ((FuncDeclNode) now).id;
+			if(funcScope.name.equals("this"))
+			{
+				System.err.printf("\"%s\" is a reserved key.", funcScope.name);
+				System.exit(1);
+			}
 			Scope temp = check(((FuncDeclNode) now).typeNode, funcScope);
 			funcScope.singleRtnType = ((TypeScope) temp).singleType;
 			funcScope.rtnDimNum = ((TypeScope) temp).dimNum;
@@ -121,14 +116,6 @@ public class ScopeChecker
 					funcScope.paramMap.put(((ParamDeclScope) scope).name, newParam);
 					newIns.param.add(newParam);
 				}
-			}
-			if (funcScope.fatherScope instanceof ClassScope) {
-				if(((ClassScope) funcScope.fatherScope).funcMap.containsKey(funcScope.name))
-				{
-					System.err.printf("Function \"%s\" has already been defined.\n", funcScope.name);
-					System.exit(1);
-				}
-				((ClassScope) funcScope.fatherScope).funcMap.put(funcScope.name, newIns);
 			}
 			temp = check(((FuncDeclNode) now).blockStmtNode, funcScope);
 			funcScope.childScope.add(temp);
@@ -205,6 +192,11 @@ public class ScopeChecker
 			VariInitScope variInitScope = new VariInitScope();
 			variInitScope.fatherScope = father;
 			variInitScope.name = ((VariInitNode) now).id;
+			if(variInitScope.name.equals("this"))
+			{
+				System.err.printf("\"%s\" is a reserved key.", variInitScope.name);
+				System.exit(1);
+			}
 			if (((VariInitNode) now).assign)
 			{
 				Scope temp = check(((VariInitNode) now).exprNode, variInitScope);
@@ -594,6 +586,38 @@ public class ScopeChecker
 			}
 			String find = ((MemberNode) now).idNode.id;
 			String type = ((ExprScope)ltemp).type;
+			if(realRoot.classMap.containsKey(type))
+			{
+				for(Scope scope : realRoot.childScope)
+				{
+					if((scope instanceof ClassScope) && ((ClassScope) scope).name.equals(type))
+					{
+						if(((ClassScope) scope).variMap.containsKey(find)) {
+							VariIns ins = ((ClassScope) scope).variMap.get(find);
+							expr.id = find;
+							expr.dimNum = ins.dimNum;
+							expr.maxDimNum = ins.dimNum;
+							expr.type = ins.singleType;
+							expr.kind = 0;
+							expr.source = ((ClassScope) scope).name;
+							return expr;
+						}
+						if(((ClassScope) scope).funcMap.containsKey(find))
+						{
+							FuncIns ins = ((ClassScope) scope).funcMap.get(find);
+							expr.id = find;
+							expr.dimNum = ins.rtnDimNum;
+							expr.maxDimNum = ins.rtnDimNum;
+							expr.type = ins.singleType;
+							expr.kind = 1;
+							expr.source = ((ClassScope) scope).name;
+							return expr;
+						}
+						System.err.printf("Class : \"%s\" does not have a member named \"%s\".", type, find);
+						System.exit(1);
+					}
+				}
+			}
 			if(realRoot.funcMap.containsKey(find))
 			{
 				FuncIns ins = realRoot.funcMap.get(find);
