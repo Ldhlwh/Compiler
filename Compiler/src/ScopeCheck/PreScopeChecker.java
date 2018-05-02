@@ -6,7 +6,6 @@ import ScopeCheck.Instances.FuncIns;
 import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
-import sun.security.timestamp.TSRequest;
 
 
 public class PreScopeChecker

@@ -6,7 +6,6 @@ import ScopeCheck.Instances.FuncIns;
 import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
-import sun.invoke.empty.Empty;
 
 
 public class ScopeChecker
