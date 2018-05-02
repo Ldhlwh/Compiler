@@ -505,6 +505,7 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((IndexNode) now).arrayExprNode, father);
 			Scope Rtemp = check(((IndexNode) now).indexExprNode,father);
+			System.err.println(((ExprScope)ltemp).kind);
 			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 3)
 			{
 				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
@@ -713,7 +714,7 @@ public class ScopeChecker
 			expr.dimNum = ((ExprScope) temp).dimNum;
 			expr.maxDimNum = ((ExprScope) temp).maxDimNum;
 			expr.source = null;
-			expr.kind = 2;
+			expr.kind = 0;
 			return expr;
 		}
 		else if(now instanceof CreatorArrayNode)
@@ -722,6 +723,7 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope temp = check(((CreatorArrayNode) now).singleTypeNode, father);
 			expr.type = ((SingleTypeScope)temp).singleType;
+			System.err.println(expr.type);
 			for(ASTNode node : ((CreatorArrayNode) now).exprNode)
 			{
 				temp = check(node, father);
@@ -735,7 +737,7 @@ public class ScopeChecker
 			expr.source = null;
 			expr.dimNum = ((CreatorArrayNode) now).exprNode.size() + ((CreatorArrayNode) now).emptyDimNum;
 			expr.maxDimNum = expr.dimNum;
-			expr.kind = 2;
+			expr.kind = 0;
 			return expr;
 		}
 		else if(now instanceof CreatorSingleNode)
@@ -743,10 +745,15 @@ public class ScopeChecker
 			ExprScope expr = new ExprScope();
 			expr.fatherScope = father;
 			expr.type = ((CreatorSingleNode) now).singleTypeNode.type;
+			if(expr.type.equals("void"))
+			{
+				System.err.println("VOID cannot be construct by NEW");
+				System.exit(1);
+			}
 			expr.id = null;
 			expr.source = null;
 			expr.dimNum = expr.maxDimNum = 0;
-			expr.kind = 2;
+			expr.kind = 0;
 			return expr;
 		}
 		else if(now instanceof BinaryNode)
@@ -968,16 +975,7 @@ public class ScopeChecker
 				{
 					scopeName = ((ClassScope) nowScope).name;
 					scopeIsFunc = false;
-					if(id.equals(((ClassScope) nowScope).name))
-					{
-						expr.id = id;
-						expr.type = id;
-						expr.source = null;
-						expr.dimNum = expr.maxDimNum = 0;
-						expr.kind = 4;
-						break;
-					}
-					else if(((ClassScope) nowScope).variMap.containsKey(id))
+					if(((ClassScope) nowScope).variMap.containsKey(id))
 					{
 						have = true;
 						VariIns ins = ((ClassScope) nowScope).variMap.get(id);
@@ -997,6 +995,16 @@ public class ScopeChecker
 						}
 						else
 							expr.kind = 3;
+						break;
+					}
+					else if(id.equals(((ClassScope) nowScope).name))
+					{
+						have = true;
+						expr.id = id;
+						expr.type = id;
+						expr.source = null;
+						expr.dimNum = expr.maxDimNum = 0;
+						expr.kind = 4;
 						break;
 					}
 					else if(((ClassScope) nowScope).funcMap.containsKey(id))
