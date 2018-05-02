@@ -236,13 +236,32 @@ public class ScopeChecker
 				return check(((ExprStmtNode) now).exprNode, father);
 			}
 			return new EmptyScope();
-		} else if (now instanceof SlctStmtNode) {
-			if (father instanceof LocalScope) {
-				Scope temp = check(((SlctStmtNode) now).ifStmtNode, father);
-				for (ASTNode node : ((SlctStmtNode) now).elifStmtNode) {
+		} else if (now instanceof SlctStmtNode)
+		{
+			if (father instanceof LocalScope)
+			{
+				Scope temp = check(((SlctStmtNode) now).ifExprNode, father);
+				if(!((ExprScope)temp).type.equals("bool"))
+				{
+					System.err.printf("Bool type expected in the condition.\n");
+					System.exit(1);
+				}
+				temp = check(((SlctStmtNode) now).ifStmtNode, father);
+				for(ASTNode node : ((SlctStmtNode) now).elifExprNode)
+				{
+					temp = check(node, father);
+					if(!((ExprScope)temp).type.equals("bool"))
+					{
+						System.err.printf("Bool type expected in the condition.\n");
+						System.exit(1);
+					}
+				}
+				for (ASTNode node : ((SlctStmtNode) now).elifStmtNode)
+				{
 					temp = check(node, father);
 				}
-				if (((SlctStmtNode) now).haveElse) {
+				if (((SlctStmtNode) now).haveElse)
+				{
 					temp = check(((SlctStmtNode) now).elseStmtNode, father);
 				}
 			}
@@ -253,6 +272,16 @@ public class ScopeChecker
 			localScope.fatherScope.childScope.add(localScope);
 			localScope.jumpable = true;
 			check(((ForInitNode) now).variDeclNode, localScope);
+			if(((ForInitNode) now).haveCond) {
+				Scope temp = check(((ForInitNode) now).condExprNode, localScope);
+				if (!((ExprScope) temp).type.equals("bool")) {
+					System.err.printf("Bool type expected in the condition.\n");
+					System.exit(1);
+				}
+			}
+			if(((ForInitNode) now).haveStep) {
+				Scope temp = check(((ForInitNode) now).stepExprNode, localScope);
+			}
 			Scope temp = check(((ForInitNode) now).stmtNode, localScope);
 			return localScope;
 		}
@@ -262,6 +291,20 @@ public class ScopeChecker
 			localScope.fatherScope = father;
 			localScope.fatherScope.childScope.add(localScope);
 			localScope.jumpable = true;
+			if(((ForNode) now).haveInit)
+			{
+				Scope temp = check(((ForNode) now).initExprNode, localScope);
+			}
+			if(((ForNode) now).haveCond) {
+				Scope temp = check(((ForNode) now).condExprNode, localScope);
+				if (!((ExprScope) temp).type.equals("bool")) {
+					System.err.printf("Bool type expected in the condition.\n");
+					System.exit(1);
+				}
+			}
+			if(((ForNode) now).haveStep) {
+				Scope temp = check(((ForNode) now).stepExprNode, localScope);
+			}
 			Scope temp = check(((ForNode) now).stmtNode, localScope);
 			return localScope;
 		}
@@ -300,14 +343,12 @@ public class ScopeChecker
 				System.err.printf("\"%s\" is not a function.\n", ((ExprScope) temp).id);
 				System.exit(1);
 			}
-			expr.kind = 1;
+			expr.kind = 2;
 			expr.type = ((ExprScope) temp).type;
 			expr.source = ((ExprScope) temp).source;
 			expr.dimNum = ((ExprScope) temp).dimNum;
 			expr.maxDimNum = ((ExprScope) temp).maxDimNum;
 			expr.id = ((ExprScope) temp).id;
-			System.err.println(((ExprScope) temp).source);
-			System.err.printf("id : %s\n",((ExprScope) temp).id);
 			if(((FuncCallNode) now).haveParamList)
 			{
 				FuncIns func = new FuncIns();
@@ -365,7 +406,7 @@ public class ScopeChecker
 				System.exit(1);
 			}
 
-			if(((ExprScope) ltemp).dimNum >= ((ExprScope) ltemp).maxDimNum)
+			if(((ExprScope) ltemp).dimNum == 0)
 			{
 				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
 				System.exit(1);
@@ -595,24 +636,25 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((BinaryNode) now).leftExprNode, father);
 			Scope rtemp = check(((BinaryNode) now).rightExprNode, father);
+			System.err.println(((ExprScope)ltemp).type);
+			System.err.println(((ExprScope) ltemp).kind);
+			System.err.println(((ExprScope)rtemp).type);
+			System.err.println(((ExprScope) rtemp).kind);
 			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
 			{
 				System.err.printf("Different types cannot do this binary operation.\n");
 				System.exit(1);
 			}
-			System.err.println(((ExprScope) ltemp).kind);
-			System.err.println(((ExprScope) rtemp).kind);
 			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
 			{
 				System.err.printf("Only internal classes can do this operation.\n");
 				System.exit(1);
 			}
-			if(((ExprScope) ltemp).dimNum > 1 || ((ExprScope) rtemp).dimNum > 1)
+			if(((ExprScope) ltemp).dimNum > 0 || ((ExprScope) rtemp).dimNum > 0)
 			{
 				System.err.printf("Arrays cannot do this binary operation.\n");
 				System.exit(1);
 			}
-			expr.id = null;
 			if(((BinaryNode) now).op.equals("+")
 					|| ((BinaryNode) now).op.equals("-")
 					|| ((BinaryNode) now).op.equals("*")
@@ -625,10 +667,27 @@ public class ScopeChecker
 					|| ((BinaryNode) now).op.equals("^")
 					|| ((BinaryNode) now).op.equals("&"))
 			{
+				if(!(((BinaryNode) now).op.equals("+")) && (!(((ExprScope) ltemp).type.equals("int")) || !(((ExprScope) rtemp).type.equals("int"))))
+				{
+					System.err.printf("Operation \"%s\" cannot be done between two \"%s\"\n", ((BinaryNode)now).op, ((ExprScope) ltemp).type);
+					System.exit(1);
+				}
 				expr.type = ((ExprScope) ltemp).type;
 			}
 			else
+			{
+				if(((BinaryNode) now).op.equals("&&")
+						|| ((BinaryNode) now).op.equals("||")
+						|| ((BinaryNode) now).op.equals("!"))
+				{
+					if(!((ExprScope) ltemp).type.equals("int") && !(((ExprScope) ltemp).type.equals("bool")))
+					{
+						System.err.printf("Operation \"%s\" cannot be done between two \"%s\"\n", ((BinaryNode)now).op, ((ExprScope) ltemp).type);
+						System.exit(1);
+					}
+				}
 				expr.type = "bool";
+			}
 			expr.source = null;
 			expr.dimNum = 0;
 			expr.maxDimNum = 0;
@@ -648,9 +707,19 @@ public class ScopeChecker
 				System.err.printf("Different types cannot do this assign operation.\n");
 				System.exit(1);
 			}
-			if(((ExprScope) ltemp).kind >= 3 || ((ExprScope) rtemp).kind >= 3)
+			if(((ExprScope) ltemp).kind == 2)
 			{
-				System.err.printf("Only internal classes can do this operation.\n");
+				System.err.printf("Const cannot be the left value.\n");
+				System.exit(1);
+			}
+			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
+			{
+				System.err.printf("Instance of non-internal classes cannot do this operation.\n");
+				System.exit(1);
+			}
+			if(((ExprScope) ltemp).kind == 4 || ((ExprScope) rtemp).kind == 4)
+			{
+				System.err.printf("Type cannot assign or be assigned.\n");
 				System.exit(1);
 			}
 			expr.id = null;
@@ -795,7 +864,7 @@ public class ScopeChecker
 						expr.id = id;
 						expr.type = ins.singleType;
 						expr.source = null;
-						expr.dimNum = 0;
+						expr.dimNum = ins.dimNum;
 						expr.maxDimNum = ins.dimNum;
 						if(ins.singleType.equals("bool")
 								|| ins.singleType.equals("int")
