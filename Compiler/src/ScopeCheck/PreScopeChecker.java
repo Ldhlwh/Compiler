@@ -11,6 +11,8 @@ import sun.security.timestamp.TSRequest;
 
 public class PreScopeChecker
 {
+	public int insID = 0;
+
 	public Scope check(ASTNode now, Scope father)
 	{
 		if(now instanceof ASTRootNode) {
@@ -28,11 +30,16 @@ public class PreScopeChecker
 							System.err.printf("Variable \"%s\" has already been defined.\n", ((VariInitScope) scope).name);
 							System.exit(1);
 						}
-						topScope.variMap.put(((VariInitScope)scope).name, new VariIns(((VariDeclScope) temp).singleType, ((VariDeclScope) temp).dimNum, ((VariInitScope)scope).name, ((VariInitScope) scope).initValue));
+						topScope.variMap.put(((VariInitScope)scope).name, new VariIns(((VariDeclScope) temp).singleType, ((VariDeclScope) temp).dimNum, ((VariInitScope)scope).name, ((VariInitScope) scope).initValue, insID++));
 					}
 				}
 			}
 			addInternalFunc(topScope);
+			if(!topScope.funcMap.containsKey("main"))
+			{
+				System.err.println("There should be a main function.");
+				System.exit(1);
+			}
 			return topScope;
 		}
 		else if(now instanceof ClassDeclNode)
@@ -47,7 +54,7 @@ public class PreScopeChecker
 					System.err.printf("Class \"%s\" has already been defined.\n", classScope.name);
 					System.exit(1);
 				}
-				((TopScope) classScope.fatherScope).classMap.put(classScope.name, new ClassIns(classScope.name));
+				((TopScope) classScope.fatherScope).classMap.put(classScope.name, new ClassIns(classScope.name, insID++));
 			}
 			return classScope;
 		}
@@ -66,7 +73,7 @@ public class PreScopeChecker
 					System.exit(1);
 				}
 			}
-			FuncIns newIns = new FuncIns(funcScope.singleRtnType, funcScope.rtnDimNum, funcScope.name);
+			FuncIns newIns = new FuncIns(funcScope.singleRtnType, funcScope.rtnDimNum, funcScope.name, insID++);
 			if(((FuncDeclNode) now).haveParamDeclListNode)
 			{
 				temp = check(((FuncDeclNode) now).paramDeclListNode, funcScope);

@@ -18,9 +18,21 @@ public class ScopeChecker
 	public Scope checkRoot(ASTNode now, Scope root)
 	{
 		realRoot = (TopScope)root;
+		Scope temp;
 		for(ASTNode node : ((ASTRootNode)now).progSecNode)
 		{
-			Scope temp = check(node, root);
+			if(node instanceof ClassDeclNode)
+				temp = check(node, root);
+		}
+		for(ASTNode node : ((ASTRootNode)now).progSecNode)
+		{
+			if(node instanceof FuncDeclNode)
+				temp = check(node, root);
+		}
+		for(ASTNode node : ((ASTRootNode)now).progSecNode)
+		{
+			if(node instanceof VariDeclNode)
+				temp = check(node, root);
 		}
 		return root;
 	}
@@ -45,12 +57,33 @@ public class ScopeChecker
 							System.err.printf("Variable \"%s\" has already been defined.\n", ((VariInitScope) scope).name);
 							System.exit(1);
 						}
-						classScope.variMap.put(((VariInitScope) scope).name, new VariIns(((VariDeclScope) temp).singleType, ((VariDeclScope) temp).dimNum, ((VariInitScope) scope).name, ((VariInitScope) scope).initValue));
+						classScope.variMap.put(((VariInitScope) scope).name, new VariIns(((VariDeclScope) temp).singleType, ((VariDeclScope) temp).dimNum, ((VariInitScope) scope).name, ((VariInitScope) scope).initValue, 0));
 					}
 				}
 			}
 			return classScope;
-		} else if (now instanceof FuncDeclNode) {
+		}
+		else if(now instanceof ConstructorNode)
+		{
+			ConstructorScope constructorScope = new ConstructorScope();
+			constructorScope.fatherScope = father;
+			constructorScope.name = ((ConstructorNode) now).id;
+			constructorScope.fatherScope.childScope.add(constructorScope);
+			if (constructorScope.fatherScope instanceof ClassScope) {
+				if(((ClassScope) constructorScope.fatherScope).funcMap.containsKey(constructorScope.name))
+				{
+					System.err.printf("Function \"%s\" has already been defined.\n", constructorScope.name);
+					System.exit(1);
+				}
+				FuncIns newIns = new FuncIns();
+				newIns.name = constructorScope.name;
+				((ClassScope) constructorScope.fatherScope).funcMap.put(constructorScope.name, newIns);
+			}
+			Scope temp = check(((ConstructorNode) now).blockStmtNode, constructorScope);
+			constructorScope.childScope.add(temp);
+			return constructorScope;
+		}
+		else if (now instanceof FuncDeclNode) {
 			FuncScope funcScope = new FuncScope();
 			funcScope.fatherScope = father;
 			funcScope.name = ((FuncDeclNode) now).id;
@@ -78,7 +111,7 @@ public class ScopeChecker
 					System.exit(1);
 				}
 			}
-			FuncIns newIns = new FuncIns(funcScope.singleRtnType, funcScope.rtnDimNum, funcScope.name);
+			FuncIns newIns = new FuncIns(funcScope.singleRtnType, funcScope.rtnDimNum, funcScope.name, 0);
 			if (((FuncDeclNode) now).haveParamDeclListNode) {
 				temp = check(((FuncDeclNode) now).paramDeclListNode, funcScope);
 				for (Scope scope : ((ParamDeclListScope) temp).paramDeclScope) {
@@ -129,16 +162,7 @@ public class ScopeChecker
 					&& !variDeclScope.singleType.equals("bool")
 					&& !variDeclScope.singleType.equals("string"))
 			{
-				boolean flag = false;
-				for(Scope scope : realRoot.childScope)
-				{
-					if((scope instanceof ClassScope) && ((ClassScope) scope).name.equals(variDeclScope.singleType))
-					{
-						flag = true;
-						break;
-					}
-				}
-				if(!flag)
+				if(!realRoot.classMap.containsKey(variDeclScope.singleType))
 				{
 					System.err.printf("Type \"%s\" has not been defined.\n", variDeclScope.singleType);
 					System.exit(1);
@@ -246,6 +270,7 @@ public class ScopeChecker
 		}
 		else if (now instanceof ReturnNode)
 		{
+			/*
 			Scope temp = check(((ReturnNode) now).exprNode, father);
 			System.err.println(((ExprScope)temp).id);
 			String singleType = ((FuncScope)father.fatherScope).singleRtnType;
@@ -281,6 +306,7 @@ public class ScopeChecker
 				System.err.printf("Wrong returned type or dimension.\n");
 				System.exit(1);
 			}
+			*/
 		}
 		else if (now instanceof ExprStmtNode) {
 			if (!((ExprStmtNode) now).empty) {
@@ -292,9 +318,12 @@ public class ScopeChecker
 			if (father instanceof LocalScope)
 			{
 				Scope temp = check(((SlctStmtNode) now).ifExprNode, father);
+				System.err.printf("-" + ((ExprScope)temp).id);
+				System.err.printf("-" + ((ExprScope)temp).type);
+				System.err.printf("-" + ((ExprScope)temp).kind);
 				if(!((ExprScope)temp).type.equals("bool"))
 				{
-					System.err.printf("Bool type expected in the condition.\n");
+					System.err.printf("Bool type expected in the 1condition.\n");
 					System.exit(1);
 				}
 				temp = check(((SlctStmtNode) now).ifStmtNode, father);
@@ -303,7 +332,7 @@ public class ScopeChecker
 					temp = check(node, father);
 					if(!((ExprScope)temp).type.equals("bool"))
 					{
-						System.err.printf("Bool type expected in the condition.\n");
+						System.err.printf("Bool type expected in the 2condition.\n");
 						System.exit(1);
 					}
 				}
@@ -326,7 +355,7 @@ public class ScopeChecker
 			if(((ForInitNode) now).haveCond) {
 				Scope temp = check(((ForInitNode) now).condExprNode, localScope);
 				if (!((ExprScope) temp).type.equals("bool")) {
-					System.err.printf("Bool type expected in the condition.\n");
+					System.err.printf("Bool type expected in the 3condition.\n");
 					System.exit(1);
 				}
 			}
@@ -349,7 +378,7 @@ public class ScopeChecker
 			if(((ForNode) now).haveCond) {
 				Scope temp = check(((ForNode) now).condExprNode, localScope);
 				if (!((ExprScope) temp).type.equals("bool")) {
-					System.err.printf("Bool type expected in the condition.\n");
+					System.err.printf("Bool type expected in the 4condition.\n");
 					System.exit(1);
 				}
 			}
@@ -491,6 +520,7 @@ public class ScopeChecker
 			}
 			String find = ((MemberNode) now).idNode.id;
 			String type = ((ExprScope)ltemp).type;
+			System.err.printf("Type : %s\n", ((ExprScope) ltemp).type);
 			if(realRoot.funcMap.containsKey(find))
 			{
 				FuncIns ins = realRoot.funcMap.get(find);
@@ -501,10 +531,12 @@ public class ScopeChecker
 				rtemp.kind = 1;
 			}
 			else {
+				boolean flag = false;
 				for (Scope scope : realRoot.childScope)
 				{
 					if (scope instanceof ClassScope)
 					{
+						System.err.printf("scopeName : %s\n", ((ClassScope) scope).name);
 						if (((ClassScope) scope).name.equals(type))
 						{
 							if (((ClassScope) scope).variMap.containsKey(find))
@@ -515,24 +547,28 @@ public class ScopeChecker
 								rtemp.dimNum = rtemp.maxDimNum = ins.dimNum;
 								rtemp.kind = 0;
 								rtemp.source = ((ClassScope) scope).name;
+								flag = true;
 								break;
 							}
-							if(((ClassScope) scope).funcMap.containsKey(find))
-							{
+							if (((ClassScope) scope).funcMap.containsKey(find)) {
 								FuncIns ins = ((ClassScope) scope).funcMap.get(find);
 								rtemp.id = ins.name;
 								rtemp.type = ins.singleType;
 								rtemp.dimNum = rtemp.maxDimNum = ins.rtnDimNum;
 								rtemp.kind = 1;
 								rtemp.source = ((ClassScope) scope).name;
+								flag = true;
 								break;
 							}
 
 							System.err.printf("Class : \"%s\" does not have a member named \"%s\".", type, find);
 							System.exit(1);
 						}
-					} else if (scope instanceof FuncScope) {
-						if (((FuncScope) scope).name.equals(find)) {
+					}
+					else if (scope instanceof FuncScope)
+					{
+						if (((FuncScope) scope).name.equals(find))
+						{
 							rtemp.id = find;
 							rtemp.type = ((FuncScope) scope).singleRtnType;
 							rtemp.dimNum = rtemp.maxDimNum = ((FuncScope) scope).rtnDimNum;
@@ -541,6 +577,8 @@ public class ScopeChecker
 							break;
 						}
 					}
+				}
+				if (!flag) {
 					System.err.printf("\"%s\" is not detected.\n", find);
 					System.exit(1);
 				}
@@ -622,13 +660,21 @@ public class ScopeChecker
 			ExprScope expr = new ExprScope();
 			expr.fatherScope = father;
 			Scope temp = check(((NotNode) now).exprNode, father);
-			if(!(((ExprScope)temp).type.equals("int")))
+			if(!(((ExprScope)temp).type.equals("int")) && ((NotNode) now).op.equals("~"))
 			{
 				System.err.printf("\"%s\" is not an int.\n", ((ExprScope) temp).id);
 				System.exit(1);
 			}
+			if(!((ExprScope)temp).type.equals("bool") && ((NotNode) now).op.equals("!"))
+			{
+				System.err.printf("\"%s\" is not an bool.\n", ((ExprScope) temp).id);
+				System.exit(1);
+			}
 			expr.id = null;
-			expr.type = "int";
+			if(((NotNode) now).op.equals("~"))
+				expr.type = "int";
+			else if(((NotNode)now).op.equals("!"))
+				expr.type = "bool";
 			expr.source = null;
 			expr.dimNum = 0;
 			expr.maxDimNum = 0;
@@ -687,10 +733,6 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((BinaryNode) now).leftExprNode, father);
 			Scope rtemp = check(((BinaryNode) now).rightExprNode, father);
-			System.err.println(((ExprScope)ltemp).type);
-			System.err.println(((ExprScope) ltemp).kind);
-			System.err.println(((ExprScope)rtemp).type);
-			System.err.println(((ExprScope) rtemp).kind);
 			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
 			{
 				System.err.printf("Different types cannot do this binary operation.\n");
@@ -724,6 +766,7 @@ public class ScopeChecker
 					System.exit(1);
 				}
 				expr.type = ((ExprScope) ltemp).type;
+				System.err.printf("OP1\n");
 			}
 			else
 			{
@@ -738,6 +781,7 @@ public class ScopeChecker
 					}
 				}
 				expr.type = "bool";
+				System.err.printf("OP2\n");
 			}
 			expr.source = null;
 			expr.dimNum = 0;
@@ -781,11 +825,12 @@ public class ScopeChecker
 				System.err.printf("Const cannot be the left value.\n");
 				System.exit(1);
 			}
+			/*
 			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
 			{
 				System.err.printf("Instance of non-internal classes cannot do this operation.\n");
 				System.exit(1);
-			}
+			}*/
 			if(((ExprScope) ltemp).kind == 4 || ((ExprScope) rtemp).kind == 4)
 			{
 				System.err.printf("Type cannot assign or be assigned.\n");
@@ -822,6 +867,8 @@ public class ScopeChecker
 				expr.kind = 4;
 				return expr;
 			}
+			String scopeName = "";
+			boolean scopeIsFunc = true;
 			for(Scope nowScope = father; !(nowScope instanceof EmptyScope); nowScope = nowScope.fatherScope)
 			{
 				if(nowScope instanceof LocalScope) {
@@ -849,6 +896,8 @@ public class ScopeChecker
 				}
 				else if(nowScope instanceof FuncScope)
 				{
+					scopeName = ((FuncScope) nowScope).name;
+					scopeIsFunc = true;
 					if(((FuncScope) nowScope).paramMap.containsKey(id))
 					{
 						have = true;
@@ -874,6 +923,8 @@ public class ScopeChecker
 				}
 				else if(nowScope instanceof ClassScope)
 				{
+					scopeName = ((ClassScope) nowScope).name;
+					scopeIsFunc = false;
 					if(id.equals(((ClassScope) nowScope).name))
 					{
 						expr.id = id;
@@ -930,6 +981,16 @@ public class ScopeChecker
 					{
 						have = true;
 						VariIns ins = ((TopScope) nowScope).variMap.get(id);
+						if(scopeIsFunc && (ins.insID > realRoot.funcMap.get(scopeName).insID))
+						{
+							System.err.printf("\"%s\" is defined after the current function.\n", id);
+							System.exit(1);
+						}
+						else if(!scopeIsFunc && (ins.insID > realRoot.classMap.get(scopeName).insID))
+						{
+							System.err.printf("\"%s\" is defined after the current class.\n", id);
+							System.exit(1);
+						}
 						expr.id = id;
 						expr.type = ins.singleType;
 						expr.source = null;

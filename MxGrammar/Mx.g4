@@ -17,7 +17,12 @@ classDecl
 memDecl
 	: variDecl
 	| funcDecl
+	| ctrDecl
 	;
+
+ctrDecl
+    : Identifier '(' ')' blockStmt #constructorDeclaration
+    ;
 	
 funcDecl
 	: typeSpec Identifier '(' paramDeclList? ')' blockStmt  #functionDeclaration

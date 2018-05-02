@@ -2,7 +2,7 @@ package ScopeCheck.Instances;
 
 import java.util.ArrayList;
 
-public class FuncIns
+public class FuncIns extends CFVIns
 {
 	public String singleType;
 	public int rtnDimNum = 0;
@@ -10,10 +10,11 @@ public class FuncIns
 	public ArrayList<ParamIns> param = new ArrayList<>();
 
 	public FuncIns() {}
-	public FuncIns(String type, int num, String str)
+	public FuncIns(String type, int num, String str, int ins)
 	{
 		singleType = type;
 		rtnDimNum = num;
 		name = str;
+		insID = ins;
 	}
 }

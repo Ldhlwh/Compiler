@@ -11,7 +11,7 @@ import javax.print.DocFlavor;
 
 public class ASTMaker extends MxBaseVisitor<ASTNode>
 {
-	public static boolean print = true;
+	public static boolean print = false;
 
 	@Override public ASTRootNode visitProg(MxParser.ProgContext ctx)
 	{
@@ -534,6 +534,14 @@ public class ASTMaker extends MxBaseVisitor<ASTNode>
 			constNode.type = "int";
 		}
 		return constNode;
+	}
+
+	@Override public ConstructorNode visitConstructorDeclaration(MxParser.ConstructorDeclarationContext ctx)
+	{
+		ConstructorNode constructorNode = new ConstructorNode();
+		constructorNode.id = ctx.Identifier().getText();
+		constructorNode.blockStmtNode = (BlockStmtNode) visit(ctx.blockStmt());
+		return constructorNode;
 	}
 
 }

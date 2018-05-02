@@ -1,7 +1,7 @@
 ASTNode
 |- ASTRootNode (ProgSecNode* (Class, Func, Vari Only))
 |- ProgSecNode
-    |- ClassDeclNode (id + ProgSecNode*(Func, Vari Only))
+    |- ClassDeclNode (id + ProgSecNode*(Func, Vari, Ctr Only))
     |- FuncDeclNode (TypeNode + id + ParamDeclListNode? + haveParamDeclList = false + BlockStmtNode)
     |- VariDeclNode (TypeNode + VariInitNode*)
     |- StmtNode
@@ -16,6 +16,8 @@ ASTNode
             |- BreakNode
             |- ContinueNode
             |- ReturnNode (ExprNode)
+
+|- ConstructorNode(id + BlockStmtNode)
 
 |- CreatorNode
     |- CreatorArrayNode (SingleTypeNode + ExprNode* + emptyDimNum = 0)

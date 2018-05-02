@@ -35,6 +35,13 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMemDecl(MxParser.MemDeclContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code constructorDeclaration}
+	 * labeled alternative in {@link MxParser#ctrDecl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstructorDeclaration(MxParser.ConstructorDeclarationContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code functionDeclaration}
 	 * labeled alternative in {@link MxParser#funcDecl}.
 	 * @param ctx the parse tree
