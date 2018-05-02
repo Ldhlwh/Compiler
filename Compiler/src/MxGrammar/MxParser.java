@@ -1,12 +1,15 @@
-// Generated from C:/Users/qydyx/Desktop/Compiler/MxGrammar\Mx.g4 by ANTLR 4.7
-import org.antlr.v4.runtime.atn.*;
-import org.antlr.v4.runtime.dfa.DFA;
+package MxGrammar;// Generated from C:/Users/qydyx/Desktop/Compiler/MxGrammar\Mx.g4 by ANTLR 4.7
+
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class MxParser extends Parser {
@@ -1255,7 +1258,7 @@ public class MxParser extends Parser {
 					setState(173);
 					stmt();
 					}
-					} 
+					}
 				}
 				setState(179);
 				_errHandler.sync(this);
@@ -1291,7 +1294,7 @@ public class MxParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_iterStmt; }
-	 
+
 		public IterStmtContext() { }
 		public void copyFrom(IterStmtContext ctx) {
 			super.copyFrom(ctx);
@@ -1486,7 +1489,7 @@ public class MxParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_jumpStmt; }
-	 
+
 		public JumpStmtContext() { }
 		public void copyFrom(JumpStmtContext ctx) {
 			super.copyFrom(ctx);
@@ -1599,7 +1602,7 @@ public class MxParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expr; }
-	 
+
 		public ExprContext() { }
 		public void copyFrom(ExprContext ctx) {
 			super.copyFrom(ctx);
@@ -2221,7 +2224,7 @@ public class MxParser extends Parser {
 						}
 						break;
 					}
-					} 
+					}
 				}
 				setState(305);
 				_errHandler.sync(this);
@@ -2245,7 +2248,7 @@ public class MxParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_creator; }
-	 
+
 		public CreatorContext() { }
 		public void copyFrom(CreatorContext ctx) {
 			super.copyFrom(ctx);
@@ -2320,7 +2323,7 @@ public class MxParser extends Parser {
 				{
 				setState(306);
 				singleTypeSpec();
-				setState(311); 
+				setState(311);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				do {
@@ -2334,11 +2337,11 @@ public class MxParser extends Parser {
 					match(T__7);
 					}
 					}
-					setState(313); 
+					setState(313);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				} while ( _la==T__6 );
-				setState(316); 
+				setState(316);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				do {
@@ -2348,11 +2351,11 @@ public class MxParser extends Parser {
 					match(Brackets);
 					}
 					}
-					setState(318); 
+					setState(318);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				} while ( _la==Brackets );
-				setState(324); 
+				setState(324);
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -2372,7 +2375,7 @@ public class MxParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(326); 
+					setState(326);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,30,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -2384,7 +2387,7 @@ public class MxParser extends Parser {
 				{
 				setState(328);
 				singleTypeSpec();
-				setState(333); 
+				setState(333);
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -2404,7 +2407,7 @@ public class MxParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(335); 
+					setState(335);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,31,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
