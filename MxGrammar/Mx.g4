@@ -97,6 +97,7 @@ iterStmt
 jumpStmt
 	: BREAK ';'			# break
 	| CONTINUE ';'		# continue
+	| RETURN ';'        # strtReturn
 	| RETURN expr ';' 	# return
 	;
 	

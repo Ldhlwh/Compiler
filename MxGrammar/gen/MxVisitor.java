@@ -186,6 +186,13 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitContinue(MxParser.ContinueContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code strtReturn}
+	 * labeled alternative in {@link MxParser#jumpStmt}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStrtReturn(MxParser.StrtReturnContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code return}
 	 * labeled alternative in {@link MxParser#jumpStmt}.
 	 * @param ctx the parse tree

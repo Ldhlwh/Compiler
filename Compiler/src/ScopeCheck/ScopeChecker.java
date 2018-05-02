@@ -277,19 +277,27 @@ public class ScopeChecker
 				System.exit(1);
 			}
 		}
+		else if(now instanceof StraightReturnNode)
+		{
+			for(Scope scope = father; !(scope.fatherScope instanceof EmptyScope); scope = scope.fatherScope)
+			{
+				if(scope instanceof FuncScope)
+				{
+					if(!((FuncScope) scope).singleRtnType.equals("void"))
+					{
+						System.err.printf("Wrong returned type or 1dimension.\n");
+						System.exit(1);
+					}
+				}
+			}
+			return new EmptyScope();
+		}
 		else if (now instanceof ReturnNode)
 		{
 			Scope temp = check(((ReturnNode) now).exprNode, father);
 			if(temp instanceof EmptyScope)
 			{
 				return new EmptyScope();
-			}
-			String rtnType = ((ExprScope) temp).type;
-			int rtnDimNum = ((ExprScope) temp).dimNum;
-			if(rtnType.equals("void"))
-			{
-				System.err.println("Cannot return void.");
-				System.exit(1);
 			}
 			String className = "";
 			if(((ExprScope)temp).id != null && ((ExprScope) temp).id.equals("this"))
@@ -303,11 +311,19 @@ public class ScopeChecker
 					}
 					if(scope instanceof TopScope)
 					{
-						System.err.printf("Wrong returned type or dimension.\n");
+						System.err.printf("Wrong returned type or 2dimension.\n");
 						System.exit(1);
 					}
 				}
 				return new EmptyScope();
+			}
+			String rtnType = ((ExprScope) temp).type;
+			int rtnDimNum = ((ExprScope) temp).dimNum;
+
+			if(rtnType.equals("void"))
+			{
+				System.err.println("Cannot return void.");
+				System.exit(1);
 			}
 			Scope scope;
 			for(scope = father;
@@ -316,9 +332,25 @@ public class ScopeChecker
 
 			int expDimNum = ((FuncScope)scope).rtnDimNum;
 			String expSingleType = ((FuncScope) scope).singleRtnType;
+			System.err.println(((ExprScope) temp).id);
+			System.err.println(rtnType);
+			System.err.println(rtnDimNum);
+			System.err.println(expSingleType);
+			System.err.println(expDimNum);
+			if( rtnType.equals("null"))
+			{
+				if(expSingleType.equals("int")
+						|| expSingleType.equals("bool")
+						|| expSingleType.equals("string"))
+				{
+					System.err.printf("Wrong returned type or 4dimension.\n");
+					System.exit(1);
+				}
+				return new EmptyScope();
+			}
 			if (!(expSingleType.equals(rtnType))
 					|| expDimNum != rtnDimNum) {
-				System.err.printf("Wrong returned type or dimension.\n");
+				System.err.printf("Wrong returned type or 3dimension.\n");
 				System.exit(1);
 			}
 			return new EmptyScope();
@@ -780,7 +812,6 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((BinaryNode) now).leftExprNode, father);
 			Scope rtemp = check(((BinaryNode) now).rightExprNode, father);
-			System.err.printf("left type %s\nright type %s\n", ((ExprScope)ltemp).type, ((ExprScope)rtemp).type);
 			if(((ExprScope) ltemp).type.equals("int")
 					|| ((ExprScope) ltemp).type.equals("string")
 					|| ((ExprScope) ltemp).type.equals("bool"))
@@ -801,10 +832,15 @@ public class ScopeChecker
 			}
 			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
 			{
-				System.err.printf("Only internal classes can do this operation.\n");
-				System.exit(1);
+				if(((ExprScope) rtemp).kind != 4) {
+					System.err.println(((BinaryNode) now).op);
+					System.err.printf("Only internal classes can do this operation.\n");
+					System.exit(1);
+				}
 			}
-			if(((ExprScope) ltemp).dimNum > 0 || ((ExprScope) rtemp).dimNum > 0)
+			//System.err.printf("LeftTemp :\n type = %8s \t dimNum = %d \t kind = %d\n", ((ExprScope) ltemp).type, ((ExprScope) ltemp).dimNum, ((ExprScope) ltemp).kind);
+			//System.err.printf("RightTemp :\n type = %8s \t dimNum = %d \t kind = %d\n", ((ExprScope) rtemp).type, ((ExprScope) rtemp).dimNum, ((ExprScope) rtemp).kind);
+			if((((ExprScope) ltemp).dimNum > 0 && !((ExprScope) rtemp).type.equals("null")) || ((ExprScope) rtemp).dimNum > 0)
 			{
 				System.err.printf("Arrays cannot do this binary operation.\n");
 				System.exit(1);
@@ -925,7 +961,26 @@ public class ScopeChecker
 			String id = ((IdNode) now).id;
 			if(id.equals("this"))
 			{
+				System.err.println("this found\n");
 				expr.id = "this";
+				boolean flag = false;
+				for(Scope scope = father; !(scope.fatherScope instanceof EmptyScope); scope = scope.fatherScope)
+				{
+					if(scope instanceof FuncScope && scope.fatherScope instanceof ClassScope)
+					{
+						expr.type = ((FuncScope) scope).name;
+						expr.kind = 3;
+						expr.dimNum = expr.maxDimNum = expr.emptyDimNum = 0;
+						expr.source = null;
+						flag = true;
+						break;
+					}
+
+				}
+				if(!flag) {
+					System.err.println("THIS cannot be used in non-class function.");
+					System.exit(1);
+				}
 				return expr;
 			}
 			boolean have = false;
@@ -1055,16 +1110,16 @@ public class ScopeChecker
 					{
 						have = true;
 						VariIns ins = ((TopScope) nowScope).variMap.get(id);
-						System.err.printf("scopeName : %s\n", scopeName);
-						if(scopeIsFunc && (ins.insID > realRoot.funcMap.get(scopeName).insID))
-						{
-							System.err.printf("\"%s\" is defined after the current function.\n", id);
-							System.exit(1);
-						}
-						else if(!scopeIsFunc && (ins.insID > realRoot.classMap.get(scopeName).insID))
-						{
-							System.err.printf("\"%s\" is defined after the current class.\n", id);
-							System.exit(1);
+						System.err.println(ins.name);
+						System.err.println(realRoot.funcMap.get(scopeName));
+						if(!scopeName.equals("")) {
+							if (scopeIsFunc && (ins.insID > realRoot.funcMap.get(scopeName).insID)) {
+								System.err.printf("\"%s\" is defined after the current function.\n", id);
+								System.exit(1);
+							} else if (!scopeIsFunc && (ins.insID > realRoot.classMap.get(scopeName).insID)) {
+								System.err.printf("\"%s\" is defined after the current class.\n", id);
+								System.exit(1);
+							}
 						}
 						expr.id = id;
 						expr.type = ins.singleType;
@@ -1107,7 +1162,7 @@ public class ScopeChecker
 					{
 						have = true;
 						expr.id = id;
-						expr.type = null;
+						expr.type = ((TopScope) nowScope).classMap.get(id).name;
 						expr.source = null;
 						expr.dimNum = expr.maxDimNum = 0;
 						expr.kind = 3;

@@ -324,6 +324,12 @@ public class ASTMaker extends MxBaseVisitor<ASTNode>
 		return returnNode;
 	}
 
+	@Override public StraightReturnNode visitStrtReturn(MxParser.StrtReturnContext ctx)
+	{
+		StraightReturnNode straightReturnNode = new StraightReturnNode();
+		return straightReturnNode;
+	}
+
 	@Override public NewNode visitNew(MxParser.NewContext ctx)
 	{
 		if(print)

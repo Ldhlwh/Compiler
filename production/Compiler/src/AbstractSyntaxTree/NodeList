@@ -16,6 +16,7 @@ ASTNode
             |- BreakNode
             |- ContinueNode
             |- ReturnNode (ExprNode)
+            |- StraightReturnNode
 
 |- ConstructorNode(id + BlockStmtNode)
 
