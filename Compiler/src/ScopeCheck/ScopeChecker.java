@@ -100,6 +100,11 @@ public class ScopeChecker
 			variDeclScope.fatherScope = father;
 			Scope temp = check(((VariDeclNode) now).typeNode, variDeclScope);
 			variDeclScope.singleType = ((TypeScope) temp).singleType;
+			if(variDeclScope.singleType.equals("void"))
+			{
+				System.err.printf("Variable cannot have the type \"void\".\n");
+				System.exit(1);
+			}
 			variDeclScope.dimNum = ((TypeScope) temp).dimNum;
 			for (ASTNode node : ((VariDeclNode) now).variInitNode) {
 				temp = check(node, variDeclScope);
@@ -301,12 +306,16 @@ public class ScopeChecker
 			expr.dimNum = ((ExprScope) temp).dimNum;
 			expr.maxDimNum = ((ExprScope) temp).maxDimNum;
 			expr.id = ((ExprScope) temp).id;
+			System.err.println(((ExprScope) temp).source);
+			System.err.printf("id : %s\n",((ExprScope) temp).id);
 			if(((FuncCallNode) now).haveParamList)
 			{
 				FuncIns func = new FuncIns();
 				if(((ExprScope) temp).source == null)
 				{
-					func = ((TopScope)realRoot).funcMap.get(expr.id);
+					System.err.println("here");
+					func = realRoot.funcMap.get(expr.id);
+					System.err.printf("1");
 				}
 				else
 				{
@@ -322,6 +331,7 @@ public class ScopeChecker
 						}
 					}
 				}
+				System.err.printf("func.param.size = %d\n", func.param.size());
 				if(func.param.size() != ((FuncCallNode) now).paramListNode.exprNode.size())
 				{
 					System.err.printf("Wrong number of parameters for function : \"%s\".\n", expr.id);
@@ -412,6 +422,7 @@ public class ScopeChecker
 								rtemp.type = ins.singleType;
 								rtemp.dimNum = rtemp.maxDimNum = ins.dimNum;
 								rtemp.kind = 0;
+								rtemp.source = ((ClassScope) scope).name;
 								break;
 							}
 							if(((ClassScope) scope).funcMap.containsKey(find))
@@ -421,6 +432,7 @@ public class ScopeChecker
 								rtemp.type = ins.singleType;
 								rtemp.dimNum = rtemp.maxDimNum = ins.rtnDimNum;
 								rtemp.kind = 1;
+								rtemp.source = ((ClassScope) scope).name;
 								break;
 							}
 
@@ -433,6 +445,7 @@ public class ScopeChecker
 							rtemp.type = ((FuncScope) scope).singleRtnType;
 							rtemp.dimNum = rtemp.maxDimNum = ((FuncScope) scope).rtnDimNum;
 							rtemp.kind = 1;
+							rtemp.source = null;
 							break;
 						}
 					}
@@ -470,10 +483,10 @@ public class ScopeChecker
 					System.exit(1);
 				}
 			}
-			expr.id = null;
+			expr.id = rtemp.id;
 			expr.type = rtemp.type;
 			expr.dimNum = rtemp.dimNum;
-			expr.source = null;
+			expr.source = rtemp.source;
 			expr.kind = rtemp.kind;
 			return expr;
 		}
@@ -628,12 +641,14 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((AssignNode) now).leftExprNode, father);
 			Scope rtemp = check(((AssignNode) now).rightExprNode, father);
+			System.err.println(((ExprScope)ltemp).kind);
+			System.err.println(((ExprScope)rtemp).kind);
 			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
 			{
 				System.err.printf("Different types cannot do this assign operation.\n");
 				System.exit(1);
 			}
-			if(((ExprScope) ltemp).kind == 3 || ((ExprScope) rtemp).kind == 3)
+			if(((ExprScope) ltemp).kind >= 3 || ((ExprScope) rtemp).kind >= 3)
 			{
 				System.err.printf("Only internal classes can do this operation.\n");
 				System.exit(1);
@@ -657,6 +672,18 @@ public class ScopeChecker
 				return expr;
 			}
 			boolean have = false;
+			System.err.println(id);
+			if(id.equals("int")
+					|| id.equals("string")
+					|| id.equals("bool")
+					|| id.equals("char"))
+			{
+				expr.id = expr.type = id;
+				expr.dimNum = expr.maxDimNum = 0;
+				expr.source = null;
+				expr.kind = 4;
+				return expr;
+			}
 			for(Scope nowScope = father; !(nowScope instanceof EmptyScope); nowScope = nowScope.fatherScope)
 			{
 				if(nowScope instanceof LocalScope) {
@@ -672,6 +699,11 @@ public class ScopeChecker
 								|| ins.singleType.equals("string")
 								|| ins.singleType.equals("char"))
 							expr.kind = 0;
+						else if(ins.singleType.equals("void"))
+						{
+							System.err.printf("Variable cannot have the type \"void\".\n");
+							System.exit(1);
+						}
 						else
 							expr.kind = 3;
 						break;
@@ -692,6 +724,11 @@ public class ScopeChecker
 								|| ins.singleType.equals("string")
 								|| ins.singleType.equals("char"))
 							expr.kind = 0;
+						else if(ins.singleType.equals("void"))
+						{
+							System.err.printf("Variable cannot have the type \"void\".\n");
+							System.exit(1);
+						}
 						else
 							expr.kind = 3;
 						break;
@@ -699,7 +736,16 @@ public class ScopeChecker
 				}
 				else if(nowScope instanceof ClassScope)
 				{
-					if(((ClassScope) nowScope).variMap.containsKey(id))
+					if(id.equals(((ClassScope) nowScope).name))
+					{
+						expr.id = id;
+						expr.type = id;
+						expr.source = null;
+						expr.dimNum = expr.maxDimNum = 0;
+						expr.kind = 4;
+						break;
+					}
+					else if(((ClassScope) nowScope).variMap.containsKey(id))
 					{
 						have = true;
 						VariIns ins = ((ClassScope) nowScope).variMap.get(id);
@@ -712,6 +758,11 @@ public class ScopeChecker
 								|| ins.singleType.equals("string")
 								|| ins.singleType.equals("char"))
 							expr.kind = 0;
+						else if(ins.singleType.equals("void"))
+						{
+							System.err.printf("Variable cannot have the type \"void\".\n");
+							System.exit(1);
+						}
 						else
 							expr.kind = 3;
 						break;
@@ -751,6 +802,11 @@ public class ScopeChecker
 								|| ins.singleType.equals("string")
 								|| ins.singleType.equals("char"))
 							expr.kind = 0;
+						else if(ins.singleType.equals("void"))
+						{
+							System.err.printf("Variable cannot have the type \"void\".\n");
+							System.exit(1);
+						}
 						else
 							expr.kind = 3;
 						break;
@@ -801,7 +857,10 @@ public class ScopeChecker
 			expr.type = ((ConstNode) now).type;
 			expr.source = null;
 			expr.dimNum = expr.maxDimNum = 0;
-			expr.kind = 2;
+			if(((ConstNode) now).type.equals("null"))
+				expr.kind = 4;
+			else
+				expr.kind = 2;
 			return expr;
 		}
 		else if(now instanceof SubExprNode)

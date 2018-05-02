@@ -59,6 +59,13 @@ public class PreScopeChecker
 			Scope temp = check(((FuncDeclNode) now).typeNode, funcScope);
 			funcScope.singleRtnType = ((TypeScope)temp).singleType;
 			funcScope.rtnDimNum = ((TypeScope)temp).dimNum;
+			if(funcScope.name.equals("main"))
+			{
+				if(!funcScope.singleRtnType.equals("int") || funcScope.rtnDimNum > 0) {
+					System.err.println("The \"main\" function must return a single int.");
+					System.exit(1);
+				}
+			}
 			FuncIns newIns = new FuncIns(funcScope.singleRtnType, funcScope.rtnDimNum, funcScope.name);
 			if(((FuncDeclNode) now).haveParamDeclListNode)
 			{

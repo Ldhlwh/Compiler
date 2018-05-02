@@ -11,7 +11,7 @@ import javax.print.DocFlavor;
 
 public class ASTMaker extends MxBaseVisitor<ASTNode>
 {
-	public static boolean print = false;
+	public static boolean print = true;
 
 	@Override public ASTRootNode visitProg(MxParser.ProgContext ctx)
 	{
@@ -522,6 +522,10 @@ public class ASTMaker extends MxBaseVisitor<ASTNode>
 		String mid = ctx.type.getText();
 		if(mid.equals("true") || mid.equals("false")) {
 			constNode.type = "bool";
+		}
+		else if(mid.equals("null"))
+		{
+			constNode.type = "null";
 		}
 		else if(mid.length() >= 2 && mid.substring(0,1).equals("\"")) {
 			constNode.type = "string";
