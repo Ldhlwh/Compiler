@@ -18,7 +18,7 @@ public class Compiler {
 	{
 			InputStream is = new FileInputStream("program.txt"); // or System.in;
 			//InputStream is = System.in;
-			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\testcase\\T599.mx"); // or System.in;
+			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\testcase\\T735.mx"); // or System.in;
 
 			ANTLRInputStream input = new ANTLRInputStream(is);
 			MxLexer lexer = new MxLexer(input);

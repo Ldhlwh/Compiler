@@ -443,7 +443,7 @@ public class ScopeChecker
 				System.err.printf("\"%s\" is not a function.\n", ((ExprScope) temp).id);
 				System.exit(1);
 			}
-			expr.kind = 0;
+			expr.kind = 2;
 			expr.type = ((ExprScope) temp).type;
 			expr.source = ((ExprScope) temp).source;
 			expr.dimNum = ((ExprScope) temp).dimNum;

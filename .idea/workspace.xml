@@ -15,8 +15,8 @@
       <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="231">
-              <caret line="656" column="22" selection-start-line="656" selection-start-column="22" selection-end-line="656" selection-end-column="22" />
+            <state relative-caret-position="208">
+              <caret line="836" column="42" selection-start-line="836" selection-start-column="34" selection-end-line="836" selection-end-column="42" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -47,8 +47,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>SingleTypeNode</find>
-      <find>single</find>
       <find>NewNode</find>
       <find>creator</find>
       <find>is not defined</find>
@@ -77,6 +75,8 @@
       <find>this cannot be</find>
       <find>return type</find>
       <find>is not detected</find>
+      <find>.kind =</find>
+      <find>.kind ==</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -339,12 +339,12 @@
       <workItem from="1525141819427" duration="58924000" />
       <workItem from="1525222209474" duration="54753000" />
       <workItem from="1525283270079" duration="154000" />
-      <workItem from="1525283467354" duration="3626000" />
+      <workItem from="1525283467354" duration="4033000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="203642000" />
+    <option name="totallyTimeSpent" value="204049000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -773,8 +773,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="656" column="22" selection-start-line="656" selection-start-column="22" selection-end-line="656" selection-end-column="22" />
+        <state relative-caret-position="208">
+          <caret line="836" column="42" selection-start-line="836" selection-start-column="34" selection-end-line="836" selection-end-column="42" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
