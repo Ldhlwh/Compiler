@@ -58,6 +58,26 @@ public class ScopeChecker
 			funcScope.singleRtnType = ((TypeScope) temp).singleType;
 			funcScope.rtnDimNum = ((TypeScope) temp).dimNum;
 			funcScope.fatherScope.childScope.add(funcScope);
+			if(!funcScope.singleRtnType.equals("int")
+					&& !funcScope.singleRtnType.equals("string")
+					&& !funcScope.singleRtnType.equals("bool")
+					&& !funcScope.singleRtnType.equals("void"))
+			{
+				boolean flag = false;
+				for(Scope scope : realRoot.childScope)
+				{
+					if((scope instanceof ClassScope) && ((ClassScope) scope).name.equals(funcScope.singleRtnType))
+					{
+						flag = true;
+						break;
+					}
+				}
+				if(!flag)
+				{
+					System.err.printf("Return type \"%s\" is undefined.", funcScope.singleRtnType);
+					System.exit(1);
+				}
+			}
 			FuncIns newIns = new FuncIns(funcScope.singleRtnType, funcScope.rtnDimNum, funcScope.name);
 			if (((FuncDeclNode) now).haveParamDeclListNode) {
 				temp = check(((FuncDeclNode) now).paramDeclListNode, funcScope);
@@ -105,9 +125,38 @@ public class ScopeChecker
 				System.err.printf("Variable cannot have the type \"void\".\n");
 				System.exit(1);
 			}
+			if(!variDeclScope.singleType.equals("int")
+					&& !variDeclScope.singleType.equals("bool")
+					&& !variDeclScope.singleType.equals("string"))
+			{
+				boolean flag = false;
+				for(Scope scope : realRoot.childScope)
+				{
+					if((scope instanceof ClassScope) && ((ClassScope) scope).name.equals(variDeclScope.singleType))
+					{
+						flag = true;
+						break;
+					}
+				}
+				if(!flag)
+				{
+					System.err.printf("Type \"%s\" has not been defined.\n", variDeclScope.singleType);
+					System.exit(1);
+				}
+			}
 			variDeclScope.dimNum = ((TypeScope) temp).dimNum;
 			for (ASTNode node : ((VariDeclNode) now).variInitNode) {
 				temp = check(node, variDeclScope);
+				if(((VariInitScope)temp).kind == 4)
+				{
+					System.err.println("Type name cannot give initial value.");
+					System.exit(1);
+				}
+				if(((VariInitScope)temp).kind == 3)
+				{
+					System.err.println("Instance cannot give initial value.");
+					System.exit(1);
+				}
 				variDeclScope.variInitScope.add(temp);
 				VariIns put = new VariIns(variDeclScope.singleType, variDeclScope.dimNum, ((VariInitScope) temp).name);
 				if (variDeclScope.fatherScope instanceof LocalScope) {
@@ -127,6 +176,8 @@ public class ScopeChecker
 			if (((VariInitNode) now).assign)
 			{
 				Scope temp = check(((VariInitNode) now).exprNode, variInitScope);
+				variInitScope.initValue = ((ExprScope)temp).id;
+				variInitScope.kind = ((ExprScope) temp).kind;
 			}
 			else
 				variInitScope.initValue = null;
@@ -700,8 +751,26 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((AssignNode) now).leftExprNode, father);
 			Scope rtemp = check(((AssignNode) now).rightExprNode, father);
-			System.err.println(((ExprScope)ltemp).kind);
-			System.err.println(((ExprScope)rtemp).kind);
+			System.err.println(((ExprScope)ltemp).type);
+			System.err.println(((ExprScope)rtemp).type);
+			if(((ExprScope) rtemp).type.equals("null"))
+			{
+				if(((ExprScope) ltemp).dimNum > 0)
+				{
+					expr.id = null;
+					expr.type = null;
+					expr.source = null;
+					expr.dimNum = ((ExprScope) ltemp).dimNum;
+					expr.maxDimNum = ((ExprScope) ltemp).maxDimNum;
+					expr.kind = 2;
+					return expr;
+				}
+				else
+				{
+					System.err.printf("NULL can only be assigned to an array.\n");
+					System.exit(1);
+				}
+			}
 			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
 			{
 				System.err.printf("Different types cannot do this assign operation.\n");
