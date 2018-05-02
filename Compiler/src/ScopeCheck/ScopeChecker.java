@@ -187,13 +187,38 @@ public class ScopeChecker
 		else if (now instanceof ReturnNode)
 		{
 			Scope temp = check(((ReturnNode) now).exprNode, father);
+			System.err.println(((ExprScope)temp).id);
 			String singleType = ((FuncScope)father.fatherScope).singleRtnType;
+			String className = "";
+			for(Scope scope = father; !(scope.fatherScope instanceof EmptyScope); scope = scope.fatherScope)
+			{
+				if(scope instanceof ClassScope)
+				{
+					className = ((ClassScope) scope).name;
+					break;
+				}
+				if(scope instanceof TopScope)
+				{
+					System.err.printf("Wrong returned type or 1dimension.\n");
+					System.exit(1);
+				}
+			}
+			if(((ExprScope)temp).id.equals("this"))
+			{
+				if(!(singleType.equals(className)))
+				{
+					System.err.printf("Wrong returned type or 2dimension.\n");
+					System.exit(1);
+				}
+				return new EmptyScope();
+			}
+
 			int dimNum = ((FuncScope) father.fatherScope).rtnDimNum;
 			String rtnType = ((ExprScope) temp).type;
 			int rtnDimNum = ((ExprScope) temp).dimNum;
 			if (!(singleType.equals(rtnType))
 					|| dimNum != rtnDimNum) {
-				System.err.printf("Wrong returned type or dimension.\n");
+				System.err.printf("Wrong returned type or 3dimension.\n");
 				System.exit(1);
 			}
 		}
@@ -325,12 +350,12 @@ public class ScopeChecker
 				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
 				System.exit(1);
 			}
-			/*
+
 			if(((ExprScope) ltemp).dimNum >= ((ExprScope) ltemp).maxDimNum)
 			{
 				System.err.printf("\"%s\" cannot be access with index.\n", ((ExprScope) ltemp).id);
 				System.exit(1);
-			}*/
+			}
 			expr.id = null;
 			expr.type = ((ExprScope) ltemp).type;
 			expr.source = ((ExprScope) ltemp).source;
@@ -346,6 +371,18 @@ public class ScopeChecker
 			Scope ltemp = check(((MemberNode) now).exprNode, father);
 			//Scope rtemp = check(((MemberNode) now).idNode, father);
 			ExprScope rtemp = new ExprScope();
+
+			if(((ExprScope)ltemp).id.equals("this"))
+			{
+				for(Scope scope = father; !(scope.fatherScope instanceof EmptyScope); scope = scope.fatherScope)
+				{
+					if(scope instanceof ClassScope)
+					{
+						return check(((MemberNode)now).idNode, father);
+					}
+				}
+				System.err.println("\"this\" cannot be used because it is not in a class.\n");
+			}
 			String find = ((MemberNode) now).idNode.id;
 			String type = ((ExprScope)ltemp).type;
 			if(realRoot.funcMap.containsKey(find))
@@ -358,10 +395,14 @@ public class ScopeChecker
 				rtemp.kind = 1;
 			}
 			else {
-				for (Scope scope : realRoot.childScope) {
-					if (scope instanceof ClassScope) {
-						if (((ClassScope) scope).name.equals(type)) {
-							if (((ClassScope) scope).variMap.containsKey(find)) {
+				for (Scope scope : realRoot.childScope)
+				{
+					if (scope instanceof ClassScope)
+					{
+						if (((ClassScope) scope).name.equals(type))
+						{
+							if (((ClassScope) scope).variMap.containsKey(find))
+							{
 								VariIns ins = ((ClassScope) scope).variMap.get(find);
 								rtemp.id = ins.name;
 								rtemp.type = ins.singleType;
@@ -369,13 +410,16 @@ public class ScopeChecker
 								rtemp.kind = 0;
 								break;
 							}
-							for (Scope subScope : scope.childScope) {
-								if (scope instanceof FuncScope) {
-									if (((FuncScope) subScope).name.equals(find)) {
-
-									}
-								}
+							if(((ClassScope) scope).funcMap.containsKey(find))
+							{
+								FuncIns ins = ((ClassScope) scope).funcMap.get(find);
+								rtemp.id = ins.name;
+								rtemp.type = ins.singleType;
+								rtemp.dimNum = rtemp.maxDimNum = ins.rtnDimNum;
+								rtemp.kind = 1;
+								break;
 							}
+
 							System.err.printf("Class : \"%s\" does not have a member named \"%s\".", type, find);
 							System.exit(1);
 						}
@@ -536,8 +580,6 @@ public class ScopeChecker
 			Scope rtemp = check(((BinaryNode) now).rightExprNode, father);
 			if(!(((ExprScope)ltemp).type.equals(((ExprScope)rtemp).type)))
 			{
-				System.err.println(((ExprScope)ltemp).type);
-				System.err.println(((ExprScope)rtemp).type);
 				System.err.printf("Different types cannot do this binary operation.\n");
 				System.exit(1);
 			}
@@ -554,7 +596,22 @@ public class ScopeChecker
 				System.exit(1);
 			}
 			expr.id = null;
-			expr.type = ((ExprScope) ltemp).type;
+			if(((BinaryNode) now).op.equals("+")
+					|| ((BinaryNode) now).op.equals("-")
+					|| ((BinaryNode) now).op.equals("*")
+					|| ((BinaryNode) now).op.equals("/")
+					|| ((BinaryNode) now).op.equals("%")
+					|| ((BinaryNode) now).op.equals("<<")
+					|| ((BinaryNode) now).op.equals(">>")
+					|| ((BinaryNode) now).op.equals("~")
+					|| ((BinaryNode) now).op.equals("|")
+					|| ((BinaryNode) now).op.equals("^")
+					|| ((BinaryNode) now).op.equals("&"))
+			{
+				expr.type = ((ExprScope) ltemp).type;
+			}
+			else
+				expr.type = "bool";
 			expr.source = null;
 			expr.dimNum = 0;
 			expr.maxDimNum = 0;
@@ -590,6 +647,11 @@ public class ScopeChecker
 			ExprScope expr = new ExprScope();
 			expr.fatherScope = father;
 			String id = ((IdNode) now).id;
+			if(id.equals("this"))
+			{
+				expr.id = "this";
+				return expr;
+			}
 			boolean have = false;
 			for(Scope nowScope = father; !(nowScope instanceof EmptyScope); nowScope = nowScope.fatherScope)
 			{

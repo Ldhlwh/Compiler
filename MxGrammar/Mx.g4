@@ -159,7 +159,7 @@ CONTINUE : 'continue';
 RETURN : 'return';
 NEW : 'new';
 CLASS : 'class';
-THIS : 'this';
+fragment THIS : 'this';
 
 // Symbols
 
@@ -261,7 +261,8 @@ BoolConst
 	
 // Identifier
 Identifier
-	: Letter (Digit | Letter | Underscore)*
+    : THIS
+	| Letter (Digit | Letter | Underscore)*
 	;
 
 
