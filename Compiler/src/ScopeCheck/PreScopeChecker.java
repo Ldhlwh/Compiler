@@ -66,8 +66,10 @@ public class PreScopeChecker
 			ConstructorScope constructorScope = new ConstructorScope();
 			constructorScope.fatherScope = father;
 			constructorScope.name = ((ConstructorNode) now).id;
-			if (constructorScope.fatherScope instanceof ClassScope) {
-				if(((ClassScope) constructorScope.fatherScope).funcMap.containsKey(constructorScope.name))
+			if (constructorScope.fatherScope instanceof ClassScope)
+			{
+				String className = ((ClassScope)constructorScope.fatherScope).name;
+				if(((TopScope) constructorScope.fatherScope.fatherScope).classMap.get(className).funcMap.containsKey(constructorScope.name))
 				{
 					System.err.printf("Constructor \"%s\" has already been defined.\n", constructorScope.name);
 					System.exit(1);
@@ -77,9 +79,9 @@ public class PreScopeChecker
 					System.err.printf("Constructor must have the same name as that of the class.\n", constructorScope.name);
 					System.exit(1);
 				}
-				FuncIns newIns = new FuncIns();
+				FuncIns newIns = new FuncIns(null, 0, constructorScope.name, insID++);
 				newIns.name = constructorScope.name;
-				((ClassScope) constructorScope.fatherScope).funcMap.put(constructorScope.name, newIns);
+				((TopScope) constructorScope.fatherScope.fatherScope).classMap.get(className).funcMap.containsKey(constructorScope.name);
 			}
 			return constructorScope;
 		}
@@ -125,12 +127,13 @@ public class PreScopeChecker
 			}
 			if(funcScope.fatherScope instanceof ClassScope)
 			{
-				if(((ClassScope)funcScope.fatherScope).funcMap.containsKey(funcScope.name))
+				String className = ((ClassScope)funcScope.fatherScope).name;
+				if(((TopScope)(funcScope.fatherScope.fatherScope)).classMap.get(className).funcMap.containsKey(funcScope.name))
 				{
 					System.err.printf("Function \"%s\" has already been defined.\n", funcScope.name);
 					System.exit(1);
 				}
-				((ClassScope) funcScope.fatherScope).funcMap.put(funcScope.name, newIns);
+				((TopScope)(funcScope.fatherScope.fatherScope)).classMap.get(className).funcMap.put(funcScope.name, newIns);
 			}
 			return funcScope;
 		}

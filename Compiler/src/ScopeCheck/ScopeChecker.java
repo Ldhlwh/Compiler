@@ -41,6 +41,8 @@ public class ScopeChecker
 			classScope.fatherScope = father;
 			classScope.name = ((ClassDeclNode) now).id;
 			classScope.fatherScope.childScope.add(classScope);
+			classScope.variMap = realRoot.classMap.get(classScope.name).variMap;
+			classScope.funcMap = realRoot.classMap.get(classScope.name).funcMap;
 			for (ASTNode node : ((ClassDeclNode) now).progSecNode)
 			{
 				Scope temp = check(node, classScope);
@@ -613,6 +615,7 @@ public class ScopeChecker
 							expr.source = ((ClassScope) scope).name;
 							return expr;
 						}
+						System.err.printf("size of funcMap = %d\n", ((ClassScope) scope).funcMap.size());
 						System.err.printf("Class : \"%s\" does not have a member named \"%s\".", type, find);
 						System.exit(1);
 					}
