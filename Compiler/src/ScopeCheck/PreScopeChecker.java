@@ -79,7 +79,7 @@ public class PreScopeChecker
 					System.err.printf("Constructor must have the same name as that of the class.\n", constructorScope.name);
 					System.exit(1);
 				}
-				FuncIns newIns = new FuncIns(null, 0, constructorScope.name, insID++);
+				FuncIns newIns = new FuncIns(((ClassScope) constructorScope.fatherScope).name, 0, constructorScope.name, insID++);
 				newIns.name = constructorScope.name;
 				((TopScope) constructorScope.fatherScope.fatherScope).classMap.get(className).funcMap.put(constructorScope.name, newIns);
 			}

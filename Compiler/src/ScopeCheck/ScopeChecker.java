@@ -438,7 +438,7 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope temp = check(((FuncCallNode) now).exprNode, father);
 			System.err.printf("Current Function : %s\n", ((ExprScope)temp).id);
-			if(((ExprScope)temp).kind != 1)
+			if(((ExprScope)temp).kind != 1 && ((ExprScope) temp).kind != 5)
 			{
 				System.err.printf("\"%s\" is not a function.\n", ((ExprScope) temp).id);
 				System.exit(1);
@@ -808,13 +808,13 @@ public class ScopeChecker
 			ExprScope expr = new ExprScope();
 			expr.fatherScope = father;
 			Scope temp = check(((NewNode) now).creatorNode, father);
-			expr.id = null;
+			expr.id = ((ExprScope)temp).type;
 			expr.type = ((ExprScope)temp).type;
 			expr.dimNum = ((ExprScope) temp).dimNum;
 			expr.maxDimNum = ((ExprScope) temp).maxDimNum;
 			expr.emptyDimNum = ((ExprScope) temp).emptyDimNum;
 			expr.source = null;
-			expr.kind = 0;
+			expr.kind = 5;
 			return expr;
 		}
 		else if(now instanceof CreatorArrayNode)
