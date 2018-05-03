@@ -522,7 +522,7 @@ public class ScopeChecker
 				System.err.println("Access failed because the dimension of the array is undeclared.");
 				System.exit(1);
 			}
-			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 2 && ((ExprScope) ltemp).kind != 3)
+			if(((ExprScope)ltemp).kind != 0 && ((ExprScope) ltemp).kind != 2 && ((ExprScope) ltemp).kind != 3 && ((ExprScope) ltemp).kind != 5)
 			{
 				System.err.println(((ExprScope) ltemp).kind);
 				System.err.printf("\"%s\" cannot be access with 1index.\n", ((ExprScope) ltemp).id);

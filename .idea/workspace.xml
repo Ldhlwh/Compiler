@@ -34,7 +34,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
+            <state relative-caret-position="378">
               <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -46,8 +46,8 @@
       <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-670">
-              <caret line="115" column="46" selection-start-line="115" selection-start-column="34" selection-end-line="115" selection-end-column="46" />
+            <state relative-caret-position="2">
+              <caret line="524" column="142" selection-start-line="524" selection-start-column="142" selection-end-line="524" selection-end-column="142" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -87,7 +87,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>assign</find>
       <find>arrays cannot do</find>
       <find>IdNode</find>
       <find>Arrays</find>
@@ -117,6 +116,7 @@
       <find>constructorNode</find>
       <find>VariDeclNode</find>
       <find>varideclNode</find>
+      <find>index</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -390,12 +390,12 @@
       <workItem from="1525222209474" duration="54753000" />
       <workItem from="1525283270079" duration="154000" />
       <workItem from="1525283467354" duration="5517000" />
-      <workItem from="1525314840523" duration="4501000" />
+      <workItem from="1525314840523" duration="4930000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="210034000" />
+    <option name="totallyTimeSpent" value="210463000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -809,16 +809,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-670">
-          <caret line="115" column="46" selection-start-line="115" selection-start-column="34" selection-end-line="115" selection-end-column="46" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/PreScopeChecker.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1766">
@@ -829,9 +819,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2">
+          <caret line="524" column="142" selection-start-line="524" selection-start-column="142" selection-end-line="524" selection-end-column="142" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
+        <state relative-caret-position="378">
           <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="true" />
