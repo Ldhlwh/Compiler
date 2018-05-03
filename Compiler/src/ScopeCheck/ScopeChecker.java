@@ -478,6 +478,7 @@ public class ScopeChecker
 				for(int i = 0; i < ((FuncCallNode) now).paramListNode.exprNode.size(); i++)
 				{
 					temp = check(((FuncCallNode) now).paramListNode.exprNode.get(i), father);
+					System.out.println(((ExprScope)temp).id);
 					if(!(func.param.get(i).singleType.equals(((ExprScope)temp).type))
 						|| func.param.get(i).dimNum != ((ExprScope) temp).dimNum)
 					{
@@ -922,6 +923,19 @@ public class ScopeChecker
 						|| ((BinaryNode) now).op.equals("!"))
 				{
 					if(!((ExprScope) ltemp).type.equals("int") && !(((ExprScope) ltemp).type.equals("bool")))
+					{
+						System.err.printf("Operation \"%s\" cannot be done between two \"%s\"\n", ((BinaryNode)now).op, ((ExprScope) ltemp).type);
+						System.exit(1);
+					}
+				}
+				if(((BinaryNode) now).op.equals("==")
+						|| ((BinaryNode) now).op.equals("!=")
+						|| ((BinaryNode) now).op.equals("<")
+						|| ((BinaryNode) now).op.equals(">")
+						|| ((BinaryNode) now).op.equals("<=")
+						|| ((BinaryNode) now).op.equals(">="))
+				{
+					if(!((ExprScope) ltemp).type.equals("int") && !((ExprScope) ltemp).type.equals("string"))
 					{
 						System.err.printf("Operation \"%s\" cannot be done between two \"%s\"\n", ((BinaryNode)now).op, ((ExprScope) ltemp).type);
 						System.exit(1);
