@@ -569,10 +569,49 @@ public class ScopeChecker
 				{
 					if(scope instanceof ClassScope)
 					{
-						return check(((MemberNode)now).idNode, father);
+						//return check(((MemberNode)now).idNode, father);
+						String id = ((MemberNode) now).idNode.id;
+						if(id.equals("this"))
+						{
+							System.err.println("this.this is not supported.");
+							System.exit(1);
+						}
+						if(((ClassScope) scope).variMap.containsKey(id)) {
+							VariIns ins = ((ClassScope) scope).variMap.get(id);
+							rtemp.id = id;
+							rtemp.type = ins.singleType;
+							rtemp.source = ((ClassScope) scope).name;
+							rtemp.dimNum = ins.dimNum;
+							rtemp.maxDimNum = ins.dimNum;
+							if (ins.singleType.equals("bool")
+									|| ins.singleType.equals("int")
+									|| ins.singleType.equals("string")
+									|| ins.singleType.equals("char"))
+								rtemp.kind = 0;
+							else if (ins.singleType.equals("void")) {
+								System.err.printf("Variable cannot have the type \"void\".\n");
+								System.exit(1);
+							} else
+								rtemp.kind = 3;
+							return rtemp;
+						}
+						if(((ClassScope) scope).funcMap.containsKey(id))
+						{
+							FuncIns ins = ((ClassScope)scope).funcMap.get(id);
+							rtemp.id = id;
+							rtemp.type = ins.singleType;
+							rtemp.source = ((ClassScope)scope).name;
+							rtemp.dimNum = rtemp.maxDimNum = ins.rtnDimNum;
+							rtemp.kind = 1;
+							return rtemp;
+						}
+						System.err.printf("\"%s\" is not found in class \"%s\"\n", id, ((ClassScope) scope).name);
+						System.exit(1);
+
 					}
 				}
 				System.err.println("\"this\" cannot be used because it is not in a class.\n");
+				System.exit(1);
 			}
 			String find = ((MemberNode) now).idNode.id;
 			String type = ((ExprScope)ltemp).type;
