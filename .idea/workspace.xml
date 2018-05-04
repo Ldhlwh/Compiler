@@ -65,25 +65,25 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>type = null</find>
-      <find>Wrong returned type or</find>
+      <find />
+      <find />
       <find>variInitNode</find>
       <find>returnNode</find>
-      <find>only internal</find>
+      <find />
       <find>err</find>
       <find>scopeName</find>
       <find>Constructor</find>
       <find>FuncDecl</find>
       <find>constructor</find>
       <find>unaccesib</find>
-      <find>does not have</find>
-      <find>this cannot be</find>
-      <find>return type</find>
-      <find>is not detected</find>
-      <find>.kind =</find>
-      <find>.kind ==</find>
+      <find />
+      <find />
+      <find />
+      <find />
+      <find />
+      <find />
       <find>1index</find>
-      <find>parameter type for fun</find>
+      <find />
       <find>member</find>
       <find>this</find>
       <find>constructorNode</find>
@@ -94,7 +94,7 @@
       <find>funccallnode</find>
       <find>funccall</find>
       <find>Binary</find>
-      <find>cannot be done between</find>
+      <find />
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -173,7 +173,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="97" />
     <option name="y" value="-21" />
     <option name="width" value="1940" />
