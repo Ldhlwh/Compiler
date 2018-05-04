@@ -16,8 +16,8 @@ import AbstractSyntaxTree.ASTPrinter;
 public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
-			//InputStream is = new FileInputStream("program.txt"); // or System.in;
-			InputStream is = System.in;
+			InputStream is = new FileInputStream("program.txt"); // or System.in;
+			//InputStream is = System.in;
 			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\t.txt"); // or System.in;
 
 			ANTLRInputStream input = new ANTLRInputStream(is);
