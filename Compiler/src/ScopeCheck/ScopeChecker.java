@@ -928,9 +928,7 @@ public class ScopeChecker
 						System.exit(1);
 					}
 				}
-				if(((BinaryNode) now).op.equals("==")
-						|| ((BinaryNode) now).op.equals("!=")
-						|| ((BinaryNode) now).op.equals("<")
+				if(((BinaryNode) now).op.equals("<")
 						|| ((BinaryNode) now).op.equals(">")
 						|| ((BinaryNode) now).op.equals("<=")
 						|| ((BinaryNode) now).op.equals(">="))
