@@ -7,6 +7,8 @@ import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
 
+import java.util.Map;
+
 
 public class ScopeChecker
 {
@@ -136,6 +138,11 @@ public class ScopeChecker
 			variDeclScope.dimNum = ((TypeScope) temp).dimNum;
 			for (ASTNode node : ((VariDeclNode) now).variInitNode) {
 				temp = check(node, variDeclScope);
+				if(!variDeclScope.singleType.equals(((VariInitScope)temp).initValue))
+				{
+					System.err.println("Types do not match.");
+					System.exit(1);
+				}
 				if(((VariInitScope)temp).kind == 4 && (((VariInitScope) temp).initValue.equals("null")))
 				{
 					if(variDeclScope.singleType.equals("int")
@@ -852,6 +859,25 @@ public class ScopeChecker
 				System.err.println("VOID cannot be construct by NEW");
 				System.exit(1);
 			}
+			if(!expr.type.equals("int")
+					|| !expr.type.equals("bool")
+					|| !expr.type.equals("string"))
+			{
+				boolean flag = false;
+				for(Map.Entry<String, ClassIns> entry : realRoot.classMap.entrySet())
+				{
+					if(entry.getValue().name.equals(expr.type))
+					{
+						flag = true;
+						break;
+					}
+				}
+				if(!flag)
+				{
+					System.err.printf("\"%s\" is not a type or class.\n", expr.type);
+					System.exit(1);
+				}
+			}
 			expr.id = null;
 			expr.source = null;
 			expr.dimNum = expr.maxDimNum = 0;
@@ -953,6 +979,11 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((AssignNode) now).leftExprNode, father);
 			Scope rtemp = check(((AssignNode) now).rightExprNode, father);
+			if(((ExprScope)ltemp).id.equals("this"))
+			{
+				System.err.println("THIS cannot be assigned.");
+				System.exit(1);
+			}
 			if(((ExprScope) rtemp).type.equals("null"))
 			{
 				if(((ExprScope) ltemp).dimNum > 0)
