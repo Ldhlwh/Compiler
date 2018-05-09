@@ -24,10 +24,11 @@ public class Compiler {
 		MxLexer lexer = new MxLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		
-		
 		MxParser parser = new MxParser(tokens);
+		lexer.removeErrorListeners();
+		lexer.addErrorListener(new MyParseErrorListener());
 		parser.removeErrorListeners();
-		parser.addErrorListener(new ParseErrorListener());
+		parser.addErrorListener(new MyParseErrorListener());
 		ParseTree tree = parser.prog();
 		
 		

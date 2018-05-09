@@ -138,7 +138,9 @@ public class ScopeChecker
 			variDeclScope.dimNum = ((TypeScope) temp).dimNum;
 			for (ASTNode node : ((VariDeclNode) now).variInitNode) {
 				temp = check(node, variDeclScope);
-				if(((VariInitNode)node).assign && !variDeclScope.singleType.equals(((VariInitScope)temp).initValue))
+				if(((VariInitNode)node).assign
+						&& !variDeclScope.singleType.equals(((VariInitScope)temp).initValue)
+						&& !((VariInitScope)temp).initValue.equals("null"))
 				{
 					System.err.println("Types do not match.");
 					System.exit(1);
@@ -979,7 +981,8 @@ public class ScopeChecker
 			expr.fatherScope = father;
 			Scope ltemp = check(((AssignNode) now).leftExprNode, father);
 			Scope rtemp = check(((AssignNode) now).rightExprNode, father);
-			if(((ExprScope)ltemp).id.equals("this"))
+			System.err.println("Here " + ((ExprScope)ltemp).type);
+			if(((ExprScope)ltemp).id != null && ((ExprScope)ltemp).id.equals("this"))
 			{
 				System.err.println("THIS cannot be assigned.");
 				System.exit(1);
