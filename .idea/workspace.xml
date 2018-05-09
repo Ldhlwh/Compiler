@@ -15,7 +15,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
+            <state relative-caret-position="168">
               <caret line="18" column="8" selection-start-line="18" selection-start-column="8" selection-end-line="18" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -36,8 +36,8 @@
       <file leaf-file-name="ScopeChecker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="231">
-              <caret line="143" column="26" selection-start-line="143" selection-start-column="26" selection-end-line="143" selection-end-column="26" />
+            <state relative-caret-position="126">
+              <caret line="140" column="50" selection-start-line="140" selection-start-column="50" selection-end-line="140" selection-end-column="50" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -70,18 +70,19 @@
       <find>this</find>
       <find>constructorNode</find>
       <find>VariDeclNode</find>
-      <find>varideclNode</find>
       <find>index</find>
       <find>funccallnode</find>
       <find>funccall</find>
       <find>Binary</find>
       <find>throw</find>
-      <find />
+      <find>token recognition error</find>
       <find>toke</find>
       <find>idNode</find>
       <find>assignNode</find>
       <find>creatorsingle</find>
       <find>variinitnode</find>
+      <find>constnode</find>
+      <find>varideclNode</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -160,7 +161,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-12" />
     <option name="y" value="-12" />
     <option name="width" value="1390" />
@@ -348,12 +349,12 @@
       <workItem from="1525446347578" duration="7000" />
       <workItem from="1525446572320" duration="318000" />
       <workItem from="1525522325511" duration="627000" />
-      <workItem from="1525845492944" duration="2996000" />
+      <workItem from="1525845492944" duration="3657000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="219264000" />
+    <option name="totallyTimeSpent" value="219925000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -383,7 +384,7 @@
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.16931216" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" weight="0.35164836" />
       <window_info id="设计器" order="3" />
       <window_info anchor="right" id="Database" order="8" />
       <window_info anchor="bottom" x="87" y="202" width="1195" height="468" id="ANTLR Preview" order="14" type="WINDOWED" weight="0.5156599" />
@@ -775,8 +776,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="143" column="26" selection-start-line="143" selection-start-column="26" selection-end-line="143" selection-end-column="26" />
+        <state relative-caret-position="126">
+          <caret line="140" column="50" selection-start-line="140" selection-start-column="50" selection-end-line="140" selection-end-column="50" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -785,7 +786,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
+        <state relative-caret-position="168">
           <caret line="18" column="8" selection-start-line="18" selection-start-column="8" selection-end-line="18" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="true" />

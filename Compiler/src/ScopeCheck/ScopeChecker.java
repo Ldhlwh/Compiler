@@ -138,7 +138,7 @@ public class ScopeChecker
 			variDeclScope.dimNum = ((TypeScope) temp).dimNum;
 			for (ASTNode node : ((VariDeclNode) now).variInitNode) {
 				temp = check(node, variDeclScope);
-				if(!variDeclScope.singleType.equals(((VariInitScope)temp).initValue))
+				if(((VariInitNode)node).assign && !variDeclScope.singleType.equals(((VariInitScope)temp).initValue))
 				{
 					System.err.println("Types do not match.");
 					System.exit(1);
