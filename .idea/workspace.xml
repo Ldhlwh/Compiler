@@ -14,11 +14,11 @@
     <splitter split-orientation="horizontal" split-proportion="0.6649937">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
+          <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="223">
-                  <caret line="54" column="36" lean-forward="true" selection-start-line="54" selection-start-column="36" selection-end-line="54" selection-end-column="36" />
+                <state relative-caret-position="882">
+                  <caret line="62" column="8" selection-start-line="62" selection-start-column="8" selection-end-line="62" selection-end-column="8" />
                   <folding>
                     <element signature="imports" expanded="true" />
                   </folding>
@@ -26,14 +26,24 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
+          <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="373">
-                  <caret line="168" column="23" selection-start-line="168" selection-start-column="23" selection-end-line="168" selection-end-column="23" />
+                <state relative-caret-position="237">
+                  <caret line="824" column="13" lean-forward="true" selection-start-line="824" selection-start-column="13" selection-end-line="824" selection-end-column="13" />
                   <folding>
                     <element signature="imports" expanded="true" />
+                    <element signature="method#add_alloc#0;class#IRGenerator#0" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="LLIRInterpreter.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/LLIRTestingField/src/LLIRInterpreter.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-224">
+                  <caret line="468" column="40" lean-forward="true" selection-start-line="468" selection-start-column="40" selection-end-line="468" selection-end-column="40" />
                 </state>
               </provider>
             </entry>
@@ -53,8 +63,8 @@
           <file leaf-file-name="Mx.g4" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2331">
-                  <caret line="111" column="61" selection-start-line="111" selection-start-column="61" selection-end-line="111" selection-end-column="61" />
+                <state relative-caret-position="-1953">
+                  <caret line="2" column="2" lean-forward="true" selection-start-line="2" selection-start-column="2" selection-end-line="2" selection-end-column="2" />
                 </state>
               </provider>
             </entry>
@@ -102,7 +112,7 @@
           <file leaf-file-name="NodeList" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="352">
+                <state relative-caret-position="966">
                   <caret line="46" selection-start-line="46" selection-end-line="46" />
                 </state>
               </provider>
@@ -154,12 +164,7 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find />
-      <find>toke</find>
-      <find>idNode</find>
-      <find>assignNode</find>
       <find>creatorsingle</find>
-      <find>variinitnode</find>
       <find>constnode</find>
       <find>varideclNode</find>
       <find />
@@ -184,12 +189,21 @@
       <find />
       <find />
       <find>index</find>
+      <find />
+      <find>varidecl</find>
+      <find>variinitnode</find>
+      <find />
+      <find>newnode</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
       <replace>err</replace>
       <replace />
+      <replace />
     </replaceStrings>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Compiler/src/Compiler.java" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -265,14 +279,17 @@
   </component>
   <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-6" />
-    <option name="width" value="918" />
-    <option name="height" value="1006" />
+    <option name="width" value="972" />
+    <option name="height" value="1046" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -293,15 +310,21 @@
             </path>
             <path>
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LLIRTestingField" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LLIRTestingField" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
               <item name="MxGrammar" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -426,8 +449,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.LLIRInterpreter" />
         <item itemvalue="Application.Compiler" />
+        <item itemvalue="Application.LLIRInterpreter" />
         <item itemvalue="Application.test" />
         <item itemvalue="LLVM Application.hello.ll" />
         <item itemvalue="Application.LP" />
@@ -483,12 +506,15 @@
       <workItem from="1527470813319" duration="1544000" />
       <workItem from="1527480375814" duration="8279000" />
       <workItem from="1527493862610" duration="29472000" />
-      <workItem from="1527557225489" duration="9164000" />
+      <workItem from="1527557225489" duration="9571000" />
+      <workItem from="1527572621951" duration="14000" />
+      <workItem from="1527572683016" duration="19000" />
+      <workItem from="1527590475761" duration="10849000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="324941000" />
+    <option name="totallyTimeSpent" value="336230000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -501,7 +527,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32997763" />
       <window_info anchor="bottom" id="Tool Output" order="14" weight="0.18008949" />
@@ -510,15 +535,15 @@
       <window_info anchor="right" id="Palette&#9;" order="4" />
       <window_info id="Image Layers" order="1" />
       <window_info anchor="right" id="Capture Analysis" order="5" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50037795" side_tool="true" weight="0.3292011" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5010661" side_tool="true" weight="0.18568233" />
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49962208" visible="true" weight="0.18568233" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.23713647" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.15191898" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.15671642" />
       <window_info id="设计器" order="3" />
       <window_info anchor="right" id="Database" order="8" />
       <window_info anchor="bottom" x="87" y="202" width="1195" height="468" id="ANTLR Preview" order="14" type="WINDOWED" weight="0.5156599" />
@@ -530,16 +555,17 @@
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info id="Designer" order="6" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="10" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32997763" />
     </layout>
     <layout-to-restore>
       <window_info anchor="bottom" id="Messages" order="14" weight="0.32550335" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49962208" visible="true" weight="0.2572707" />
       <window_info id="Image Layers" order="1" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32997763" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49962208" visible="true" weight="0.2572707" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
       <window_info id="UI Designer" order="4" />
@@ -566,6 +592,7 @@
       <window_info anchor="right" id="Structure" order="1" sideWeight="0.46410686" side_tool="true" weight="0.15565032" />
       <window_info anchor="bottom" id="调试" order="11" weight="0.50111854" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32997763" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
     </layout-to-restore>
   </component>
@@ -577,7 +604,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="39" />
+      <option name="time" value="40" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -818,13 +845,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/LLIRTestingField/src/LLIRInterpreter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4518">
-          <caret line="460" column="9" selection-start-line="460" selection-start-column="9" selection-end-line="460" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="840">
@@ -872,16 +892,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2331">
-          <caret line="111" column="61" selection-start-line="111" selection-start-column="61" selection-end-line="111" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
+        <state relative-caret-position="966">
           <caret line="46" selection-start-line="46" selection-end-line="46" />
         </state>
       </provider>
@@ -896,22 +909,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="373">
-          <caret line="168" column="23" selection-start-line="168" selection-start-column="23" selection-end-line="168" selection-end-column="23" />
+        <state relative-caret-position="882">
+          <caret line="62" column="8" selection-start-line="62" selection-start-column="8" selection-end-line="62" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
+    <entry file="file://$PROJECT_DIR$/MxGrammar/Mx.g4">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="54" column="36" lean-forward="true" selection-start-line="54" selection-start-column="36" selection-end-line="54" selection-end-column="36" />
+        <state relative-caret-position="-1953">
+          <caret line="2" column="2" lean-forward="true" selection-start-line="2" selection-start-column="2" selection-end-line="2" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LLIRTestingField/src/LLIRInterpreter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-224">
+          <caret line="468" column="40" lean-forward="true" selection-start-line="468" selection-start-column="40" selection-end-line="468" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="237">
+          <caret line="824" column="13" lean-forward="true" selection-start-line="824" selection-start-column="13" selection-end-line="824" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#add_alloc#0;class#IRGenerator#0" />
           </folding>
         </state>
       </provider>

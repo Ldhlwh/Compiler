@@ -244,10 +244,10 @@ public class IRGenerator
 				}
 				BasicBlock entry = new BasicBlock(((FuncDeclNode)node).id + "_entry");
 				fb.entry = entry;
-				pass(node, ((FuncDeclNode)node).scope, entry, false, true, null);
+				pass(node, ((FuncDeclNode)node).scope, entry, false, true, null, null, null);
 			}
 			else
-				pass(node, topScope, __init_entry, false, true, null);
+				pass(node, topScope, __init_entry, false, true, null, null, null);
 		}
 		
 		FuncCallIns ins = new FuncCallIns();
@@ -262,7 +262,7 @@ public class IRGenerator
 		__init_entry.insList.add(jins);
 	}
 	
-	public Pair<String, BasicBlock> pass(ASTNode now, Scope curScope, BasicBlock curBlock, boolean wantAddr, boolean checkThis, BasicBlock recHead)
+	public Pair<String, BasicBlock> pass(ASTNode now, Scope curScope, BasicBlock curBlock, boolean wantAddr, boolean checkThis, BasicBlock recHead, BasicBlock trueBlock, BasicBlock falseBlock)
 	{
 		if(now instanceof VariDeclNode)
 		{
@@ -301,7 +301,9 @@ public class IRGenerator
 							MovIns ins = new MovIns();
 							ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
 							ins.insName = "move";
-							ins.src = pass(((VariInitNode)node).exprNode, curScope, curBlock, false, true, recHead).getKey();
+							Pair<String, BasicBlock> temp = pass(((VariInitNode)node).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+							ins.src = temp.getKey();
+							curBlock = temp.getValue();
 							curBlock.insList.add(ins);
 						}
 					}
@@ -316,11 +318,14 @@ public class IRGenerator
 						MovIns ins = new MovIns();
 						ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
 						ins.insName = "move";
-						ins.src = pass(((VariInitNode)node).exprNode, curScope, curBlock, false, true, recHead).getKey();
+						Pair<String, BasicBlock> temp = pass(((VariInitNode)node).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+						ins.src = temp.getKey();
+						curBlock = temp.getValue();
 						curBlock.insList.add(ins);
 					}
 				}
 			}
+			return new Pair<>(null, curBlock);
 		}
 		
 		else if(now instanceof ClassDeclNode)
@@ -338,7 +343,7 @@ public class IRGenerator
 			{
 				if(node instanceof ConstructorNode)
 				{
-					temp = pass(node, ((ConstructorNode)node).scope, A_A_entry, false, true, recHead).getValue();
+					temp = pass(node, ((ConstructorNode)node).scope, A_A_entry, false, true, recHead, trueBlock, falseBlock).getValue();
 				}
 				if(node instanceof FuncDeclNode)
 				{
@@ -351,7 +356,7 @@ public class IRGenerator
 					}
 					BasicBlock A_entry = new BasicBlock(((ClassDeclNode)now).id + "." + ((FuncDeclNode)node).id + "_entry");
 					A_.entry = A_entry;
-					pass(node, ((FuncDeclNode)node).scope, A_entry, false, true, recHead);
+					pass(node, ((FuncDeclNode)node).scope, A_entry, false, true, recHead, trueBlock, falseBlock);
 				}
 			}
 			
@@ -363,7 +368,7 @@ public class IRGenerator
 		
 		else if(now instanceof FuncDeclNode)
 		{
-			BasicBlock temp = pass(((FuncDeclNode)now).blockStmtNode, ((FuncDeclNode)now).blockStmtNode.scope, curBlock, false, true, recHead).getValue();
+			BasicBlock temp = pass(((FuncDeclNode)now).blockStmtNode, ((FuncDeclNode)now).blockStmtNode.scope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 			if(((FuncDeclNode)now).typeNode.singleTypeNode.type.equals("void"))
 			{
 				JumpIns ins = new JumpIns();
@@ -376,7 +381,7 @@ public class IRGenerator
 		
 		else if(now instanceof ConstructorNode)
 		{
-			return pass(((ConstructorNode)now).blockStmtNode, ((ConstructorNode)now).blockStmtNode.scope, curBlock, false, true, recHead);
+			return pass(((ConstructorNode)now).blockStmtNode, ((ConstructorNode)now).blockStmtNode.scope, curBlock, false, true, recHead, trueBlock, falseBlock);
 		}
 		
 		else if(now instanceof BlockStmtNode)
@@ -388,7 +393,7 @@ public class IRGenerator
 				{
 					BasicBlock ifFalse = new BasicBlock();
 					curBlock.ifFalse = ifFalse;
-					curBlock = pass(node, curScope, curBlock, false, true, recHead).getValue();
+					curBlock = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 				}
 				else if(node instanceof ForInitNode)
 				{
@@ -398,16 +403,18 @@ public class IRGenerator
 				{
 					BasicBlock ifFalse = new BasicBlock();
 					curBlock.ifFalse = ifFalse;
-					curBlock = pass(node, curScope, curBlock, false, true, recHead).getValue();
+					curBlock = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 				}
 				else if(node instanceof WhileNode)
 				{
 					BasicBlock ifFalse = new BasicBlock();
 					curBlock.ifFalse = ifFalse;
-					curBlock = pass(node, curScope, curBlock, false, true, recHead).getValue();
+					curBlock = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 				}
 				else
-					pass(node, curScope, curBlock, false, true, recHead);
+				{
+					curBlock = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
+				}
 			}
 			return new Pair<>(null, curBlock);
 		}
@@ -415,34 +422,40 @@ public class IRGenerator
 		else if(now instanceof ExprStmtNode)
 		{
 			if(!((ExprStmtNode)now).empty)
-				pass(((ExprStmtNode)now).exprNode, curScope, curBlock, false, true, recHead);
+			{
+				Pair<String, BasicBlock> temp = pass(((ExprStmtNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+				curBlock = temp.getValue();
+			}
 			return new Pair<>(null, curBlock);
 		}
 		
 		else if(now instanceof SlctStmtNode)
 		{
 			BasicBlock finalBlock = curBlock.ifFalse;
+			curBlock.ifFalse = null;
 			
 			if(((SlctStmtNode)now).elifExprNode.size() == 0)
 			{
 				BasicBlock bb = new BasicBlock();
 				BasicBlock nowBlock;
-				curBlock.ifTrue = bb;
-				curBlock.ifFalse = finalBlock;
 				
 				JumpIns ins = new JumpIns();
 				ins.insName = "br";
-				ins.cond = pass(((SlctStmtNode)now).ifExprNode, curScope, curBlock, false, true, recHead).getKey();
+				Pair<String, BasicBlock> temp = pass(((SlctStmtNode)now).ifExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+				ins.cond = temp.getKey();
+				curBlock = temp.getValue();
 				ins.ifTrue = bb.blockID;
 				ins.ifFalse = curBlock.ifFalse.blockID;
+				curBlock.ifTrue = bb;
+				curBlock.ifFalse = finalBlock;
 				curBlock.insList.add(ins);
-				nowBlock = pass(((SlctStmtNode)now).ifStmtNode, curScope, bb, false, true, recHead).getValue();
+				
+				nowBlock = pass(((SlctStmtNode)now).ifStmtNode, curScope, bb, false, true, recHead, trueBlock, falseBlock).getValue();
 				
 				JumpIns ins2 = new JumpIns();
 				ins2.insName = "jump";
 				ins2.target = finalBlock.blockID;
 				nowBlock.insList.add(ins2);
-				
 				nowBlock.to = finalBlock;
 				
 				if(((SlctStmtNode)now).haveElse)
@@ -452,13 +465,12 @@ public class IRGenerator
 					
 					ins.ifFalse = eb.blockID;
 					
-					nowBlock = pass(((SlctStmtNode)now).elseStmtNode, curScope, eb, false, true, recHead).getValue();
+					nowBlock = pass(((SlctStmtNode)now).elseStmtNode, curScope, eb, false, true, recHead, trueBlock, falseBlock).getValue();
 					
 					JumpIns ins3 = new JumpIns();
 					ins3.insName = "jump";
 					ins3.target = finalBlock.blockID;
 					nowBlock.insList.add(ins3);
-					
 					nowBlock.to = finalBlock;
 				}
 				return new Pair<>(null, finalBlock);
@@ -468,16 +480,19 @@ public class IRGenerator
 				BasicBlock nowBlock;
 				BasicBlock abb = new BasicBlock();
 				BasicBlock afbb = new BasicBlock();
-				curBlock.ifTrue = abb;
-				curBlock.ifFalse = afbb;
 				
 				JumpIns ains = new JumpIns();
 				ains.insName = "br";
-				ains.cond = pass(((SlctStmtNode)now).ifExprNode, curScope, curBlock, false, true, recHead).getKey();
+				Pair<String, BasicBlock> temp = pass(((SlctStmtNode)now).ifExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+				ains.cond = temp.getKey();
+				curBlock = temp.getValue();
 				ains.ifTrue = abb.blockID;
 				ains.ifFalse = afbb.blockID;
 				curBlock.insList.add(ains);
-				nowBlock = pass(((SlctStmtNode)now).ifStmtNode, curScope, abb, false, true, recHead).getValue();
+				curBlock.ifTrue = abb;
+				curBlock.ifFalse = afbb;
+				
+				nowBlock = pass(((SlctStmtNode)now).ifStmtNode, curScope, abb, false, true, recHead, trueBlock, falseBlock).getValue();
 				
 				JumpIns ains2 = new JumpIns();
 				ains2.insName = "jump";
@@ -491,17 +506,20 @@ public class IRGenerator
 				for(int i = 0; i < maxSize; i++)
 				{
 					BasicBlock bb = new BasicBlock();
-					curBlock.ifTrue = bb;
 					BasicBlock fbb = new BasicBlock();
-					curBlock.ifFalse = fbb;
 					
 					JumpIns ins = new JumpIns();
 					ins.insName = "br";
-					ins.cond = pass(((SlctStmtNode)now).elifExprNode.get(i), curScope, curBlock, false, true, recHead).getKey();
+					Pair<String, BasicBlock> temp1 = pass(((SlctStmtNode)now).elifExprNode.get(i), curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+					ins.cond = temp1.getKey();
+					curBlock = temp1.getValue();
 					ins.ifTrue = bb.blockID;
 					ins.ifFalse = fbb.blockID;
+					curBlock.ifTrue = bb;
+					curBlock.ifFalse = fbb;
 					curBlock.insList.add(ins);
-					nowBlock = pass(((SlctStmtNode)now).elifStmtNode.get(i), curScope, bb, false, true, recHead).getValue();
+					
+					nowBlock = pass(((SlctStmtNode)now).elifStmtNode.get(i), curScope, bb, false, true, recHead, trueBlock, falseBlock).getValue();
 				
 					if(i == maxSize - 1
 							&& ((SlctStmtNode)now).haveElse)
@@ -512,7 +530,7 @@ public class IRGenerator
 						nowBlock.insList.add(ins2);
 						nowBlock.to = finalBlock;
 						
-						nowBlock = pass(((SlctStmtNode)now).elseStmtNode, curScope, fbb, false, true, recHead).getValue();
+						nowBlock = pass(((SlctStmtNode)now).elseStmtNode, curScope, fbb, false, true, recHead, trueBlock, falseBlock).getValue();
 						
 						JumpIns ins3 = new JumpIns();
 						ins3.insName = "jump";
@@ -555,23 +573,26 @@ public class IRGenerator
 		{
 			curScope = ((ForNode)now).scope;
 			BasicBlock finalBlock = curBlock.ifFalse;
-			
+			curBlock.ifFalse = null;
 			
 			if(((ForNode)now).haveInit)
 			{
-				pass(((ForNode)now).initExprNode, curScope, curBlock, false, true, recHead);
+				pass(((ForNode)now).initExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 			}
 			
 			BasicBlock bb = new BasicBlock();
-			curBlock.ifTrue = bb;
 			
 			if(((ForNode)now).haveCond)
 			{
 				JumpIns ins = new JumpIns();
 				ins.insName = "br";
-				ins.cond = pass(((ForNode)now).condExprNode, curScope, curBlock, false, true, recHead).getKey();
+				Pair<String, BasicBlock> temp = pass(((ForNode)now).condExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+				ins.cond = temp.getKey();
+				curBlock = temp.getValue();
 				ins.ifTrue = bb.blockID;
 				ins.ifFalse = finalBlock.blockID;
+				curBlock.ifTrue = bb;
+				curBlock.ifFalse = finalBlock;
 				curBlock.insList.add(ins);
 			}
 			else
@@ -582,20 +603,24 @@ public class IRGenerator
 				curBlock.insList.add(ins);
 			}
 			
-			BasicBlock nowBlock = pass(((ForNode)now).stmtNode, curScope, bb, false, true, curBlock).getValue();
+			BasicBlock nowBlock = pass(((ForNode)now).stmtNode, curScope, bb, false, true, curBlock, null, null).getValue();
 			
 			if(((ForNode)now).haveStep)
 			{
-				nowBlock = pass(((ForNode)now).stepExprNode, curScope, nowBlock, false, true, recHead).getValue();
+				nowBlock = pass(((ForNode)now).stepExprNode, curScope, nowBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 			}
 			
 			if(((ForNode)now).haveCond)
 			{
 				JumpIns ins = new JumpIns();
 				ins.insName = "br";
-				ins.cond = pass(((ForNode)now).condExprNode, curScope, nowBlock, false, true, recHead).getKey();
+				Pair<String, BasicBlock> temp = pass(((ForNode)now).condExprNode, curScope, nowBlock, false, true, recHead, trueBlock, falseBlock);
+				ins.cond = temp.getKey();
+				nowBlock = temp.getValue();
 				ins.ifTrue = bb.blockID;
 				ins.ifFalse = finalBlock.blockID;
+				nowBlock.ifTrue = bb;
+				nowBlock.ifFalse = finalBlock;
 				nowBlock.insList.add(ins);
 			}
 			else
@@ -603,6 +628,7 @@ public class IRGenerator
 				JumpIns ins = new JumpIns();
 				ins.insName = "jump";
 				ins.target = bb.blockID;
+				nowBlock.to = bb;
 				nowBlock.insList.add(ins);
 			}
 			return new Pair<>(null, finalBlock);
@@ -612,24 +638,32 @@ public class IRGenerator
 		{
 			curScope = ((WhileNode)now).scope;
 			BasicBlock finalBlock = curBlock.ifFalse;
+			curBlock.ifFalse = null;
 			
 			BasicBlock bb = new BasicBlock();
-			curBlock.ifTrue = bb;
 			
 			JumpIns ins = new JumpIns();
 			ins.insName = "br";
-			ins.cond = pass(((WhileNode)now).exprNode, curScope, curBlock, false, true, recHead).getKey();
+			Pair<String, BasicBlock> temp = pass(((WhileNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+			ins.cond = temp.getKey();
+			curBlock = temp.getValue();
 			ins.ifTrue = bb.blockID;
 			ins.ifFalse = finalBlock.blockID;
+			curBlock.ifTrue = bb;
+			curBlock.ifFalse = finalBlock;
 			curBlock.insList.add(ins);
 			
-			BasicBlock nowBlock = pass(((WhileNode)now).stmtNode, curScope, bb, false, true, curBlock).getValue();
+			BasicBlock nowBlock = pass(((WhileNode)now).stmtNode, curScope, bb, false, true, curBlock, null, null).getValue();
 			
 			ins = new JumpIns();
 			ins.insName = "br";
-			ins.cond = pass(((WhileNode)now).exprNode, curScope, nowBlock, false, true, recHead).getKey();
+			Pair<String, BasicBlock> temp1 = pass(((WhileNode)now).exprNode, curScope, nowBlock, false, true, recHead, trueBlock, falseBlock);
+			ins.cond = temp1.getKey();
+			nowBlock = temp1.getValue();
 			ins.ifTrue = bb.blockID;
 			ins.ifFalse = finalBlock.blockID;
+			nowBlock.ifTrue = bb;
+			nowBlock.ifFalse = finalBlock;
 			nowBlock.insList.add(ins);
 			
 			return new Pair<>(null, finalBlock);
@@ -657,7 +691,7 @@ public class IRGenerator
 		{
 			JumpIns ins = new JumpIns();
 			ins.insName = "ret";
-			ins.src = pass(((ReturnNode)now).exprNode, curScope, curBlock, false, true, recHead).getKey();
+			ins.src = pass(((ReturnNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 			curBlock.insList.add(ins);
 			return new Pair<>(null, curBlock);
 		}
@@ -687,7 +721,7 @@ public class IRGenerator
 				mins.insName = "store";
 				mins.size = bytes.get("addr") + "";
 				mins.addr = ins.dest;
-				mins.src = pass(((CreatorArrayNode)now).exprNode.get(i), curScope, curBlock, false, true, recHead).getKey();
+				mins.src = pass(((CreatorArrayNode)now).exprNode.get(i), curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				if(i == 0)
 					first = mins.src;
 				mins.offset = i * bytes.get("addr");
@@ -739,7 +773,7 @@ public class IRGenerator
 		
 		else if(now instanceof SuffixIncDecNode)
 		{
-			String outcome = pass(((SuffixIncDecNode)now).exprNode, curScope, curBlock, false, true, recHead).getKey();
+			String outcome = pass(((SuffixIncDecNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 			MovIns ins = new MovIns();
 			ins.insName = "move";
 			ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
@@ -767,14 +801,25 @@ public class IRGenerator
 				ins.insName = "call";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
 				ins.funcName = className + "." + funcName;
-				ins.ops.add(pass(((MemberNode)((FuncCallNode)now).exprNode).exprNode, curScope, curBlock, false, true, recHead).getKey());
+				ins.ops.add(pass(((MemberNode)((FuncCallNode)now).exprNode).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey());
 				if(((FuncCallNode)now).haveParamList)
 				{
 					for(ASTNode node : ((FuncCallNode)now).paramListNode.exprNode)
 					{
-						ins.ops.add(pass(node, curScope, curBlock, false, true, recHead).getKey());
+						ins.ops.add(pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey());
 					}
 				}
+				curBlock.insList.add(ins);
+				return new Pair<>(ins.dest, curBlock);
+			}
+			else if(((FuncCallNode)now).exprNode instanceof NewNode)
+			{
+				String funcName = ((NewNode)((FuncCallNode)now).exprNode).ofType;
+				FuncCallIns ins = new FuncCallIns();
+				ins.insName = "call";
+				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				ins.funcName = funcName + "." + funcName;
+				ins.ops.add(pass(((NewNode)((FuncCallNode)now).exprNode).creatorNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey());
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
@@ -789,7 +834,7 @@ public class IRGenerator
 				{
 					for(ASTNode node : ((FuncCallNode)now).paramListNode.exprNode)
 					{
-						ins.ops.add(pass(node, curScope, curBlock, false, true, recHead).getKey());
+						ins.ops.add(pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey());
 					}
 				}
 				curBlock.insList.add(ins);
@@ -802,7 +847,7 @@ public class IRGenerator
 			ArithIns ins = new ArithIns();
 			ins.insName = "mul";
 			ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-			ins.src1 = pass(((IndexNode)now).indexExprNode, curScope, curBlock, false, true, recHead).getKey();
+			ins.src1 = pass(((IndexNode)now).indexExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 			ins.src2 = bytes.get("addr") + "";
 			curBlock.insList.add(ins);
 			
@@ -815,7 +860,7 @@ public class IRGenerator
 			ArithIns ins3 = new ArithIns();
 			ins3.insName = "add";
 			ins3.dest = ins3.src1 = ins2.dest;
-			ins3.src2 = pass(((IndexNode)now).arrayExprNode, curScope, curBlock, false, true, recHead).getKey();
+			ins3.src2 = pass(((IndexNode)now).arrayExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 			curBlock.insList.add(ins3);
 			
 			if(wantAddr)
@@ -844,7 +889,7 @@ public class IRGenerator
 			ArithIns ins = new ArithIns();
 			ins.insName = "add";
 			ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-			ins.src1 = pass(((MemberNode)now).exprNode, curScope, curBlock, false, true, recHead).getKey();
+			ins.src1 = pass(((MemberNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 			ins.src2 = vtemp.offset + "";
 			curBlock.insList.add(ins);
 			
@@ -868,7 +913,7 @@ public class IRGenerator
 		{
 			ArithIns ins = new ArithIns();
 			ins.insName = "add";
-			ins.dest = ins.src1 = pass(((PrefixIncDecNode)now).exprNode, curScope, curBlock, false, true, recHead).getKey();
+			ins.dest = ins.src1 = pass(((PrefixIncDecNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 			ins.src2 = "1";
 			curBlock.insList.add(ins);
 			
@@ -882,13 +927,13 @@ public class IRGenerator
 				ArithIns ins = new ArithIns();
 				ins.insName = "neg";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((PosNegNode)now).exprNode, curScope, curBlock, false, true, recHead).getKey();
+				ins.src1 = pass(((PosNegNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
 			else if(((PosNegNode)now).op.equals("add"))
 			{
-				return pass(((PosNegNode)now).exprNode, curScope, curBlock, false, true, recHead);
+				return pass(((PosNegNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 			}
 		}
 		
@@ -899,7 +944,7 @@ public class IRGenerator
 				ArithIns ins = new ArithIns();
 				ins.insName = "sub";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src2 = pass(((NotNode)now).exprNode, curScope, curBlock, false, true, recHead).getKey();
+				ins.src2 = pass(((NotNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				ins.src1 = "1";
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
@@ -909,7 +954,7 @@ public class IRGenerator
 				BitIns ins = new BitIns();
 				ins.insName = "not";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((NotNode)now).exprNode, curScope, curBlock, false, true, recHead).getKey();
+				ins.src1 = pass(((NotNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
@@ -917,7 +962,7 @@ public class IRGenerator
 		
 		else if(now instanceof NewNode)
 		{
-			return pass(((NewNode)now).creatorNode, curScope, curBlock, false, true, recHead);
+			return pass(((NewNode)now).creatorNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 		}
 		
 		else if(now instanceof BinaryNode)
@@ -940,8 +985,8 @@ public class IRGenerator
 				if(((BinaryNode)now).op.equals("%"))
 					ins.insName = "rem";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead).getKey();
-				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead).getKey();
+				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
@@ -963,8 +1008,8 @@ public class IRGenerator
 				if(((BinaryNode)now).op.equals("^"))
 					ins.insName = "xor";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead).getKey();
-				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead).getKey();
+				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
@@ -989,24 +1034,160 @@ public class IRGenerator
 				if(((BinaryNode)now).op.equals("!="))
 					ins.insName = "sne";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead).getKey();
-				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead).getKey();
+				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
 			else if(((BinaryNode)now).op.equals("&&")
 					|| ((BinaryNode)now).op.equals("||"))
 			{
+				
+				if(trueBlock == null)
+				{
+					trueBlock = new BasicBlock();
+					falseBlock = new BasicBlock();
+					BasicBlock finalBlock = new BasicBlock();
+					trueBlock.to = falseBlock.to = finalBlock;
+					
+					MovIns ins = new MovIns();
+					ins.insName = "move";
+					ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+					ins.src = "1";
+					trueBlock.insList.add(ins);
+					
+					JumpIns jins = new JumpIns();
+					jins.insName = "jump";
+					jins.target = finalBlock.blockID;
+					trueBlock.insList.add(jins);
+					
+					MovIns ins2 = new MovIns();
+					ins2.insName = "move";
+					ins2.dest = ins.dest;
+					ins2.src = "0";
+					falseBlock.insList.add(ins2);
+					
+					JumpIns jins2 = new JumpIns();
+					jins2.insName = "jump";
+					jins2.target = finalBlock.blockID;
+					falseBlock.insList.add(jins2);
+					
+					if(((BinaryNode)now).op.equals("&&"))
+					{
+						BasicBlock nb = new BasicBlock();
+						Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, nb, falseBlock);
+						String outcome = temp.getKey();
+						curBlock = temp.getValue();
+						
+						JumpIns ains = new JumpIns();
+						ains.insName = "br";
+						ains.cond = outcome;
+						ains.ifFalse = falseBlock.blockID;
+						ains.ifTrue = nb.blockID;
+						curBlock.insList.add(ains);
+						
+						curBlock.ifTrue = nb;
+						curBlock.ifFalse = falseBlock;
+						
+						Pair<String, BasicBlock> temp1 = pass(((BinaryNode)now).rightExprNode, curScope, nb, false, true, recHead, trueBlock, falseBlock);
+						String outcome1 = temp1.getKey();
+						curBlock = temp1.getValue();
+						
+						JumpIns ains2 = new JumpIns();
+						ains2.insName = "br";
+						ains2.cond = outcome1;
+						ains2.ifTrue = trueBlock.blockID;
+						ains2.ifFalse = falseBlock.blockID;
+						curBlock.insList.add(ains2);
+						
+						curBlock.ifTrue = trueBlock;
+						curBlock.ifFalse = falseBlock;
+					}
+					else if(((BinaryNode)now).op.equals("||"))
+					{
+						BasicBlock nb = new BasicBlock();
+						Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, nb);
+						String outcome = temp.getKey();
+						curBlock = temp.getValue();
+						
+						JumpIns ains = new JumpIns();
+						ains.insName = "br";
+						ains.cond = outcome;
+						ains.ifFalse = nb.blockID;
+						ains.ifTrue = trueBlock.blockID;
+						curBlock.insList.add(ains);
+						
+						curBlock.ifTrue = trueBlock;
+						curBlock.ifFalse = nb;
+						
+						Pair<String, BasicBlock> temp1 = pass(((BinaryNode)now).rightExprNode, curScope, nb, false, true, recHead, trueBlock, falseBlock);
+						String outcome1 = temp1.getKey();
+						curBlock = temp1.getValue();
+						
+						JumpIns ains2 = new JumpIns();
+						ains2.insName = "br";
+						ains2.cond = outcome1;
+						ains2.ifTrue = trueBlock.blockID;
+						ains2.ifFalse = falseBlock.blockID;
+						curBlock.insList.add(ains2);
+						
+						curBlock.ifTrue = trueBlock;
+						curBlock.ifFalse = falseBlock;
+					}
+					return new Pair<>(ins.dest, finalBlock);
+				}
+				
+				if(((BinaryNode)now).op.equals("&&"))
+				{
+					Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+					String outcome = temp.getKey();
+					curBlock = temp.getValue();
+					BasicBlock nb = new BasicBlock();
+					
+					JumpIns ains = new JumpIns();
+					ains.insName = "br";
+					ains.cond = outcome;
+					ains.ifFalse = falseBlock.blockID;
+					ains.ifTrue = nb.blockID;
+					curBlock.insList.add(ains);
+					
+					curBlock.ifTrue = nb;
+					curBlock.ifFalse = falseBlock;
+					
+					return pass(((BinaryNode)now).rightExprNode, curScope, nb, false, true, recHead, trueBlock, falseBlock);
+				}
+				else if(((BinaryNode)now).op.equals("||"))
+				{
+					Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+					String outcome = temp.getKey();
+					curBlock = temp.getValue();
+					BasicBlock nb = new BasicBlock();
+					
+					JumpIns ains = new JumpIns();
+					ains.insName = "br";
+					ains.cond = outcome;
+					ains.ifFalse = nb.blockID;
+					ains.ifTrue = trueBlock.blockID;
+					curBlock.insList.add(ains);
+					
+					curBlock.ifTrue = trueBlock;
+					curBlock.ifFalse = nb;
+					
+					return pass(((BinaryNode)now).rightExprNode, curScope, nb, false, true, recHead, trueBlock, falseBlock);
+				}
+				
+				/*
 				BitIns ins = new BitIns();
 				if(((BinaryNode)now).op.equals("&&"))
 					ins.insName = "and";
 				if(((BinaryNode)now).op.equals("||"))
 					ins.insName = "or";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead).getKey();
-				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead).getKey();
+				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
+				*/
 			}
 		}
 		
@@ -1019,21 +1200,24 @@ public class IRGenerator
 			{
 				MovIns ins = new MovIns();
 				ins.insName = "move";
-				ins.dest = pass(((AssignNode)now).leftExprNode, curScope, curBlock, false, true, recHead).getKey();
-				ins.src = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead).getKey();
-				curBlock.insList.add(ins);
+				ins.dest = pass(((AssignNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+				ins.src = temp.getKey();
+				temp.getValue().insList.add(ins);
+				return new Pair<>(null, temp.getValue());
 			}
 			else
 			{
 				MemAccIns ins = new MemAccIns();
 				ins.insName = "store";
-				ins.addr = pass(((AssignNode)now).leftExprNode, curScope, curBlock, true, true, recHead).getKey();
-				ins.src = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead).getKey();
+				ins.addr = pass(((AssignNode)now).leftExprNode, curScope, curBlock, true, true, recHead, trueBlock, falseBlock).getKey();
+				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+				ins.src = temp.getKey();
 				ins.size = bytes.get("addr") + "";
 				ins.offset = 0;
-				curBlock.insList.add(ins);
+				temp.getValue().insList.add(ins);
+				return new Pair<>(null, temp.getValue());
 			}
-			return null;
 		}
 		
 		else if(now instanceof IdNode)
@@ -1116,7 +1300,7 @@ public class IRGenerator
 		
 		else if(now instanceof SubExprNode)
 		{
-			return pass(((SubExprNode)now).exprNode, curScope, curBlock, false, true, recHead);
+			return pass(((SubExprNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 		}
 		
 		return null;
