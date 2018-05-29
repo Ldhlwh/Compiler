@@ -6,6 +6,7 @@ public class VariIns extends CFVIns
 	public int dimNum;
 	public String name;
 	public String initValue = null;
+	public int offset = 0;
 
 	public VariIns() {}
 	public VariIns(String type, int num, String str)

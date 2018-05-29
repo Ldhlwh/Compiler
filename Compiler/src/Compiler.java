@@ -1,4 +1,5 @@
 import AbstractSyntaxTree.Nodes.*;
+import IR.IRGenerator;
 import MxGrammar.MxLexer;
 import MxGrammar.MxParser;
 import ScopeCheck.PreScopeChecker;
@@ -16,8 +17,8 @@ import AbstractSyntaxTree.ASTPrinter;
 public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
-		InputStream is = new FileInputStream("program.txt"); // or System.in;
-		//InputStream is = System.in;
+		//InputStream is = new FileInputStream("program.txt"); // or System.in;
+		InputStream is = System.in;
 		//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\t.txt"); // or System.in;
 		
 		ANTLRInputStream input = new ANTLRInputStream(is);
@@ -44,10 +45,11 @@ public class Compiler {
 		PreScopeChecker preScopeChecker = new PreScopeChecker();
 		Scope rootScope = preScopeChecker.check(rootNode, new EmptyScope());
 		
-		System.err.println("------ScopePrint------");
 		ScopePrinter scopePrinter = new ScopePrinter();
+		/*
+		System.err.println("------ScopePrint------");
 		scopePrinter.print(rootScope);
-		
+		*/
 		System.err.println("------ScopeCheck------");
 		ScopeChecker scopeChecker = new ScopeChecker();
 		scopeChecker.checkRoot(rootNode, rootScope);
@@ -55,5 +57,13 @@ public class Compiler {
 		System.err.println("------ScopePrint------");
 		scopePrinter = new ScopePrinter();
 		scopePrinter.print(rootScope);
+		
+		//ASTPrinter printer = new ASTPrinter();
+		//printer.print(rootNode);
+		
+		System.err.println("------IR Generation------");
+		IRGenerator IR = new IRGenerator((ASTRootNode)rootNode);
+		IR.passRoot();
+		IR.print();
 	}
 }

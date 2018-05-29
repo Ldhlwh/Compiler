@@ -1,28 +1,51 @@
-int[][][][] a;
+int[] a = new int[3];
 
-int main() {
-    a = new int[3][4][][];
-    int x = a.size();
-    println("size of a: " + toString(x));
-    return 0;
+int b = 20;
+bool haha = true;
+bool gaga = false;
+
+class A
+{
+    int c;
+    A b, d;
+    bool[] f;
+    A()
+    {
+        c = 20;
+    }
+
+    int foo(int abc)
+    {
+        return c;
+    }
 }
 
-/*!! metadata:
-=== comment ===
-Zhou Fan
-=== is_public ===
-True
-=== assert ===
-success_compile
-=== timeout ===
-0
-=== input ===
+int foo(int x)
+{
+    b = 20 * x;
 
-=== phase ===
-semantic pretest
-=== output ===
+    for(int i = 0; i < 3; i++)
+    {
+        b++;
+    }
 
-=== exitcode ===
-0
+    int j;
+    for(j = 0; j < 3; j++)
+    {
+        b--;
+    }
 
-!!*/
+    while(j < 5)
+    {
+        b++;
+    }
+
+    return b;
+}
+
+int main()
+{
+    A aa = new A;
+    int c;
+    c = foo(3);
+}

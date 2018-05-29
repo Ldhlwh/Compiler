@@ -52,6 +52,17 @@ public class ScopePrinter
 			}
 			System.err.println();
 		}
+		else if(now instanceof ConstructorScope)
+		{
+			System.err.println("[ConstructorScope]");
+			System.err.printf("return[dimNum] : %s[%d] funcName : %s\n", ((ConstructorScope)now).name, 0, ((ConstructorScope) now).name);
+			for(Scope scope : now.childScope)
+			{
+				System.err.println();
+				print(scope);
+			}
+			System.err.println();
+		}
 		else if(now instanceof LocalScope)
 		{
 			System.err.println("[LocalScope]");

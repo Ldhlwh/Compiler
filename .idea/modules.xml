@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Compiler/Compiler.iml" filepath="$PROJECT_DIR$/Compiler/Compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LLIRTestingField/LLIRTestingField.iml" filepath="$PROJECT_DIR$/LLIRTestingField/LLIRTestingField.iml" />
       <module fileurl="file://$PROJECT_DIR$/MxGrammar/MxGrammar.iml" filepath="$PROJECT_DIR$/MxGrammar/MxGrammar.iml" />
       <module fileurl="file://$PROJECT_DIR$/testt/testt.iml" filepath="$PROJECT_DIR$/testt/testt.iml" />
     </modules>

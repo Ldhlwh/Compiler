@@ -13,6 +13,7 @@ public class ASTPrinter
 		if(now instanceof ASTRootNode)
 		{
 			System.err.println("ASTRootNode");
+			System.err.printf("TopScope : %d\n", ((ASTRootNode)now).scope.scopeID);
 			System.err.print("progSecNode : ");
 			for(ASTNode node : ((ASTRootNode) now).progSecNode)
 				System.err.printf("%d ", node.nodeID);
@@ -23,6 +24,7 @@ public class ASTPrinter
 		else if(now instanceof ClassDeclNode)
 		{
 			System.err.println("ClassDeclNode");
+			System.err.printf("ClassScope : %d\n", ((ClassDeclNode)now).scope.scopeID);
 			System.err.printf("idNode : %s\n", ((ClassDeclNode) now).id);
 			System.err.print("progSecNode : ");
 			for(ASTNode node : ((ClassDeclNode) now).progSecNode)
@@ -36,6 +38,7 @@ public class ASTPrinter
 			System.err.println("FuncDeclNode");
 			System.err.printf("typeNode : %d\n", ((FuncDeclNode) now).typeNode.nodeID);
 			System.err.printf("idNode : %s\n", ((FuncDeclNode) now).id);
+			System.err.printf("FuncScope : %d\n", ((FuncDeclNode)now).scope.scopeID);
 			if(((FuncDeclNode) now).haveParamDeclListNode)
 				System.err.printf("paramDeclListNode : %d\n", ((FuncDeclNode) now).paramDeclListNode.nodeID);
 			System.err.printf("blockStmtNode : %d\n", ((FuncDeclNode) now).blockStmtNode.nodeID);
@@ -44,6 +47,14 @@ public class ASTPrinter
 			if(((FuncDeclNode) now).haveParamDeclListNode)
 				print(((FuncDeclNode) now).paramDeclListNode);
 			print(((FuncDeclNode) now).blockStmtNode);
+		}
+		else if(now instanceof ConstructorNode)
+		{
+			System.err.println("ConstructorNode");
+			System.err.printf("ConstructorScope : %d\n", ((ConstructorNode)now).scope.scopeID);
+			System.err.printf("blockStmtNode : %d\n", ((ConstructorNode) now).blockStmtNode.nodeID);
+			System.err.println("\n");
+			print(((ConstructorNode) now).blockStmtNode);
 		}
 		else if(now instanceof VariDeclNode)
 		{
@@ -60,6 +71,7 @@ public class ASTPrinter
 		else if(now instanceof BlockStmtNode)
 		{
 			System.err.println("BlockStmtNode");
+			System.err.printf("LocalScope : %d\n", ((BlockStmtNode)now).scope.scopeID);
 			System.err.print("progSecNode : ");
 			for(ASTNode node : ((BlockStmtNode) now).progSecNode)
 				System.err.printf("%d ", node.nodeID);
@@ -104,6 +116,7 @@ public class ASTPrinter
 		else if(now instanceof ForInitNode)
 		{
 			System.err.println("ForInitNode");
+			System.err.printf("LocalScope : %d\n", ((ForInitNode)now).scope.scopeID);
 			System.err.printf("variDeclNode : %d\n", ((ForInitNode) now).variDeclNode.nodeID);
 			if(((ForInitNode) now).haveCond)
 				System.err.printf("condExprNode : %d\n", ((ForInitNode) now).condExprNode.nodeID);
@@ -120,6 +133,7 @@ public class ASTPrinter
 		else if(now instanceof ForNode)
 		{
 			System.err.println("ForNode");
+			System.err.printf("LocalScope : %d\n", ((ForNode)now).scope.scopeID);
 			if(((ForNode) now).haveInit)
 				System.err.printf("initExprNode : %d\n", ((ForNode) now).initExprNode.nodeID);
 			if(((ForNode) now).haveCond)
@@ -138,6 +152,7 @@ public class ASTPrinter
 		else if(now instanceof WhileNode)
 		{
 			System.err.println("WhileNode");
+			System.err.printf("LocalScope : %d\n", ((WhileNode)now).scope.scopeID);
 			System.err.printf("exprNode : %d\n", ((WhileNode) now).exprNode.nodeID);
 			System.err.printf("stmtNode : %d\n", ((WhileNode) now).stmtNode.nodeID);
 			print(((WhileNode) now).exprNode);
