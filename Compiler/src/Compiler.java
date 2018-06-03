@@ -7,7 +7,6 @@ import ScopeCheck.PreScopeChecker;
 import ScopeCheck.ScopeChecker;
 import ScopeCheck.ScopePrinter;
 import ScopeCheck.Scopes.*;
-import jdk.internal.util.xml.impl.Input;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import java.io.*;

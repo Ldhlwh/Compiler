@@ -17,27 +17,23 @@
     <splitter split-orientation="horizontal" split-proportion="0.5914322">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
+          <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="185">
-                  <caret line="1062" selection-start-line="1062" selection-end-line="1062" />
+                <state relative-caret-position="210">
+                  <caret line="10" selection-start-line="10" selection-end-line="10" />
                   <folding>
-                    <element signature="imports" expanded="true" />
                     <element signature="method#add_alloc#0;class#IRGenerator#0" />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
+          <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="121">
-                  <caret line="24" column="8" lean-forward="true" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="8" />
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                  </folding>
+                <state relative-caret-position="189">
+                  <caret line="9" selection-start-line="9" selection-end-line="9" />
                 </state>
               </provider>
             </entry>
@@ -108,16 +104,16 @@
       <find>forinitnode</find>
       <find>funcDecl</find>
       <find>while</find>
-      <find>true, null</find>
-      <find>true, cur</find>
+      <find />
+      <find />
       <find>index</find>
-      <find>recHead, null, null</find>
+      <find />
       <find>varidecl</find>
       <find>variinitnode</find>
       <find>,</find>
       <find>newnode</find>
-      <find>new BasicBlock</find>
-      <find>new Basic</find>
+      <find />
+      <find />
       <find>move</find>
       <find>entry</find>
       <find>entry&quot;</find>
@@ -130,8 +126,8 @@
     <replaceStrings>
       <replace>ASTNode</replace>
       <replace>err</replace>
-      <replace>true, recHead</replace>
-      <replace>recHead, trueBlock, falseBlock</replace>
+      <replace />
+      <replace />
     </replaceStrings>
   </component>
   <component name="HighlightingSettingsPerFile">
@@ -188,9 +184,9 @@
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
       </list>
     </option>
   </component>
@@ -453,12 +449,12 @@
       <workItem from="1527982551200" duration="951000" />
       <workItem from="1527986345984" duration="1250000" />
       <workItem from="1527988418865" duration="1527000" />
-      <workItem from="1528003645740" duration="23758000" />
+      <workItem from="1528003645740" duration="23919000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="370224000" />
+    <option name="totallyTimeSpent" value="370385000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -470,7 +466,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32997763" />
@@ -552,7 +548,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java</url>
-          <line>416</line>
+          <line>411</line>
           <properties />
           <option name="timeStamp" value="41" />
         </line-breakpoint>
@@ -867,17 +863,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="185">
-          <caret line="1062" selection-start-line="1062" selection-end-line="1062" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#add_alloc#0;class#IRGenerator#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="399">
@@ -890,10 +875,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="121">
-          <caret line="24" column="8" lean-forward="true" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="8" />
+        <state relative-caret-position="189">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="10" selection-start-line="10" selection-end-line="10" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="method#add_alloc#0;class#IRGenerator#0" />
           </folding>
         </state>
       </provider>

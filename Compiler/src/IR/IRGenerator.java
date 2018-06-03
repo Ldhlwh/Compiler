@@ -6,13 +6,8 @@ import ScopeCheck.Instances.ClassIns;
 import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
-import com.sun.corba.se.impl.interceptors.PICurrent;
-import com.sun.org.apache.bcel.internal.generic.BIPUSH;
-import com.sun.xml.internal.org.jvnet.mimepull.MIMEConfig;
 import javafx.util.Pair;
-import org.w3c.dom.css.CSSImportRule;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
