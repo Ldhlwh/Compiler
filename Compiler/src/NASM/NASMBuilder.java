@@ -15,6 +15,7 @@ public class NASMBuilder
 	public PrintStream o;
 	
 	private String temp = "r15";
+	private String temp2 = "r14";
 	
 	public NASMBuilder(boolean submit)
 	{
@@ -35,6 +36,10 @@ public class NASMBuilder
 			else
 				o.printf("\t\tglobal\t\t%s\n", fb.funcName);
 		}
+		o.printf("\n\t\textern\t\tmalloc\n");
+		o.printf("\t\textern\t\tputs\n");
+		o.printf("\t\textern\t\tprintf\n");
+		
 		o.printf("\n\t\tsection\t\t.bss\n");
 		
 		for(Map.Entry<String, VariIns> entry : ir.topScope.variMap.entrySet())
@@ -42,6 +47,9 @@ public class NASMBuilder
 			o.printf("@" + entry.getKey() + ":");
 			o.printf("\t\tresq\t\t1\n");
 		}
+		
+		//o.printf("\n\t\tsection\t\t.data\n");
+		//o.printf("_outStr:\t\tdb\t\t\"%%s\"\n");
 		
 		o.printf("\n\t\tsection\t\t.text\n");
 		
@@ -218,26 +226,85 @@ public class NASMBuilder
 			}
 			else if(ins instanceof MemAccIns)
 			{
-			
+				if(ins.insName.equals("alloc"))
+				{
+					int choice = isReg(((MemAccIns)ins).size);
+					String src = null;
+					if(choice == 0)
+					{
+						src = ((MemAccIns)ins).size;
+					}
+					else if(choice == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).src));
+						src = "qword[" + pos + "]";
+					}
+					else if(choice == 2)
+					{
+						src = "qword[" + ((MemAccIns)ins).src + "]";
+					}
+					
+					o.printf("\t\tmov\t\trdi, %s\n", src);
+					o.printf("\t\tcall\t\tmalloc\n");
+					
+					int c2 = isReg(((MemAccIns)ins).dest);
+					String s2 = null;
+					if(c2 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
+						s2 = "qword[" + pos + "]";
+					}
+					else if(c2 == 2)
+					{
+						s2 = "qword[" + ((MemAccIns)ins).dest + "]";
+					}
+					
+					o.printf("\t\tmov\t\t%s, rax\n", s2);
+				}
+				else if(ins.insName.equals("store"))
+				{
+					String size = ((MemAccIns)ins).size;
+					String offset = ((MemAccIns)ins).offset + "";
+					int choice = isReg(((MemAccIns)ins).addr);
+					String addr = null;
+					if(choice == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
+						addr = "qword[" + pos + "]";
+					}
+					o.printf("\t\tmov\t\t%s, %s\n", temp, addr);
+					o.printf("\t\tadd\t\t%s, %s\n", temp, offset);
+					
+					int cs = isReg(((MemAccIns)ins).src);
+					String src = null;
+					if(cs == 0)
+					{
+						src = ((MemAccIns)ins).src;
+					}
+					else if(choice == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).src));
+						src = "qword[" + pos + "]";
+					}
+					else if(choice == 2)
+					{
+						src = "qword[" + ((MemAccIns)ins).src + "]";
+					}
+					o.printf("\t\tmov\t\t%s, %s\n", temp2, src);
+					if(size.equals("1"))
+						o.printf("\t\tmov\t\t[%s], %s\n", temp, temp2);
+					else if(size.equals("8"))
+						o.printf("\t\tmov\t\tqword[%s], %s\n", temp, temp2);
+				}
 			}
 			else if(ins instanceof FuncCallIns)
 			{
 				String funcName = ((FuncCallIns)ins).funcName;
-				FuncBlock curFB = null;
-				for(FuncBlock block : ir.funcBlock)
-				{
-					if(block.funcName.equals(funcName))
-					{
-						curFB = block;
-						break;
-					}
-				}
 				
-				int paramNum = curFB.param.size();
-				int up = (paramNum < 6) ? paramNum : 6;
-				for(int j = 0; j < up; j++)
+				if(funcName.equals("println")
+						|| funcName.equals("print"))
 				{
-					String str = ((FuncCallIns)ins).ops.get(j);
+					String str = ((FuncCallIns)ins).ops.get(0);
 					int choice = isReg(str);
 					String op = null;
 					if(choice == 0)
@@ -253,31 +320,52 @@ public class NASMBuilder
 					{
 						op = "qword[" + str + "]";
 					}
+					o.printf("\t\tmov\t\t%s, %s\n", temp, op);
+					o.printf("\t\tadd\t\t%s, 8\n", temp);
 					
-					String reg = null;
-					if(j == 0)
-						reg = "rdi";
-					else if(j == 1)
-						reg = "rsi";
-					else if(j == 2)
-						reg = "rdx";
-					else if(j == 3)
-						reg = "rcx";
-					else if(j == 4)
-						reg = "r8";
-					else if(j == 5)
-						reg = "r9";
 					
-					o.printf("\t\tmov\t\t%s, %s\n", reg, op);
-				}
-				if(paramNum > 6)
-				{
-					if(paramNum % 2 == 1)
+					if(funcName.equals("println"))
 					{
-						o.printf("\t\tmov\t\t%s, 0\n", temp);
-						o.printf("\t\tpush\t\t%s\n", temp);
+						o.printf("\t\tmov\t\trdi, %s\n", temp);
+						o.printf("\t\tcall\t\tputs\n");
 					}
-					for(int j = paramNum - 1; j >= 6; j--)
+					else if(funcName.equals("print"))
+					{
+						//o.printf("\t\tmov\t\trdi, _outStr\n");
+						o.printf("\t\tmov\t\trdi, %s\n", temp);
+						o.printf("\t\tmov\t\trax, 0\n");
+						o.printf("\t\tcall\t\tprintf\n");
+					}
+					
+					int c2 = isReg(((FuncCallIns)ins).dest);
+					String s2 = null;
+					if(c2 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						s2 = "qword[" + pos + "]";
+					}
+					else if(c2 == 2)
+					{
+						s2 = "qword[" + ((FuncCallIns)ins).dest + "]";
+					}
+					
+					o.printf("\t\tmov\t\t%s, rax\n", s2);
+				}
+				
+				else
+				{
+					FuncBlock curFB = null;
+					for(FuncBlock block : ir.funcBlock)
+					{
+						if(block.funcName.equals(funcName))
+						{
+							curFB = block;
+							break;
+						}
+					}
+					int paramNum = curFB.param.size();
+					int up = (paramNum < 6) ? paramNum : 6;
+					for(int j = 0; j < up; j++)
 					{
 						String str = ((FuncCallIns)ins).ops.get(j);
 						int choice = isReg(str);
@@ -296,27 +384,69 @@ public class NASMBuilder
 							op = "qword[" + str + "]";
 						}
 						
-						o.printf("\t\tmov\t\t%s, %s\n", temp, op);
-						o.printf("\t\tpush\t\t%s\n", temp);
+						String reg = null;
+						if(j == 0)
+							reg = "rdi";
+						else if(j == 1)
+							reg = "rsi";
+						else if(j == 2)
+							reg = "rdx";
+						else if(j == 3)
+							reg = "rcx";
+						else if(j == 4)
+							reg = "r8";
+						else if(j == 5)
+							reg = "r9";
+						
+						o.printf("\t\tmov\t\t%s, %s\n", reg, op);
 					}
+					if(paramNum > 6)
+					{
+						if(paramNum % 2 == 1)
+						{
+							o.printf("\t\tmov\t\t%s, 0\n", temp);
+							o.printf("\t\tpush\t\t%s\n", temp);
+						}
+						for(int j = paramNum - 1; j >= 6; j--)
+						{
+							String str = ((FuncCallIns)ins).ops.get(j);
+							int choice = isReg(str);
+							String op = null;
+							if(choice == 0)
+							{
+								op = str;
+							}
+							else if(choice == 1)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(str));
+								op = "qword[" + pos + "]";
+							}
+							else if(choice == 2)
+							{
+								op = "qword[" + str + "]";
+							}
+							
+							o.printf("\t\tmov\t\t%s, %s\n", temp, op);
+							o.printf("\t\tpush\t\t%s\n", temp);
+						}
+					}
+					if(funcName.equals("main"))
+						funcName = "_main";
+					o.printf("\t\tcall\t\t%s\n", funcName);
+					
+					int choice = isReg(((FuncCallIns)ins).dest);
+					String src = null;
+					if(choice == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						src = "qword[" + pos + "]";
+					}
+					else if(choice == 2)
+					{
+						src = "qword[" + ((FuncCallIns)ins).dest + "]";
+					}
+					o.printf("\t\tmov\t\t%s, rax\n", src);
 				}
-				if(funcName.equals("main"))
-					funcName = "_main";
-				o.printf("\t\tcall\t\t%s\n", funcName);
-				
-				int choice = isReg(((FuncCallIns)ins).dest);
-				String src = null;
-				if(choice == 1)
-				{
-					String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-					src = "qword[" + pos + "]";
-				}
-				else if(choice == 2)
-				{
-					src = "qword[" + ((FuncCallIns)ins).dest + "]";
-				}
-				o.printf("\t\tmov\t\t%s, rax\n", src);
-				
 			}
 			else if(ins instanceof MovIns)
 			{

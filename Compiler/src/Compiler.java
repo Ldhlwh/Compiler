@@ -25,8 +25,10 @@ public class Compiler {
 		if(SUBMIT)
 			is = new FileInputStream("program.txt"); // or System.in;
 		else
-			is = System.in;
-			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\testProg.mx"); // or System.in;
+		{
+			//is = System.in;
+			is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\testProg.mx"); // or System.in;
+		}
 		
 		OutputStream ous = System.out;
 		((PrintStream)ous).println();
@@ -55,7 +57,7 @@ public class Compiler {
 		PreScopeChecker preScopeChecker = new PreScopeChecker();
 		Scope rootScope = preScopeChecker.check(rootNode, new EmptyScope());
 		
-		ScopePrinter scopePrinter = new ScopePrinter();
+		//ScopePrinter scopePrinter = new ScopePrinter();
 		/*
 		System.err.println("------ScopePrint------");
 		scopePrinter.print(rootScope);
@@ -64,9 +66,10 @@ public class Compiler {
 		ScopeChecker scopeChecker = new ScopeChecker();
 		scopeChecker.checkRoot(rootNode, rootScope);
 		
+		/*
 		System.err.println("------ScopePrint------");
 		scopePrinter = new ScopePrinter();
-		scopePrinter.print(rootScope);
+		scopePrinter.print(rootScope);*/
 		
 		//ASTPrinter printer = new ASTPrinter();
 		//printer.print(rootNode);
