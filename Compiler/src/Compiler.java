@@ -2,10 +2,12 @@ import AbstractSyntaxTree.Nodes.*;
 import IR.IRGenerator;
 import MxGrammar.MxLexer;
 import MxGrammar.MxParser;
+import NASM.NASMBuilder;
 import ScopeCheck.PreScopeChecker;
 import ScopeCheck.ScopeChecker;
 import ScopeCheck.ScopePrinter;
 import ScopeCheck.Scopes.*;
+import jdk.internal.util.xml.impl.Input;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import java.io.*;
@@ -17,9 +19,18 @@ import AbstractSyntaxTree.ASTPrinter;
 public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
-		//InputStream is = new FileInputStream("program.txt"); // or System.in;
-		InputStream is = System.in;
-		//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\t.txt"); // or System.in;
+		boolean SUBMIT = true;
+		
+		InputStream is;
+		
+		if(SUBMIT)
+			is = new FileInputStream("program.txt"); // or System.in;
+		else
+			is = System.in;
+			//InputStream is = new FileInputStream("C:\\Users\\qydyx\\Desktop\\testProg.mx"); // or System.in;
+		
+		OutputStream ous = System.out;
+		((PrintStream)ous).println();
 		
 		ANTLRInputStream input = new ANTLRInputStream(is);
 		MxLexer lexer = new MxLexer(input);
@@ -65,5 +76,10 @@ public class Compiler {
 		IRGenerator IR = new IRGenerator((ASTRootNode)rootNode);
 		IR.passRoot();
 		IR.print();
+		
+		System.err.println("------NASM Code Generation------");
+		NASMBuilder nasm = new NASMBuilder(SUBMIT);
+		nasm.ir = IR;
+		nasm.generate();
 	}
 }

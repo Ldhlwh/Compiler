@@ -17,7 +17,11 @@ public class BasicBlock
 	
 	public static int bbNum = 0;
 	
-	public boolean printed = false;
+	public boolean printed = false;		// While printing the IR
+	public boolean allocated = false;	// While allocating the Regs to Mem
+	public boolean generated = false;	// While generating NASM code
+	
+	public FuncBlock ofFunc;
 	
 	public BasicBlock()
 	{

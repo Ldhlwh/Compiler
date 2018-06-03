@@ -1,6 +1,8 @@
 package IR;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class FuncBlock
@@ -9,6 +11,9 @@ public class FuncBlock
 	public BasicBlock entry;
 	
 	public ArrayList<String> param = new ArrayList<>();
+	
+	public Map<String, Integer> memPos = new HashMap<>();
+	public int memSize = 0;
 	
 	public FuncBlock(String name)
 	{

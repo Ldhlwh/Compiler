@@ -8,6 +8,7 @@ import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
 import com.sun.corba.se.impl.interceptors.PICurrent;
 import com.sun.org.apache.bcel.internal.generic.BIPUSH;
+import com.sun.xml.internal.org.jvnet.mimepull.MIMEConfig;
 import javafx.util.Pair;
 import org.w3c.dom.css.CSSImportRule;
 
@@ -32,9 +33,9 @@ public class IRGenerator
 		rootNode = root;
 		topScope = root.scope;
 		
-		bytes.put("addr", 4);
-		bytes.put("int", 4);
-		bytes.put("bool", 1);
+		bytes.put("addr", 8);
+		bytes.put("int", 8);
+		bytes.put("bool", 8);
 		bytes.put("char", 1);
 		for(Map.Entry<String, ClassIns> entry : topScope.classMap.entrySet())
 		{
@@ -71,8 +72,9 @@ public class IRGenerator
 	{
 		FuncBlock _alloc = new FuncBlock("_alloc");
 		funcBlock.add(_alloc);
-		BasicBlock _alloc_entry = new BasicBlock("_alloc_entry");
+		BasicBlock _alloc_entry = new BasicBlock("_alloc");
 		_alloc.entry = _alloc_entry;
+		_alloc_entry.ofFunc = _alloc;
 		
 		_alloc.param.add("$_cnt");
 		_alloc.param.add("$_cnt_addr");
@@ -150,6 +152,7 @@ public class IRGenerator
 		BasicBlock fbb = new BasicBlock();
 		_alloc_entry.ifTrue = bb;
 		_alloc_entry.ifFalse = fbb;
+		bb.ofFunc = fbb.ofFunc = _alloc;
 		
 		JumpIns jins = new JumpIns();
 		jins.insName = "br";
@@ -227,10 +230,11 @@ public class IRGenerator
 	{
 		FuncBlock __init = new FuncBlock("__init");
 		funcBlock.add(__init);
-		BasicBlock __init_entry = new BasicBlock("__init_entry");
+		BasicBlock __init_entry = new BasicBlock("__init");
 		__init.entry = __init_entry;
+		__init_entry.ofFunc = __init;
 		
-		add_alloc();
+		//add_alloc();
 		
 		for(ASTNode node : rootNode.progSecNode)
 		{
@@ -242,8 +246,9 @@ public class IRGenerator
 				{
 					fb.param.add("$" + p.name + "_" + ((FuncDeclNode)node).scope.scopeID);
 				}
-				BasicBlock entry = new BasicBlock(((FuncDeclNode)node).id + "_entry");
+				BasicBlock entry = new BasicBlock(((FuncDeclNode)node).id);
 				fb.entry = entry;
+				entry.ofFunc = fb;
 				pass(node, ((FuncDeclNode)node).scope, entry, false, true, null, null, null);
 			}
 			else
@@ -279,7 +284,10 @@ public class IRGenerator
 							if(((VariDeclNode)now).typeNode.singleTypeNode.type.equals("int"))
 							{
 								MovIns ins = new MovIns();
-								ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
+								if(curScope == topScope)
+									ins.dest = "@" + ((VariInitNode)node).id;
+								else
+									ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
 								ins.insName = "move";
 								ins.src = ((ConstNode)((VariInitNode)node).exprNode).text;
 								curBlock.insList.add(ins);
@@ -287,7 +295,10 @@ public class IRGenerator
 							if(((VariDeclNode)now).typeNode.singleTypeNode.type.equals("bool"))
 							{
 								MovIns ins = new MovIns();
-								ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
+								if(curScope == topScope)
+									ins.dest = "@" + ((VariInitNode)node).id;
+								else
+									ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
 								ins.insName = "move";
 								if(((ConstNode)((VariInitNode)node).exprNode).text.equals("true"))
 									ins.src = "1";
@@ -299,7 +310,10 @@ public class IRGenerator
 						else
 						{
 							MovIns ins = new MovIns();
-							ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
+							if(curScope == topScope)
+								ins.dest = "@" + ((VariInitNode)node).id;
+							else
+								ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
 							ins.insName = "move";
 							Pair<String, BasicBlock> temp = pass(((VariInitNode)node).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 							ins.src = temp.getKey();
@@ -316,7 +330,10 @@ public class IRGenerator
 					if(((VariInitNode)node).assign)
 					{
 						MovIns ins = new MovIns();
-						ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
+						if(curScope == topScope)
+							ins.dest = "@" + ((VariInitNode)node).id;
+						else
+							ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
 						ins.insName = "move";
 						Pair<String, BasicBlock> temp = pass(((VariInitNode)node).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 						ins.src = temp.getKey();
@@ -333,8 +350,9 @@ public class IRGenerator
 			FuncBlock A_A = new FuncBlock(((ClassDeclNode)now).id + "." + ((ClassDeclNode)now).id);
 			funcBlock.add(A_A);
 			A_A.param.add("$this_" + ((ClassDeclNode)now).scope.scopeID);
-			BasicBlock A_A_entry = new BasicBlock(((ClassDeclNode)now).id + "." + ((ClassDeclNode)now).id + "_entry");
+			BasicBlock A_A_entry = new BasicBlock(((ClassDeclNode)now).id + "." + ((ClassDeclNode)now).id);
 			A_A.entry = A_A_entry;
+			A_A_entry.ofFunc = A_A;
 			
 			String reg = "$this_" + ((ClassDeclNode)now).scope.scopeID;
 			BasicBlock temp = A_A_entry;
@@ -354,8 +372,9 @@ public class IRGenerator
 					{
 						A_.param.add("$" + p.name + "_" + ((FuncDeclNode)node).scope.scopeID);
 					}
-					BasicBlock A_entry = new BasicBlock(((ClassDeclNode)now).id + "." + ((FuncDeclNode)node).id + "_entry");
+					BasicBlock A_entry = new BasicBlock(((ClassDeclNode)now).id + "." + ((FuncDeclNode)node).id);
 					A_.entry = A_entry;
+					A_entry.ofFunc = A_;
 					pass(node, ((FuncDeclNode)node).scope, A_entry, false, true, recHead, trueBlock, falseBlock);
 				}
 			}
@@ -393,6 +412,7 @@ public class IRGenerator
 				{
 					BasicBlock ifFalse = new BasicBlock();
 					curBlock.ifFalse = ifFalse;
+					ifFalse.ofFunc = curBlock.ofFunc;
 					curBlock = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 				}
 				else if(node instanceof ForInitNode)
@@ -409,6 +429,7 @@ public class IRGenerator
 				{
 					BasicBlock ifFalse = new BasicBlock();
 					curBlock.ifFalse = ifFalse;
+					ifFalse.ofFunc = curBlock.ofFunc;
 					curBlock = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 				}
 				else
@@ -437,6 +458,7 @@ public class IRGenerator
 			if(((SlctStmtNode)now).elifExprNode.size() == 0)
 			{
 				BasicBlock bb = new BasicBlock();
+				bb.ofFunc = curBlock.ofFunc;
 				BasicBlock nowBlock;
 				
 				JumpIns ins = new JumpIns();
@@ -445,7 +467,7 @@ public class IRGenerator
 				ins.cond = temp.getKey();
 				curBlock = temp.getValue();
 				ins.ifTrue = bb.blockID;
-				ins.ifFalse = curBlock.ifFalse.blockID;
+				ins.ifFalse = finalBlock.blockID;
 				curBlock.ifTrue = bb;
 				curBlock.ifFalse = finalBlock;
 				curBlock.insList.add(ins);
@@ -461,6 +483,7 @@ public class IRGenerator
 				if(((SlctStmtNode)now).haveElse)
 				{
 					BasicBlock eb = new BasicBlock();
+					eb.ofFunc = curBlock.ofFunc;
 					curBlock.ifFalse = eb;
 					
 					ins.ifFalse = eb.blockID;
@@ -480,6 +503,7 @@ public class IRGenerator
 				BasicBlock nowBlock;
 				BasicBlock abb = new BasicBlock();
 				BasicBlock afbb = new BasicBlock();
+				abb.ofFunc = afbb.ofFunc = curBlock.ofFunc;
 				
 				JumpIns ains = new JumpIns();
 				ains.insName = "br";
@@ -507,6 +531,7 @@ public class IRGenerator
 				{
 					BasicBlock bb = new BasicBlock();
 					BasicBlock fbb = new BasicBlock();
+					bb.ofFunc = fbb.ofFunc = curBlock.ofFunc;
 					
 					JumpIns ins = new JumpIns();
 					ins.insName = "br";
@@ -581,6 +606,7 @@ public class IRGenerator
 			}
 			
 			BasicBlock bb = new BasicBlock();
+			bb.ofFunc = curBlock.ofFunc;
 			
 			if(((ForNode)now).haveCond)
 			{
@@ -641,6 +667,7 @@ public class IRGenerator
 			curBlock.ifFalse = null;
 			
 			BasicBlock bb = new BasicBlock();
+			bb.ofFunc = curBlock.ofFunc;
 			
 			JumpIns ins = new JumpIns();
 			ins.insName = "br";
@@ -922,16 +949,21 @@ public class IRGenerator
 		
 		else if(now instanceof PosNegNode)
 		{
-			if(((PosNegNode)now).op.equals("sub"))
+			if(((PosNegNode)now).op.equals("-"))
 			{
+				MovIns mins = new MovIns();
+				mins.insName = "move";
+				mins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				mins.src = pass(((PosNegNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				curBlock.insList.add(mins);
+				
 				ArithIns ins = new ArithIns();
 				ins.insName = "neg";
-				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((PosNegNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				ins.dest = ins.src1 = mins.dest;
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
-			else if(((PosNegNode)now).op.equals("add"))
+			else if(((PosNegNode)now).op.equals("+"))
 			{
 				return pass(((PosNegNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 			}
@@ -951,10 +983,15 @@ public class IRGenerator
 			}
 			else if(((NotNode)now).op.equals("~"))
 			{
+				MovIns mins = new MovIns();
+				mins.insName = "move";
+				mins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				mins.src = pass(((NotNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				curBlock.insList.add(mins);
+				
 				BitIns ins = new BitIns();
 				ins.insName = "not";
-				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((NotNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				ins.dest = ins.src1 = mins.dest;
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
@@ -973,20 +1010,27 @@ public class IRGenerator
 					|| ((BinaryNode)now).op.equals("/")
 					|| ((BinaryNode)now).op.equals("%"))
 			{
+				String s1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				String s2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				MovIns mins = new MovIns();
+				mins.insName = "move";
+				mins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				mins.src = s1;
+				curBlock.insList.add(mins);
+				
 				ArithIns ins = new ArithIns();
 				if(((BinaryNode)now).op.equals("+"))
 					ins.insName = "add";
 				if(((BinaryNode)now).op.equals("-"))
 					ins.insName = "sub";
 				if(((BinaryNode)now).op.equals("*"))
-					ins.insName = "mul";
+					ins.insName = "imul";
 				if(((BinaryNode)now).op.equals("/"))
 					ins.insName = "div";
 				if(((BinaryNode)now).op.equals("%"))
 					ins.insName = "rem";
-				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
-				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				ins.dest = ins.src1 = mins.dest;
+				ins.src2 = s2;
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
@@ -996,6 +1040,14 @@ public class IRGenerator
 					|| ((BinaryNode)now).op.equals("|")
 					|| ((BinaryNode)now).op.equals("^"))
 			{
+				String s1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				String s2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				MovIns mins = new MovIns();
+				mins.insName = "move";
+				mins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				mins.src = s1;
+				curBlock.insList.add(mins);
+				
 				BitIns ins = new BitIns();
 				if(((BinaryNode)now).op.equals("<<"))
 					ins.insName = "shl";
@@ -1007,8 +1059,7 @@ public class IRGenerator
 					ins.insName = "or";
 				if(((BinaryNode)now).op.equals("^"))
 					ins.insName = "xor";
-				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				ins.dest = ins.src1 = mins.dest; //"$_t" + (tempRegNum++) + "_" + curScope.scopeID;
 				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
@@ -1049,6 +1100,7 @@ public class IRGenerator
 					falseBlock = new BasicBlock();
 					BasicBlock finalBlock = new BasicBlock();
 					trueBlock.to = falseBlock.to = finalBlock;
+					trueBlock.ofFunc = falseBlock.ofFunc = finalBlock.ofFunc = curBlock.ofFunc;
 					
 					MovIns ins = new MovIns();
 					ins.insName = "move";
@@ -1075,6 +1127,7 @@ public class IRGenerator
 					if(((BinaryNode)now).op.equals("&&"))
 					{
 						BasicBlock nb = new BasicBlock();
+						nb.ofFunc = curBlock.ofFunc;
 						Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, nb, falseBlock);
 						String outcome = temp.getKey();
 						curBlock = temp.getValue();
@@ -1106,6 +1159,7 @@ public class IRGenerator
 					else if(((BinaryNode)now).op.equals("||"))
 					{
 						BasicBlock nb = new BasicBlock();
+						nb.ofFunc = curBlock.ofFunc;
 						Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, nb);
 						String outcome = temp.getKey();
 						curBlock = temp.getValue();
@@ -1143,6 +1197,7 @@ public class IRGenerator
 					String outcome = temp.getKey();
 					curBlock = temp.getValue();
 					BasicBlock nb = new BasicBlock();
+					nb.ofFunc = curBlock.ofFunc;
 					
 					JumpIns ains = new JumpIns();
 					ains.insName = "br";
@@ -1162,6 +1217,7 @@ public class IRGenerator
 					String outcome = temp.getKey();
 					curBlock = temp.getValue();
 					BasicBlock nb = new BasicBlock();
+					nb.ofFunc = curBlock.ofFunc;
 					
 					JumpIns ains = new JumpIns();
 					ains.insName = "br";
@@ -1252,7 +1308,11 @@ public class IRGenerator
 				
 				return new Pair<>(ins2.dest, curBlock);
 			}
-			String temp = "$" + ((IdNode)now).id + "_" + ((IdNode)now).ofScope.scopeID;
+			String temp = "";
+			if(((IdNode)now).ofScope == topScope)
+				temp = "@" + ((IdNode)now).id;
+			else
+				temp = "$" + ((IdNode)now).id + "_" + ((IdNode)now).ofScope.scopeID;
 			return new Pair<>(temp, curBlock);
 		}
 		
