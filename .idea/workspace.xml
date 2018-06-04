@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="245" />
+    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="252" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72816ae8-fb79-49b9-8a8d-6f8a5ecaffc8" name="默认" comment="" />
@@ -18,7 +18,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
+            <state relative-caret-position="210">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -30,8 +30,20 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8967">
-              <caret line="427" selection-start-line="427" selection-end-line="427" />
+            <state relative-caret-position="10332">
+              <caret line="492" column="52" selection-start-line="492" selection-start-column="52" selection-end-line="492" selection-end-column="52" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FuncBlock.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="357">
+              <caret line="17" column="32" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -42,8 +54,13 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="10" selection-start-line="10" selection-end-line="10" />
+            <state relative-caret-position="189">
+              <caret line="9" selection-start-line="9" selection-end-line="9" />
+              <folding>
+                <element signature="method#add_alloc#0;class#IRGenerator#0" />
+                <element signature="method#add_int_size#0;class#IRGenerator#0" />
+                <element signature="method#add_string_length#0;class#IRGenerator#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -60,14 +77,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>load</find>
-      <find>c</find>
-      <find>ins3i</find>
-      <find>forinitnode</find>
-      <find>funcDecl</find>
-      <find>while</find>
-      <find />
-      <find>index</find>
       <find>varidecl</find>
       <find>variinitnode</find>
       <find>,</find>
@@ -90,6 +99,14 @@
       <find>_alloc</find>
       <find>member</find>
       <find>&quot;add&quot;</find>
+      <find>funccallins</find>
+      <find>getstring</find>
+      <find>string</find>
+      <find>length</find>
+      <find>funcc</find>
+      <find>getint</find>
+      <find />
+      <find>256</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -149,8 +166,8 @@
         <option value="$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
         <option value="$PROJECT_DIR$/MxGrammar/Mx.g4" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
@@ -172,7 +189,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-10" />
     <option name="width" value="1390" />
     <option name="height" value="1756" />
@@ -182,7 +199,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
       <pane id="Scope" />
       <pane id="PackagesPane" />
       <pane id="ProjectPane">
@@ -213,6 +229,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -407,11 +424,12 @@
       <workItem from="1528080971772" duration="1515000" />
       <workItem from="1528083968720" duration="2594000" />
       <workItem from="1528088546218" duration="7822000" />
+      <workItem from="1528112922991" duration="8649000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="394656000" />
+    <option name="totallyTimeSpent" value="403305000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -423,7 +441,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="-6" width="1381" height="885" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32997763" />
@@ -437,11 +455,11 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4989339" weight="0.33471075" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.4619687" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.1723356" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.17430703" />
       <window_info id="设计器" order="3" />
       <window_info anchor="right" id="Database" order="8" />
       <window_info anchor="bottom" x="87" y="202" width="1195" height="468" id="ANTLR Preview" order="14" type="WINDOWED" weight="0.5156599" />
@@ -507,12 +525,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java</url>
-          <line>527</line>
+          <line>569</line>
           <properties />
           <option name="timeStamp" value="41" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="43" />
+      <option name="time" value="45" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -805,16 +823,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="30" selection-start-line="30" selection-end-line="30" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1344">
@@ -822,26 +830,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="10" selection-start-line="10" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8967">
-          <caret line="427" selection-start-line="427" selection-end-line="427" />
+        <state relative-caret-position="10332">
+          <caret line="492" column="52" selection-start-line="492" selection-start-column="52" selection-end-line="492" selection-end-column="52" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="17" column="32" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+          <folding>
+            <element signature="method#add_alloc#0;class#IRGenerator#0" />
+            <element signature="method#add_int_size#0;class#IRGenerator#0" />
+            <element signature="method#add_string_length#0;class#IRGenerator#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
+        <state relative-caret-position="210">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />

@@ -49,6 +49,12 @@ public class NASMBuilder
 		o.printf("\n\t\textern\t\tmalloc\n");
 		o.printf("\t\textern\t\tputs\n");
 		o.printf("\t\textern\t\tprintf\n");
+		o.printf("\t\textern\t\tscanf\n");
+		o.printf("\t\textern\t\tgets\n");
+		o.printf("\t\textern\t\tsprintf\n");
+		
+		o.printf("\n\t\tsection\t\t.data\n");
+		o.printf("_getInt:\t\tdb\t\t\"%%lld\", 0\n");
 		
 		o.printf("\n\t\tsection\t\t.bss\n");
 		
@@ -76,7 +82,8 @@ public class NASMBuilder
 		
 		for(FuncBlock fb : ir.funcBlock)
 		{
-			generate(fb.entry);
+			if(fb.used || fb.funcName.equals("__init"))
+				generate(fb.entry);
 		}
 	}
 	
@@ -383,8 +390,6 @@ public class NASMBuilder
 						op = "qword[" + str + "]";
 					}
 					o.printf("\t\tmov\t\t%s, %s\n", temp, op);
-					o.printf("\t\tadd\t\t%s, 8\n", temp);
-					
 					
 					if(funcName.equals("println"))
 					{
@@ -412,6 +417,81 @@ public class NASMBuilder
 					}
 					
 					o.printf("\t\tmov\t\t%s, rax\n", s2);
+				}
+				
+				else if(funcName.equals("getString"))
+				{
+					int choice = isReg(((FuncCallIns)ins).dest);
+					String dest = null;
+					if(choice == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						dest = "qword[" + pos + "]";
+					}
+					else if(choice == 2)
+					{
+						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+					}
+					
+					o.printf("\t\tmov\t\trdi, 256\n");
+					o.printf("\t\tcall\t\tmalloc\n");
+					o.printf("\t\tmov\t\t%s, rax\n", dest);
+					
+					o.printf("\t\tmov\t\trdi, %s\n", dest);
+					o.printf("\t\tcall\t\tgets\n");
+				}
+				
+				else if(funcName.equals("getInt"))
+				{
+					int choice = isReg(((FuncCallIns)ins).dest);
+					String dest = null;
+					if(choice == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						dest = "[" + pos + "]";
+					}
+					else if(choice == 2)
+					{
+						dest = "[" + ((FuncCallIns)ins).dest + "]";
+					}
+
+					o.printf("\t\tmov\t\trdi, _getInt\n");
+					o.printf("\t\tlea\t\trax, %s\n", dest);
+					o.printf("\t\tmov\t\trsi, rax\n");
+					o.printf("\t\tmov\t\trax, 0\n");
+					o.printf("\t\tcall\t\tscanf\n");
+				}
+				
+				else if(funcName.equals("toString"))
+				{
+					int cs = isReg(((FuncCallIns)ins).ops.get(0));
+					int cd = isReg(((FuncCallIns)ins).dest);
+					String src = null, dest = null;
+					if(cs == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+						src = "qword[" + pos + "]";
+					}
+					
+					if(cd == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						dest = "qword[" + pos + "]";
+					}
+					else if(cd == 2)
+					{
+						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+					}
+					
+					o.printf("\t\tmov\t\trdi, 256\n");
+					o.printf("\t\tcall\t\tmalloc\n");
+					o.printf("\t\tmov\t\t%s, rax\n", dest);
+					
+					o.printf("\t\tmov\t\trdi, %s\n", dest);
+					o.printf("\t\tmov\t\trsi, _getInt\n");
+					o.printf("\t\tmov\t\trdx, %s\n", src);
+					o.printf("\t\tmov\t\trax, 0\n");
+					o.printf("\t\tcall\t\tsprintf\n");
 				}
 				
 				else
@@ -961,6 +1041,26 @@ public class NASMBuilder
 			}
 			else if(ins instanceof FuncCallIns)
 			{
+				String funcName = ((FuncCallIns)ins).funcName;
+				
+				for(FuncBlock f : ir.funcBlock)
+				{
+					if(f.funcName.equals(funcName))
+					{
+						if(!f.funcName.equals("_alloc"))
+						{
+							f.used = true;
+							break;
+						}
+						else
+						{
+							if(!fb.funcName.equals("_alloc"))
+								f.used = true;
+							break;
+						}
+					}
+				}
+				
 				if(((FuncCallIns)ins).dest.substring(0, 1).equals("$"))
 				{
 					if(!fb.memPos.containsKey(((FuncCallIns)ins).dest))

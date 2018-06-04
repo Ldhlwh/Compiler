@@ -7,7 +7,6 @@ import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
 import javafx.util.Pair;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -321,18 +320,61 @@ public class IRGenerator
 		
 		length.param.add("$_pos");
 		
-		MemAccIns ins = new MemAccIns();
-		ins.insName = "load";
-		ins.dest = "$_t" + (tempRegNum++);
-		ins.size = bytes.get("addr") + "";
-		ins.offset = 0;
-		ins.addr = "$_pos";
-		entry.insList.add(ins);
+		BasicBlock bm = new BasicBlock(), bl = new BasicBlock();
+		bm.ofFunc = bl.ofFunc = length;
+		entry.to = bm;
+		bm.ifTrue = bl;
+		bm.ifFalse = bm;
 		
-		JumpIns jins = new JumpIns();
-		jins.insName = "ret";
-		jins.src = ins.dest;
-		entry.insList.add(jins);
+		MovIns i1 = new MovIns();
+		i1.insName = "move";
+		i1.dest = "$_cnt";
+		i1.src = "-1";
+		entry.insList.add(i1);
+		
+		JumpIns i2 = new JumpIns();
+		i2.insName = "jump";
+		i2.target = bm.blockID;
+		entry.insList.add(i2);
+		
+		MemAccIns i3 = new MemAccIns();
+		i3.insName = "load";
+		i3.dest = "$_t";
+		i3.size = "1";
+		i3.addr = "$_pos";
+		i3.offset = 0;
+		bm.insList.add(i3);
+		
+		ArithIns i4 = new ArithIns();
+		i4.insName = "add";
+		i4.dest = i4.src1 = "$_pos";
+		i4.src2 = "1";
+		bm.insList.add(i4);
+		
+		ArithIns i5 = new ArithIns();
+		i5.insName = "add";
+		i5.dest = i5.src1 = "$_cnt";
+		i5.src2 = "1";
+		bm.insList.add(i5);
+		
+		CondSetIns i6 = new CondSetIns();
+		i6.insName = "seq";
+		i6.dest = "$_cond";
+		i6.src1 = "$_t";
+		i6.src2 = "0";
+		bm.insList.add(i6);
+		
+		JumpIns i7 = new JumpIns();
+		i7.insName = "br";
+		i7.cond = "$_cond";
+		i7.ifTrue = bl.blockID;
+		i7.ifFalse = bm.blockID;
+		bm.insList.add(i7);
+		
+		JumpIns i8 = new JumpIns();
+		i8.insName = "ret";
+		i8.src = "$_cnt";
+		bl.insList.add(i8);
 	}
 	
 	public void passRoot()
@@ -1473,7 +1515,7 @@ public class IRGenerator
 				MemAccIns ins = new MemAccIns();
 				ins.insName = "alloc";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.size = bytes.get("addr") + len + "";
+				ins.size = len + "";
 				curBlock.insList.add(ins);
 				
 				MemAccIns ins2 = new MemAccIns();
@@ -1491,7 +1533,7 @@ public class IRGenerator
 					ins3.size = bytes.get("char") + "";
 					ins3.addr = ins.dest;
 					ins3.src = (int)(text.charAt(i)) + "";
-					ins3.offset = bytes.get("addr") + i;
+					ins3.offset = i;
 					curBlock.insList.add(ins3);
 				}
 				return new Pair<>(ins.dest, curBlock);

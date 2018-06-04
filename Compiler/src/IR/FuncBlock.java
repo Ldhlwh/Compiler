@@ -15,6 +15,8 @@ public class FuncBlock
 	public Map<String, Integer> memPos = new HashMap<>();
 	public int memSize = 0;
 	
+	public boolean used = false;
+	
 	public FuncBlock(String name)
 	{
 		funcName = name;
