@@ -52,6 +52,9 @@ public class NASMBuilder
 		o.printf("\t\textern\t\tscanf\n");
 		o.printf("\t\textern\t\tgets\n");
 		o.printf("\t\textern\t\tsprintf\n");
+		o.printf("\t\textern\t\tstrcpy\n");
+		o.printf("\t\textern\t\tstrcat\n");
+		o.printf("\t\textern\t\tstrcmp\n");
 		
 		o.printf("\n\t\tsection\t\t.data\n");
 		o.printf("_getInt:\t\tdb\t\t\"%%lld\", 0\n");
@@ -492,6 +495,108 @@ public class NASMBuilder
 					o.printf("\t\tmov\t\trdx, %s\n", src);
 					o.printf("\t\tmov\t\trax, 0\n");
 					o.printf("\t\tcall\t\tsprintf\n");
+				}
+				
+				else if(funcName.equals("string.copy"))
+				{
+					int cd = isReg(((FuncCallIns)ins).dest);
+					int cs = isReg(((FuncCallIns)ins).ops.get(0));
+					String dest = null, src = null;
+					if(cs == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+						src = "qword[" + pos + "]";
+					}
+					if(cd == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						dest = "qword[" + pos + "]";
+					}
+					else if(cd == 2)
+					{
+						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+					}
+					
+					o.printf("\t\tmov\t\trdi, 256\n");
+					o.printf("\t\tcall\t\tmalloc\n");
+					o.printf("\t\tmov\t\t%s, rax\n", dest);
+					
+					o.printf("\t\tmov\t\trdi, %s\n", dest);
+					o.printf("\t\tmov\t\trsi, %s\n", src);
+					o.printf("\t\tcall\t\tstrcpy\n");
+				}
+				
+				else if(funcName.equals("string.cat"))
+				{
+					int cd = isReg(((FuncCallIns)ins).dest);
+					int cs1 = isReg(((FuncCallIns)ins).ops.get(0));
+					int cs2 = isReg(((FuncCallIns)ins).ops.get(1));
+					String dest = null, src1 = null, src2 = null;
+					if(cs1 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+						src1 = "qword[" + pos + "]";
+					}
+					if(cs2 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
+						src2 = "qword[" + pos + "]";
+					}
+					if(cd == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						dest = "qword[" + pos + "]";
+					}
+					else if(cd == 2)
+					{
+						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+					}
+					
+					o.printf("\t\tmov\t\trdi, 256\n");
+					o.printf("\t\tcall\t\tmalloc\n");
+					o.printf("\t\tmov\t\t%s, rax\n", dest);
+					
+					o.printf("\t\tmov\t\trdi, %s\n", dest);
+					o.printf("\t\tmov\t\trsi, %s\n", src1);
+					o.printf("\t\tcall\t\tstrcpy\n");
+					
+					o.printf("\t\tmov\t\trdi, %s\n", dest);
+					o.printf("\t\tmov\t\trsi, %s\n", src2);
+					o.printf("\t\tcall\t\tstrcat\n");
+				}
+				else if(funcName.equals("string.cmp"))
+				{
+					int cd = isReg(((FuncCallIns)ins).dest);
+					int cs1 = isReg(((FuncCallIns)ins).ops.get(0));
+					int cs2 = isReg(((FuncCallIns)ins).ops.get(1));
+					String dest = null, src1 = null, src2 = null;
+					if(cs1 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+						src1 = "qword[" + pos + "]";
+					}
+					if(cs2 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
+						src2 = "qword[" + pos + "]";
+					}
+					if(cd == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						dest = "qword[" + pos + "]";
+					}
+					else if(cd == 2)
+					{
+						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+					}
+					
+					
+					o.printf("\t\tmov\t\trdi, %s\n", src1);
+					o.printf("\t\tmov\t\trsi, %s\n", src2);
+					o.printf("\t\tcall\t\tstrcmp\n");
+					
+					o.printf("\t\tmov\t\t%s, 0\n", dest);
+					o.printf("\t\tsub\t\t%s, rax\n", dest);
 				}
 				
 				else

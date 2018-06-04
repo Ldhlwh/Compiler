@@ -1150,11 +1150,16 @@ public class IRGenerator
 		{
 			if(((NotNode)now).op.equals("!"))
 			{
+				MovIns mins = new MovIns();
+				mins.insName = "move";
+				mins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				mins.src = "1";
+				curBlock.insList.add(mins);
+				
 				ArithIns ins = new ArithIns();
 				ins.insName = "sub";
-				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				ins.dest = ins.src1 = mins.dest;
 				ins.src2 = pass(((NotNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
-				ins.src1 = "1";
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
@@ -1182,6 +1187,21 @@ public class IRGenerator
 		else if(now instanceof BinaryNode)
 		{
 			if(((BinaryNode)now).op.equals("+")
+					&& ((BinaryNode)now).leftExprNode.ofType.equals("string"))
+			{
+				String s1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				String s2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				
+				FuncCallIns ins = new FuncCallIns();
+				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				ins.insName = "call";
+				ins.funcName = "string.cat";
+				ins.ops.add(s1);
+				ins.ops.add(s2);
+				curBlock.insList.add(ins);
+				return new Pair<>(ins.dest, curBlock);
+			}
+			else if(((BinaryNode)now).op.equals("+")
 					|| ((BinaryNode)now).op.equals("-")
 					|| ((BinaryNode)now).op.equals("*")
 					|| ((BinaryNode)now).op.equals("/")
@@ -1240,6 +1260,44 @@ public class IRGenerator
 				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
+			}
+			else if(((BinaryNode)now).leftExprNode.ofType.equals("string")
+					&& (((BinaryNode)now).op.equals("<")
+					|| ((BinaryNode)now).op.equals(">")
+					|| ((BinaryNode)now).op.equals("<=")
+					|| ((BinaryNode)now).op.equals(">=")
+					|| ((BinaryNode)now).op.equals("==")
+					|| ((BinaryNode)now).op.equals("!=")))
+			{
+				String s1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				String s2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				
+				FuncCallIns ins = new FuncCallIns();
+				ins.insName = "call";
+				ins.funcName = "string.cmp";
+				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				ins.ops.add(s1);
+				ins.ops.add(s2);
+				curBlock.insList.add(ins);
+			
+				CondSetIns cins = new CondSetIns();
+				if(((BinaryNode)now).op.equals("<"))
+					cins.insName = "slt";
+				if(((BinaryNode)now).op.equals(">"))
+					cins.insName = "sgt";
+				if(((BinaryNode)now).op.equals("<="))
+					cins.insName = "sle";
+				if(((BinaryNode)now).op.equals(">="))
+					cins.insName = "sge";
+				if(((BinaryNode)now).op.equals("=="))
+					cins.insName = "seq";
+				if(((BinaryNode)now).op.equals("!="))
+					cins.insName = "sne";
+				cins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				cins.src1 = ins.dest;
+				cins.src2 = "0";
+				curBlock.insList.add(cins);
+				return new Pair<>(cins.dest, curBlock);
 			}
 			else if(((BinaryNode)now).op.equals("<")
 					|| ((BinaryNode)now).op.equals(">")
