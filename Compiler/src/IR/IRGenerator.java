@@ -1492,7 +1492,7 @@ public class IRGenerator
 				i5.insName = "move";
 				i5.dest = ins.dest;
 				i5.src = "0";
-				bt.insList.add(i5);
+				bf.insList.add(i5);
 				
 				JumpIns i3 = new JumpIns();
 				i3.insName = "jump";
