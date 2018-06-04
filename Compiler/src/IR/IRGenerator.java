@@ -377,6 +377,139 @@ public class IRGenerator
 		bl.insList.add(i8);
 	}
 	
+	private void add_string_substring()
+	{
+		FuncBlock f = new FuncBlock("string.substring");
+		funcBlock.add(f);
+		BasicBlock entry = new BasicBlock("string.substring");
+		f.entry = entry;
+		entry.ofFunc = f;
+		
+		BasicBlock bm = new BasicBlock(), bl = new BasicBlock();
+		bm.ofFunc = bl.ofFunc = f;
+		entry.to = bm;
+		bm.ifTrue = bl;
+		bm.ifFalse = bm;
+		
+		f.param.add("$_src");
+		f.param.add("$_st");
+		f.param.add("$_ed");
+		
+		MemAccIns i1 = new MemAccIns();
+		i1.insName = "alloc";
+		i1.dest = "$_dest";
+		i1.size = "256";
+		entry.insList.add(i1);
+		
+		MovIns i2 = new MovIns();
+		i2.insName = "move";
+		i2.dest = "$_tdest";
+		i2.src = i1.dest;
+		entry.insList.add(i2);
+		
+		ArithIns i3 = new ArithIns();
+		i3.insName = "add";
+		i3.dest = i3.src1 = "$_src";
+		i3.src2 = "$_st";
+		entry.insList.add(i3);
+		
+		JumpIns i4 = new JumpIns();
+		i4.insName = "jump";
+		i4.target = bm.blockID;
+		
+		MemAccIns i5 = new MemAccIns();
+		i5.insName = "load";
+		i5.dest = "$_t";
+		i5.size = "1";
+		i5.addr = "$_src";
+		i5.offset = 0;
+		bm.insList.add(i5);
+		
+		MemAccIns i6 = new MemAccIns();
+		i6.insName = "store";
+		i6.size = "1";
+		i6.addr = "$_tdest";
+		i6.src = "$_t";
+		i6.offset = 0;
+		bm.insList.add(i6);
+		
+		ArithIns i7 = new ArithIns();
+		i7.insName = "add";
+		i7.dest = i7.src1 = "$_src";
+		i7.src2 = "1";
+		bm.insList.add(i7);
+		
+		ArithIns i8 = new ArithIns();
+		i8.insName = "add";
+		i8.dest = i8.src1 = "$_tdest";
+		i8.src2 = "1";
+		bm.insList.add(i8);
+		
+		ArithIns i9 = new ArithIns();
+		i9.insName = "add";
+		i9.dest = i9.src1 = "$_st";
+		i9.src2 = "1";
+		bm.insList.add(i9);
+		
+		CondSetIns i10 = new CondSetIns();
+		i10.insName = "seq";
+		i10.dest = "$_cond";
+		i10.src1 = "$_st";
+		i10.src2 = "$_ed";
+		bm.insList.add(i10);
+		
+		JumpIns i11 = new JumpIns();
+		i11.insName = "br";
+		i11.cond = "$_cond";
+		i11.ifTrue = bl.blockID;
+		i11.ifFalse = bm.blockID;
+		bm.insList.add(i11);
+		
+		MemAccIns i12 = new MemAccIns();
+		i12.insName = "store";
+		i12.size = "1";
+		i12.addr = "$_tdest";
+		i12.src = "0";
+		i12.offset = 0;
+		bl.insList.add(i12);
+		
+		JumpIns i13 = new JumpIns();
+		i13.insName = "ret";
+		i13.src = "$_dest";
+		bl.insList.add(i13);
+	}
+	
+	private void add_string_ord()
+	{
+		FuncBlock f = new FuncBlock("string.ord");
+		funcBlock.add(f);
+		BasicBlock entry = new BasicBlock("string.ord");
+		f.entry = entry;
+		entry.ofFunc = f;
+		
+		f.param.add("$_src");
+		f.param.add("$_pos");
+		
+		ArithIns i1 = new ArithIns();
+		i1.insName = "add";
+		i1.dest = i1.src1 = "$_src";
+		i1.src2 = "$_pos";
+		entry.insList.add(i1);
+		
+		MemAccIns i2 = new MemAccIns();
+		i2.insName = "load";
+		i2.dest = "$_t";
+		i2.size = "1";
+		i2.addr = "$_src";
+		i2.offset = 0;
+		entry.insList.add(i2);
+		
+		JumpIns i3 = new JumpIns();
+		i3.insName = "ret";
+		i3.src = "$_t";
+		entry.insList.add(i3);
+	}
+	
 	public void passRoot()
 	{
 		FuncBlock __init = new FuncBlock("__init");
@@ -388,6 +521,8 @@ public class IRGenerator
 		add_alloc();
 		add_int_size();
 		add_string_length();
+		add_string_substring();
+		add_string_ord();
 		
 		for(ASTNode node : rootNode.progSecNode)
 		{

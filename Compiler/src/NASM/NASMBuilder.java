@@ -52,9 +52,11 @@ public class NASMBuilder
 		o.printf("\t\textern\t\tscanf\n");
 		o.printf("\t\textern\t\tgets\n");
 		o.printf("\t\textern\t\tsprintf\n");
+		o.printf("\t\textern\t\tsscanf\n");
 		o.printf("\t\textern\t\tstrcpy\n");
 		o.printf("\t\textern\t\tstrcat\n");
 		o.printf("\t\textern\t\tstrcmp\n");
+		o.printf("\t\textern\t\tord\n");
 		
 		o.printf("\n\t\tsection\t\t.data\n");
 		o.printf("_getInt:\t\tdb\t\t\"%%lld\", 0\n");
@@ -363,7 +365,7 @@ public class NASMBuilder
 						dest = "qword[" + ((MemAccIns)ins).dest + "]";
 					}
 					if(size.equals("1"))
-						o.printf("\t\tmov\t\t%s, [%s]\n", temp2, temp);
+						o.printf("\t\tmov\t\t%sb, [%s]\n", temp2, temp);
 					else if(size.equals("8"))
 						o.printf("\t\tmov\t\t%s, qword[%s]\n", temp2, temp);
 					o.printf("\t\tmov\t\t%s, %s\n", dest, temp2);
@@ -599,6 +601,78 @@ public class NASMBuilder
 					o.printf("\t\tsub\t\t%s, rax\n", dest);
 				}
 				
+				else if(funcName.equals("string.parseInt"))
+				{
+					int cs = isReg(((FuncCallIns)ins).ops.get(0));
+					int cd = isReg(((FuncCallIns)ins).dest);
+					String src = null, dest = null;
+					if(cs == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+						src = "qword[" + pos + "]";
+					}
+					
+					if(cd == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						dest = pos;
+					}
+					else if(cd == 2)
+					{
+						dest = ((FuncCallIns)ins).dest;
+					}
+					
+					o.printf("\t\tlea\t\t%s, [%s]\n", temp, dest);
+					
+					o.printf("\t\tmov\t\trdi, %s\n", src);
+					o.printf("\t\tmov\t\trsi, _getInt\n");
+					o.printf("\t\tmov\t\trdx, %s\n", temp);
+					o.printf("\t\tmov\t\trax, 0\n");
+					o.printf("\t\tcall\t\tsscanf\n");
+				}
+				/*
+				else if(funcName.equals("string.ord"))
+				{
+					int cs1 = isReg(((FuncCallIns)ins).ops.get(0));
+					int cs2 = isReg(((FuncCallIns)ins).ops.get(1));
+					int cd = isReg(((FuncCallIns)ins).dest);
+					String dest = null, src1 = null, src2 = null;
+				
+					if(cd == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						dest = "qword[" + pos + "]";
+					}
+					if(cs1 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+						src1 = "qword[" + pos + "]";
+					}
+					else if(cs1 == 2)
+					{
+						src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+					}
+					if(cs2 == 0)
+					{
+						src2 = ((FuncCallIns)ins).ops.get(1);
+					}
+					else if(cs2 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
+						src2 = "qword[" + pos + "]";
+					}
+					else if(cs2 == 2)
+					{
+						src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
+					}
+					
+					o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
+					o.printf("\t\tadd\t\t%s, %s\n", temp, src2);
+					o.printf("\t\tmov\t\trdi, %s\n", temp);
+					o.printf("\t\tcall\t\tord\n");
+					o.printf("\t\tmov\t\t%s, rax\n", dest);
+				}
+				*/
 				else
 				{
 					FuncBlock curFB = null;
