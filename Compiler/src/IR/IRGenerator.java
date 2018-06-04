@@ -698,9 +698,9 @@ public class IRGenerator
 			{
 				if(node instanceof SlctStmtNode)
 				{
-					BasicBlock ifFalse = new BasicBlock();
-					curBlock.ifFalse = ifFalse;
-					ifFalse.ofFunc = curBlock.ofFunc;
+					//BasicBlock ifFalse = new BasicBlock();
+					//curBlock.ifFalse = ifFalse;
+					//ifFalse.ofFunc = curBlock.ofFunc;
 					curBlock = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 				}
 				else if(node instanceof ForInitNode)
@@ -709,15 +709,16 @@ public class IRGenerator
 				}
 				else if(node instanceof ForNode)
 				{
-					BasicBlock ifFalse = new BasicBlock();
-					curBlock.ifFalse = ifFalse;
+					//BasicBlock ifFalse = new BasicBlock();
+					//ifFalse.ofFunc = curBlock.ofFunc;
+					//curBlock.ifFalse = ifFalse;
 					curBlock = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 				}
 				else if(node instanceof WhileNode)
 				{
-					BasicBlock ifFalse = new BasicBlock();
-					curBlock.ifFalse = ifFalse;
-					ifFalse.ofFunc = curBlock.ofFunc;
+					//BasicBlock ifFalse = new BasicBlock();
+					//curBlock.ifFalse = ifFalse;
+					//ifFalse.ofFunc = curBlock.ofFunc;
 					curBlock = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getValue();
 				}
 				else
@@ -740,8 +741,8 @@ public class IRGenerator
 		
 		else if(now instanceof SlctStmtNode)
 		{
-			BasicBlock finalBlock = curBlock.ifFalse;
-			curBlock.ifFalse = null;
+			BasicBlock finalBlock = new BasicBlock();
+			finalBlock.ofFunc = curBlock.ofFunc;
 			
 			if(((SlctStmtNode)now).elifExprNode.size() == 0)
 			{
@@ -885,8 +886,8 @@ public class IRGenerator
 		else if(now instanceof ForNode)
 		{
 			curScope = ((ForNode)now).scope;
-			BasicBlock finalBlock = curBlock.ifFalse;
-			curBlock.ifFalse = null;
+			BasicBlock finalBlock = new BasicBlock();
+			finalBlock.ofFunc = curBlock.ofFunc;
 			
 			if(((ForNode)now).haveInit)
 			{
@@ -951,8 +952,8 @@ public class IRGenerator
 		else if(now instanceof WhileNode)
 		{
 			curScope = ((WhileNode)now).scope;
-			BasicBlock finalBlock = curBlock.ifFalse;
-			curBlock.ifFalse = null;
+			BasicBlock finalBlock = new BasicBlock();
+			finalBlock.ofFunc = curBlock.ofFunc;
 			
 			BasicBlock bb = new BasicBlock();
 			bb.ofFunc = curBlock.ofFunc;
@@ -1294,7 +1295,9 @@ public class IRGenerator
 				ArithIns ins = new ArithIns();
 				ins.insName = "sub";
 				ins.dest = ins.src1 = mins.dest;
-				ins.src2 = pass(((NotNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+				Pair<String, BasicBlock> temp = pass(((NotNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+				ins.src2 = temp.getKey();
+				curBlock = temp.getValue();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
