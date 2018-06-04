@@ -63,7 +63,7 @@ public class IRGenerator
 		}
 	}
 	
-	public void add_alloc()
+	private void add_alloc()
 	{
 		FuncBlock _alloc = new FuncBlock("_alloc");
 		funcBlock.add(_alloc);
@@ -74,10 +74,15 @@ public class IRGenerator
 		_alloc.param.add("$_cnt");
 		_alloc.param.add("$_cnt_addr");
 		
+		MovIns tins = new MovIns();
+		tins.insName = "move";
+		tins.dest = "$_t" + (tempRegNum++);
+		tins.src = "$_cnt";
+		_alloc_entry.insList.add(tins);
+		
 		ArithIns ains = new ArithIns();
 		ains.insName = "mul";
-		ains.dest = "$_t" + (tempRegNum++);
-		ains.src1 = "$_cnt";
+		ains.dest = ains.src1 = tins.dest;
 		ains.src2 = bytes.get("addr") + "";
 		_alloc_entry.insList.add(ains);
 		
@@ -107,10 +112,15 @@ public class IRGenerator
 		ins2.src = "0";
 		_alloc_entry.insList.add(ins2);
 		
+		MovIns tins2 = new MovIns();
+		tins2.insName = "move";
+		tins2.dest = "$_cnt_next_addr";
+		tins2.src = "$_cnt_addr";
+		_alloc_entry.insList.add(tins2);
+		
 		ArithIns ains3 = new ArithIns();
 		ains3.insName = "add";
-		ains3.dest = "$_cnt_next_addr";
-		ains3.src1 = "$_cnt_addr";
+		ains3.dest = ains3.src1 = tins2.dest;
 		ains3.src2 = bytes.get("addr") + "";
 		_alloc_entry.insList.add(ains3);
 		
@@ -129,42 +139,93 @@ public class IRGenerator
 		cins.src2 = "$_cnt";
 		_alloc_entry.insList.add(cins);
 		
+		BasicBlock bt = new BasicBlock();
+		BasicBlock bf = new BasicBlock();
+		BasicBlock bm = new BasicBlock();
+		BasicBlock bl = new BasicBlock();
+		
+		_alloc_entry.ifTrue = bm;
+		_alloc_entry.ifFalse = bm.ifFalse = bf;
+		bm.ifTrue = bt;
+		bt.to = bf.to = bl;
+		bt.ofFunc = bf.ofFunc = bm.ofFunc = bl.ofFunc = _alloc;
+		
+		JumpIns i1 = new JumpIns();
+		i1.insName = "br";
+		i1.cond = cins.dest;
+		i1.ifTrue = bm.blockID;
+		i1.ifFalse = bf.blockID;
+		_alloc_entry.insList.add(i1);
+		
 		CondSetIns cins2 = new CondSetIns();
 		cins2.insName = "sgt";
 		cins2.dest = "$_cond2";
 		cins2.src1 = "$_cnt_next";
 		cins2.src2 = "0";
-		_alloc_entry.insList.add(cins2);
+		bm.insList.add(cins2);
 		
-		ArithIns bins = new ArithIns();
-		bins.insName = "mul";
-		bins.dest = "$_cond";
-		bins.src1 = "$_cond1";
-		bins.src2 = "$_cond2";
-		_alloc_entry.insList.add(bins);
+		JumpIns i2 = new JumpIns();
+		i2.insName = "br";
+		i2.cond = cins2.dest;
+		i2.ifTrue = bt.blockID;
+		i2.ifFalse = bf.blockID;
+		bm.insList.add(i2);
+		
+		MovIns i3 = new MovIns();
+		i3.insName = "move";
+		i3.dest = "$_cond";
+		i3.src = "1";
+		bt.insList.add(i3);
+		
+		JumpIns i4 = new JumpIns();
+		i4.insName = "jump";
+		i4.target = bl.blockID;
+		bt.insList.add(i4);
+		
+		MovIns i5 = new MovIns();
+		i5.insName = "move";
+		i5.dest = "$_cond";
+		i5.src = "0";
+		bf.insList.add(i5);
+		
+		JumpIns i6 = new JumpIns();
+		i6.insName = "jump";
+		i6.target = bl.blockID;
+		bf.insList.add(i6);
 		
 		BasicBlock bb = new BasicBlock();
 		BasicBlock fbb = new BasicBlock();
-		_alloc_entry.ifTrue = bb;
-		_alloc_entry.ifFalse = fbb;
+		bl.ifTrue = bb;
+		bl.ifFalse = fbb;
 		bb.ofFunc = fbb.ofFunc = _alloc;
+		
+		CondSetIns i7 = new CondSetIns();
+		i7.insName = "seq";
+		i7.dest = i7.src1 = "$_cond";
+		i7.src2 = "1";
+		bl.insList.add(i7);
 		
 		JumpIns jins = new JumpIns();
 		jins.insName = "br";
 		jins.cond = "$_cond";
 		jins.ifTrue = bb.blockID;
 		jins.ifFalse = fbb.blockID;
-		_alloc_entry.insList.add(jins);
+		bl.insList.add(jins);
 		
 		JumpIns jins2 = new JumpIns();
 		jins2.insName = "ret";
 		jins2.src = ins.dest;
 		fbb.insList.add(jins2);
 		
+		MovIns tins4 = new MovIns();
+		tins4.insName = "move";
+		tins4.dest = "$_t" + (tempRegNum++);
+		tins4.src = "$_i";
+		bb.insList.add(tins4);
+		
 		ArithIns bbins = new ArithIns();
 		bbins.insName = "mul";
-		bbins.dest = "$_t" + (tempRegNum++);
-		bbins.src1 = "$_i";
+		bbins.dest = bbins.src1 = tins4.dest;
 		bbins.src2 = bytes.get("addr") + "";
 		bb.insList.add(bbins);
 		
@@ -174,10 +235,15 @@ public class IRGenerator
 		bbins2.src2 = bytes.get("addr") + "";
 		bb.insList.add(bbins2);
 		
+		MovIns tins5 = new MovIns();
+		tins5.insName = "move";
+		tins5.dest = "$_t_d";
+		tins5.src = bbins2.dest;
+		bb.insList.add(tins5);
+		
 		ArithIns bbins3 = new ArithIns();
 		bbins3.insName = "add";
-		bbins3.dest = "$_t_d";
-		bbins3.src1 = bbins2.dest;
+		bbins3.dest = bbins3.src1 = tins5.dest;
 		bbins3.src2 = "$_t";
 		bb.insList.add(bbins3);
 		
@@ -221,6 +287,54 @@ public class IRGenerator
 		bb.ifFalse = fbb;
 	}
 	
+	private void add_int_size()
+	{
+		FuncBlock int_size = new FuncBlock("int.size");
+		funcBlock.add(int_size);
+		BasicBlock entry = new BasicBlock("int.size");
+		int_size.entry = entry;
+		entry.ofFunc = int_size;
+		
+		int_size.param.add("$_pos");
+		
+		MemAccIns ins = new MemAccIns();
+		ins.insName = "load";
+		ins.dest = "$_t" + (tempRegNum++);
+		ins.size = bytes.get("addr") + "";
+		ins.offset = 0;
+		ins.addr = "$_pos";
+		entry.insList.add(ins);
+		
+		JumpIns jins = new JumpIns();
+		jins.insName = "ret";
+		jins.src = ins.dest;
+		entry.insList.add(jins);
+	}
+	
+	private void add_string_length()
+	{
+		FuncBlock length = new FuncBlock("string.length");
+		funcBlock.add(length);
+		BasicBlock entry = new BasicBlock("string.length");
+		length.entry = entry;
+		entry.ofFunc = length;
+		
+		length.param.add("$_pos");
+		
+		MemAccIns ins = new MemAccIns();
+		ins.insName = "load";
+		ins.dest = "$_t" + (tempRegNum++);
+		ins.size = bytes.get("addr") + "";
+		ins.offset = 0;
+		ins.addr = "$_pos";
+		entry.insList.add(ins);
+		
+		JumpIns jins = new JumpIns();
+		jins.insName = "ret";
+		jins.src = ins.dest;
+		entry.insList.add(jins);
+	}
+	
 	public void passRoot()
 	{
 		FuncBlock __init = new FuncBlock("__init");
@@ -229,7 +343,9 @@ public class IRGenerator
 		__init.entry = __init_entry;
 		__init_entry.ofFunc = __init;
 		
-		//add_alloc();
+		add_alloc();
+		add_int_size();
+		add_string_length();
 		
 		for(ASTNode node : rootNode.progSecNode)
 		{
@@ -758,6 +874,20 @@ public class IRGenerator
 			mins.offset = (dim - 1) * bytes.get("addr");
 			curBlock.insList.add(mins);
 			
+			/*
+			MovIns mmins = new MovIns();
+			mmins.insName = "move";
+			mmins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+			mmins.src = ins.dest;
+			curBlock.insList.add(mmins);
+			
+			ArithIns ains = new ArithIns();
+			ains.insName = "add";
+			ains.dest = ains.src1 = mmins.dest;
+			ains.src2 = bytes.get("addr") + "";
+			curBlock.insList.add(ains);
+			*/
+			
 			FuncCallIns fins = new FuncCallIns();
 			fins.insName = "call";
 			fins.funcName = "_alloc";
@@ -866,10 +996,15 @@ public class IRGenerator
 		
 		else if(now instanceof IndexNode)
 		{
+			MovIns mmins = new MovIns();
+			mmins.insName = "move";
+			mmins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+			mmins.src = pass(((IndexNode)now).indexExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+			curBlock.insList.add(mmins);
+			
 			ArithIns ins = new ArithIns();
 			ins.insName = "mul";
-			ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-			ins.src1 = pass(((IndexNode)now).indexExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+			ins.dest = ins.src1 = mmins.dest;
 			ins.src2 = bytes.get("addr") + "";
 			curBlock.insList.add(ins);
 			
@@ -908,10 +1043,15 @@ public class IRGenerator
 			ClassIns temp = topScope.classMap.get(className);
 			VariIns vtemp = temp.variMap.get(memberName);
 			
+			MovIns mins = new MovIns();
+			mins.insName = "move";
+			mins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+			mins.src = 	pass(((MemberNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+			curBlock.insList.add(mins);
+			
 			ArithIns ins = new ArithIns();
 			ins.insName = "add";
-			ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-			ins.src1 = pass(((MemberNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+			ins.dest = ins.src1 = mins.dest;
 			ins.src2 = vtemp.offset + "";
 			curBlock.insList.add(ins);
 			
@@ -1019,7 +1159,7 @@ public class IRGenerator
 				if(((BinaryNode)now).op.equals("-"))
 					ins.insName = "sub";
 				if(((BinaryNode)now).op.equals("*"))
-					ins.insName = "imul";
+					ins.insName = "mul";
 				if(((BinaryNode)now).op.equals("/"))
 					ins.insName = "div";
 				if(((BinaryNode)now).op.equals("%"))
@@ -1281,10 +1421,15 @@ public class IRGenerator
 				ClassIns temp = topScope.classMap.get(className);
 				VariIns vtemp = temp.variMap.get(memberName);
 				
+				MovIns mins = new MovIns();
+				mins.insName = "move";
+				mins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+				mins.src = "$this_" + ((IdNode)now).ofScope.scopeID;
+				curBlock.insList.add(mins);
+				
 				ArithIns ins = new ArithIns();
 				ins.insName = "add";
-				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = "$this_" + ((IdNode)now).ofScope.scopeID;
+				ins.dest = ins.src1 = mins.dest;
 				ins.src2 = vtemp.offset + "";
 				curBlock.insList.add(ins);
 				

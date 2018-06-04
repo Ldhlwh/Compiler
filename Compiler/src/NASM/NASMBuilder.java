@@ -22,7 +22,17 @@ public class NASMBuilder
 		if(submit)
 			o = System.out;
 		else
-			o = System.err;
+		{
+			try
+			{
+				o = new PrintStream("C:\\Users\\qydyx\\Desktop\\my.asm");
+			}
+			catch(Throwable throwable)
+			{
+				System.exit(1);
+			}
+		}
+		
 	}
 	
 	public void generate()
@@ -195,16 +205,33 @@ public class NASMBuilder
 						if(choice == 0)
 						{
 							o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
-							o.printf("\t\tcmp\t\t%s, %s\n", temp, src2);
+							src1 = temp;
 						}
 						else if(choice == 1)
 						{
 							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src1));
-							o.printf("\t\tcmp\t\tqword[%s], %s\n", pos, src2);
+							o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, pos);
+							src1 = temp;
 						}
 						else if(choice == 2)
 						{
-							o.printf("\t\tcmp\t\tqword[%s], %s\n", src1, src2);
+							o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, src1);
+							src1 = temp;
+						}
+						
+						choice = isReg(src2);
+						if(choice == 0)
+						{
+							o.printf("\t\tcmp\t\t%s, %s\n", temp, src2);
+						}
+						else if(choice == 1)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src2));
+							o.printf("\t\tcmp\t\t%s, qword[%s]\n", temp, pos);
+						}
+						else if(choice == 2)
+						{
+							o.printf("\t\tcmp\t\t%s, qword[%s]\n", temp, src2);
 						}
 						
 						if(type.equals("slt"))
@@ -236,12 +263,12 @@ public class NASMBuilder
 					}
 					else if(choice == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).src));
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).size));
 						src = "qword[" + pos + "]";
 					}
 					else if(choice == 2)
 					{
-						src = "qword[" + ((MemAccIns)ins).src + "]";
+						src = "qword[" + ((MemAccIns)ins).size + "]";
 					}
 					
 					o.printf("\t\tmov\t\trdi, %s\n", src);
@@ -295,6 +322,41 @@ public class NASMBuilder
 						o.printf("\t\tmov\t\t[%s], %s\n", temp, temp2);
 					else if(size.equals("8"))
 						o.printf("\t\tmov\t\tqword[%s], %s\n", temp, temp2);
+				}
+				else if(ins.insName.equals("load"))
+				{
+					String size = ((MemAccIns)ins).size;
+					String offset = ((MemAccIns)ins).offset + "";
+					int choice = isReg(((MemAccIns)ins).addr);
+					String addr = null;
+					if(choice == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
+						addr = "qword[" + pos + "]";
+					}
+					o.printf("\t\tmov\t\t%s, %s\n", temp, addr);
+					o.printf("\t\tadd\t\t%s, %s\n", temp, offset);
+					
+					int cs = isReg(((MemAccIns)ins).dest);
+					String dest = null;
+					if(cs == 0)
+					{
+						dest = ((MemAccIns)ins).dest;
+					}
+					else if(choice == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
+						dest = "qword[" + pos + "]";
+					}
+					else if(choice == 2)
+					{
+						dest = "qword[" + ((MemAccIns)ins).dest + "]";
+					}
+					if(size.equals("1"))
+						o.printf("\t\tmov\t\t%s, [%s]\n", temp2, temp);
+					else if(size.equals("8"))
+						o.printf("\t\tmov\t\t%s, qword[%s]\n", temp2, temp);
+					o.printf("\t\tmov\t\t%s, %s\n", dest, temp2);
 				}
 			}
 			else if(ins instanceof FuncCallIns)
@@ -488,6 +550,11 @@ public class NASMBuilder
 			}
 			else if(ins instanceof ArithIns)
 			{
+				if(!((ArithIns)ins).dest.equals(((ArithIns)ins).src1))
+				{
+					System.err.println("$dest is not the same as $src1");
+					System.exit(1);
+				}
 				if(ins.insName.equals("neg"))
 				{
 					int choice = isReg(((ArithIns)ins).src1);
@@ -513,10 +580,16 @@ public class NASMBuilder
 					{
 						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
 						src1 = "qword[" + pos + "]";
+						o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
 					}
 					else if(c1 == 2)
 					{
 						src1 = "qword[" + ((ArithIns)ins).src1 + "]";
+						o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
+					}
+					else if(c1 == 0)
+					{
+						o.printf("\t\tmov\t\t%s, %s\n", temp, ((ArithIns)ins).src1);
 					}
 					
 					if(c2 == 0)
@@ -527,22 +600,17 @@ public class NASMBuilder
 					{
 						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
 						src2 = "qword[" + pos + "]";
-						
-						o.printf("\t\tmov\t\t%s, %s\n", temp, src2);
-						src2 = temp;
 					}
 					else if(c2 == 2)
 					{
 						src2 = "qword[" + ((ArithIns)ins).src2 + "]";
-						
-						o.printf("\t\tmov\t\t%s, %s\n", temp, src2);
-						src2 = temp;
 					}
 					
 					String insName = ins.insName;
 					if(insName.equals("mul"))
 						insName = "imul";
-					o.printf("\t\t%s\t\t%s, %s\n", insName, src1, src2);
+					o.printf("\t\t%s\t\t%s, %s\n", insName, temp, src2);
+					o.printf("\t\tmov\t\t%s, %s\n", src1, temp);
 				}
 				else if(ins.insName.equals("div")
 						|| ins.insName.equals("rem"))
@@ -567,7 +635,8 @@ public class NASMBuilder
 					int c2 = isReg(((ArithIns)ins).src2);
 					if(c2 == 0)
 					{
-						o.printf("\t\tdiv\t\t%s\n", ((ArithIns)ins).src2);
+						o.printf("\t\tmov\t\t%s, %s\n", temp, ((ArithIns)ins).src2);
+						o.printf("\t\tdiv\t\t%s\n", temp);
 					}
 					else if(c2 == 1)
 					{
@@ -694,7 +763,67 @@ public class NASMBuilder
 			}
 			else if(ins instanceof CondSetIns)
 			{
-			
+				if(i == bb.insList.size() - 1 || !(bb.insList.get(i + 1).insName.equals("br")))
+				{
+					int cd = isReg(((CondSetIns)ins).dest);
+					String dest = null;
+					if(cd == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).dest));
+						dest = "qword[" + pos + "]";
+					}
+					else if(cd == 2)
+					{
+						dest = "qword[" + ((CondSetIns)ins).dest + "]";
+					}
+					
+					int cs1 = isReg(((CondSetIns)ins).src1);
+					String src1 = null;
+					if(cs1 == 0)
+					{
+						src1 = ((CondSetIns)ins).src1;
+					}
+					else if(cs1 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).src1));
+						src1 = "qword[" + pos + "]";
+					}
+					else if(cs1 == 2)
+					{
+						src1 = "qword[" + ((CondSetIns)ins).src1 + "]";
+					}
+					
+					o.printf("\t\tmov\t\t%s, %s\n", dest, src1);
+					
+					int cs2 = isReg(((CondSetIns)ins).src2);
+					String src2 = null;
+					if(cs2 == 0)
+					{
+						src2 = ((CondSetIns)ins).src2;
+					}
+					else if(cs2 == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).src2));
+						src2 = "qword[" + pos + "]";
+					}
+					else if(cs2 == 2)
+					{
+						src2 = "qword[" + ((CondSetIns)ins).src2 + "]";
+					}
+					
+					if(ins.insName.equals("slt"))
+						o.printf("\t\tjl\t\t%s\n", ((JumpIns)ins).ifTrue);
+					else if(ins.insName.equals("sgt"))
+						o.printf("\t\tjg\t\t%s\n", ((JumpIns)ins).ifTrue);
+					else if(ins.insName.equals("sle"))
+						o.printf("\t\tjle\t\t%s\n", ((JumpIns)ins).ifTrue);
+					else if(ins.insName.equals("sge"))
+						o.printf("\t\tjge\t\t%s\n", ((JumpIns)ins).ifTrue);
+					else if(ins.insName.equals("seq"))
+						o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
+					else if(ins.insName.equals("sne"))
+						o.printf("\t\tjne\t\t%s\n", ((JumpIns)ins).ifTrue);
+				}
 			}
 		}
 		
