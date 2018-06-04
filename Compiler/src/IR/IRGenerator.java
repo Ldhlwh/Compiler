@@ -7,6 +7,7 @@ import ScopeCheck.Instances.ParamIns;
 import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
 import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -1435,6 +1436,7 @@ public class IRGenerator
 				cins.src1 = ins.dest;
 				cins.src2 = "0";
 				curBlock.insList.add(cins);
+				
 				return new Pair<>(cins.dest, curBlock);
 			}
 			else if(((BinaryNode)now).op.equals("<")
@@ -1461,7 +1463,43 @@ public class IRGenerator
 				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				curBlock.insList.add(ins);
-				return new Pair<>(ins.dest, curBlock);
+				
+				BasicBlock bt = new BasicBlock(), bf = new BasicBlock(), bl = new BasicBlock();
+				bt.ofFunc = bf.ofFunc = bl.ofFunc = curBlock.ofFunc;
+				curBlock.ifTrue = bt;
+				curBlock.ifFalse = bf;
+				bt.to = bf.to = bl;
+				
+				JumpIns i1 = new JumpIns();
+				i1.insName = "br";
+				i1.cond = ins.dest;
+				i1.ifTrue = bt.blockID;
+				i1.ifFalse = bf.blockID;
+				curBlock.insList.add(i1);
+				
+				MovIns i4 = new MovIns();
+				i4.insName = "move";
+				i4.dest = ins.dest;
+				i4.src = "1";
+				bt.insList.add(i4);
+				
+				JumpIns i2 = new JumpIns();
+				i2.insName = "jump";
+				i2.target = bl.blockID;
+				bt.insList.add(i2);
+				
+				MovIns i5 = new MovIns();
+				i5.insName = "move";
+				i5.dest = ins.dest;
+				i5.src = "0";
+				bt.insList.add(i5);
+				
+				JumpIns i3 = new JumpIns();
+				i3.insName = "jump";
+				i3.target = bl.blockID;
+				bf.insList.add(i3);
+				
+				return new Pair<>(ins.dest, bl);
 			}
 			else if(((BinaryNode)now).op.equals("&&")
 					|| ((BinaryNode)now).op.equals("||"))
@@ -1696,6 +1734,8 @@ public class IRGenerator
 		
 		else if(now instanceof ConstNode)
 		{
+			if(((ConstNode)now).text.equals("null"))
+				return new Pair<>("0", curBlock);
 			if(((ConstNode)now).type.equals("int"))
 				return new Pair<>(((ConstNode)now).text, curBlock);
 			if(((ConstNode)now).text.equals("true"))

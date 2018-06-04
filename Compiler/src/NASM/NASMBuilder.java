@@ -29,6 +29,7 @@ public class NASMBuilder
 			}
 			catch(Throwable throwable)
 			{
+				System.err.printf("Exception thrown.\n");
 				System.exit(1);
 			}
 		}
@@ -207,7 +208,7 @@ public class NASMBuilder
 						Ins lastIns = bb.insList.get(i - 1);
 						if(!(((CondSetIns)lastIns).dest.equals(((JumpIns)ins).cond)))
 						{
-							o.println("ERROR");
+							System.err.println("ERROR");
 							System.exit(1);
 						}
 						String type = lastIns.insName;
@@ -477,6 +478,10 @@ public class NASMBuilder
 						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
 						src = "qword[" + pos + "]";
 					}
+					else if(cs == 2)
+					{
+						src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+					}
 					
 					if(cd == 1)
 					{
@@ -523,7 +528,7 @@ public class NASMBuilder
 					o.printf("\t\tcall\t\tmalloc\n");
 					o.printf("\t\tmov\t\t%s, rax\n", dest);
 					
-					o.printf("\t\tmov\t\trdi, %s\n", dest);
+					o.printf("\t\tmov\t\trdi, rax\n");
 					o.printf("\t\tmov\t\trsi, %s\n", src);
 					o.printf("\t\tcall\t\tstrcpy\n");
 				}
@@ -558,7 +563,7 @@ public class NASMBuilder
 					o.printf("\t\tcall\t\tmalloc\n");
 					o.printf("\t\tmov\t\t%s, rax\n", dest);
 					
-					o.printf("\t\tmov\t\trdi, %s\n", dest);
+					o.printf("\t\tmov\t\trdi, rax\n");
 					o.printf("\t\tmov\t\trsi, %s\n", src1);
 					o.printf("\t\tcall\t\tstrcpy\n");
 					
