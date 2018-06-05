@@ -51,7 +51,6 @@ public class NASMBuilder
 		o.printf("\t\textern\t\tputs\n");
 		o.printf("\t\textern\t\tprintf\n");
 		o.printf("\t\textern\t\tscanf\n");
-		o.printf("\t\textern\t\tgets\n");
 		o.printf("\t\textern\t\tsprintf\n");
 		o.printf("\t\textern\t\tsscanf\n");
 		o.printf("\t\textern\t\tstrcpy\n");
@@ -61,6 +60,7 @@ public class NASMBuilder
 		
 		o.printf("\n\t\tsection\t\t.data\n");
 		o.printf("_getInt:\t\tdb\t\t\"%%lld\", 0\n");
+		o.printf("_getStr:\t\tdb\t\t\"%%s\", 0\n");
 		
 		o.printf("\n\t\tsection\t\t.bss\n");
 		
@@ -464,8 +464,10 @@ public class NASMBuilder
 					o.printf("\t\tcall\t\tmalloc\n");
 					o.printf("\t\tmov\t\t%s, rax\n", dest);
 					
-					o.printf("\t\tmov\t\trdi, %s\n", dest);
-					o.printf("\t\tcall\t\tgets\n");
+					o.printf("\t\tmov\t\trdi, _getStr\n");
+					o.printf("\t\tmov\t\trsi, %s\n", dest);
+					o.printf("\t\tmov\t\trax, 0\n");
+					o.printf("\t\tcall\t\tscanf\n");
 				}
 				
 				else if(funcName.equals("getInt"))

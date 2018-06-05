@@ -1274,6 +1274,21 @@ public class IRGenerator
 			ins.src2 = "1";
 			curBlock.insList.add(ins);
 			
+			int ls = curBlock.insList.size();
+			if(ls >= 2)
+			{
+				Ins l2 = curBlock.insList.get(ls - 2);
+				if(l2.insName.equals("load"))
+				{
+					MemAccIns mins = new MemAccIns();
+					mins.insName = "store";
+					mins.addr = ((MemAccIns)l2).addr;
+					mins.src = ((MemAccIns)l2).dest;
+					mins.size = bytes.get("addr") + "";
+					mins.offset = 0;
+					curBlock.insList.add(mins);
+				}
+			}
 			return new Pair<>(ins.dest, curBlock);
 		}
 		
