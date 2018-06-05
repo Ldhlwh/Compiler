@@ -89,7 +89,10 @@ public class NASMBuilder
 		for(FuncBlock fb : ir.funcBlock)
 		{
 			if(fb.used || fb.funcName.equals("__init"))
+			{
+				//System.err.printf("%s\n", fb.funcName);
 				generate(fb.entry);
+			}
 		}
 	}
 	

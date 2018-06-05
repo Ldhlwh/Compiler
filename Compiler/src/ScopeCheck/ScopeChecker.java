@@ -459,6 +459,7 @@ public class ScopeChecker
 			expr.kind = 2;
 			expr.type = ((ExprScope) temp).type;
 			expr.source = ((ExprScope) temp).source;
+			((FuncCallNode)now).source = expr.source;
 			expr.dimNum = ((ExprScope) temp).dimNum;
 			expr.maxDimNum = ((ExprScope) temp).maxDimNum;
 			expr.id = ((ExprScope) temp).id;

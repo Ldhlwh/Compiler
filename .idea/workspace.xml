@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="270" />
+    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="273" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72816ae8-fb79-49b9-8a8d-6f8a5ecaffc8" name="默认" comment="" />
@@ -14,13 +14,13 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
+    <splitter split-orientation="horizontal" split-proportion="0.67903644">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="105">
+                <state relative-caret-position="210">
                   <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
                   <folding>
                     <element signature="imports" expanded="true" />
@@ -32,8 +32,8 @@
           <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="13">
-                  <caret line="364" column="8" selection-start-line="364" selection-start-column="8" selection-end-line="364" selection-end-column="8" />
+                <state relative-caret-position="148">
+                  <caret line="874" column="30" selection-start-line="874" selection-start-column="27" selection-end-line="874" selection-end-column="30" />
                   <folding>
                     <element signature="imports" expanded="true" />
                   </folding>
@@ -44,8 +44,8 @@
           <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="94">
-                  <caret line="1147" column="22" selection-start-line="1147" selection-start-column="22" selection-end-line="1147" selection-end-column="22" />
+                <state relative-caret-position="148">
+                  <caret line="1146" column="24" selection-start-line="1146" selection-start-column="21" selection-end-line="1146" selection-end-column="24" />
                   <folding>
                     <element signature="imports" expanded="true" />
                     <element signature="method#add_int_size#0;class#IRGenerator#0" />
@@ -63,7 +63,7 @@
             <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="31">
-                  <caret line="1308" column="45" selection-start-line="1308" selection-start-column="45" selection-end-line="1308" selection-end-column="45" />
+                  <caret line="1315" column="45" selection-start-line="1315" selection-start-column="45" selection-end-line="1315" selection-end-column="45" />
                   <folding>
                     <element signature="imports" expanded="true" />
                     <element signature="method#add_int_size#0;class#IRGenerator#0" />
@@ -87,13 +87,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>sprintf</find>
-      <find>add</find>
-      <find>constno</find>
-      <find>mov</find>
-      <find>length</find>
-      <find>substring</find>
-      <find>strc</find>
       <find />
       <find>strcmp</find>
       <find>slt</find>
@@ -110,13 +103,20 @@
       <find>get</find>
       <find>prefix</find>
       <find>Arith</find>
-      <find>lea</find>
       <find>&quot;ret&quot;</find>
       <find>origin</find>
       <find>membernode</find>
       <find>HHH</find>
       <find>improve</find>
       <find>suffix</find>
+      <find>funccallnode</find>
+      <find>oftype</find>
+      <find>funccall</find>
+      <find>funcdecl</find>
+      <find>lea</find>
+      <find>funccal</find>
+      <find>getDim</find>
+      <find>err</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -130,7 +130,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/LocalScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/PrefixIncDecNode.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/VariInitScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Instances/FuncIns.java" />
@@ -176,10 +175,11 @@
         <option value="$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java" />
         <option value="$PROJECT_DIR$/MxGrammar/Mx.g4" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/FuncCallNode.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
       </list>
     </option>
@@ -255,7 +255,7 @@
     <property name="$PROJECT_DIR$/MxGrammar/Mx.g4::/auto-gen" value="true" />
     <property name="$PROJECT_DIR$/MxGrammar/Mx.g4::/gen-listener" value="false" />
     <property name="$PROJECT_DIR$/MxGrammar/Mx.g4::/gen-visitor" value="true" />
-    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://C:/Users/qydyx/Desktop/Compiler/Compiler/src/IR/Instructions/JumpIns.java&#10;System.out&#9;null&#9;null&#10;paramList&#9;PSI&#9;JAVA://com.sun.xml.internal.ws.encoding.ParameterList" />
+    <property name="SearchEverywhereHistoryKey" value="ofType&#9;PSI&#9;JAVA://AbstractSyntaxTree.Nodes.ExprNode#ofType&#10;System.out&#9;null&#9;null&#10;paramList&#9;PSI&#9;JAVA://com.sun.xml.internal.ws.encoding.ParameterList" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="jdk.selected.JAVA_MODULE" value="10" />
@@ -446,12 +446,12 @@
       <workItem from="1528112922991" duration="40902000" />
       <workItem from="1528174237819" duration="2467000" />
       <workItem from="1528185704886" duration="5411000" />
-      <workItem from="1528195029275" duration="20415000" />
+      <workItem from="1528195029275" duration="23650000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="463851000" />
+    <option name="totallyTimeSpent" value="467086000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -477,7 +477,7 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.30425057" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.41387025" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
@@ -548,13 +548,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Compiler/src/MyParseErrorListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="325">
-          <caret line="23" column="44" selection-start-line="23" selection-start-column="44" selection-end-line="23" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/hello.ll" />
     <entry file="file://$PROJECT_DIR$/LLIRTestingField/src/main.java" />
     <entry file="file://$PROJECT_DIR$/LLIRTestingField/src/LLIRTester.java" />
@@ -736,13 +729,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/IdNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="6" column="25" selection-start-line="6" selection-start-column="25" selection-end-line="6" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MxGrammar/gen/MxBaseVisitor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="21">
@@ -768,13 +754,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="950">
           <caret line="46" selection-start-line="46" selection-end-line="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/ASTNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="64">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -816,27 +795,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/ExprNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="4" column="24" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="17" column="32" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="19" column="42" selection-start-line="19" selection-start-column="42" selection-end-line="19" selection-end-column="42" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -850,27 +812,55 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java">
+    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/ASTNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="535" column="14" selection-start-line="535" selection-start-column="14" selection-end-line="535" selection-end-column="14" />
+        <state relative-caret-position="84">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
+    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13">
-          <caret line="364" column="8" selection-start-line="364" selection-start-column="8" selection-end-line="364" selection-end-column="8" />
+        <state relative-caret-position="200">
+          <caret line="440" column="33" selection-start-line="440" selection-start-column="21" selection-end-line="440" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/IdNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" column="31" lean-forward="true" selection-start-line="2" selection-start-column="31" selection-end-line="2" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/ExprNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="4" column="25" lean-forward="true" selection-start-line="4" selection-start-column="25" selection-end-line="4" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="461" column="53" selection-start-line="461" selection-start-column="53" selection-end-line="461" selection-end-column="53" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/FuncCallNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="9" column="24" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="94">
-          <caret line="1147" column="22" selection-start-line="1147" selection-start-column="22" selection-end-line="1147" selection-end-column="22" />
+        <state relative-caret-position="148">
+          <caret line="1146" column="24" selection-start-line="1146" selection-start-column="21" selection-end-line="1146" selection-end-column="24" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#add_int_size#0;class#IRGenerator#0" />
@@ -879,9 +869,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="148">
+          <caret line="874" column="30" selection-start-line="874" selection-start-column="27" selection-end-line="874" selection-end-column="30" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
+        <state relative-caret-position="210">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />

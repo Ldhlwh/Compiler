@@ -1202,6 +1202,13 @@ public class IRGenerator
 				ins.insName = "call";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
 				ins.funcName = funcName;
+				
+				if(((FuncCallNode)now).source != null)
+				{
+					ins.funcName = ((FuncCallNode)now).source + "." + ins.funcName;
+					ins.ops.add(curBlock.ofFunc.param.get(0));
+				}
+				
 				if(((FuncCallNode)now).haveParamList)
 				{
 					for(ASTNode node : ((FuncCallNode)now).paramListNode.exprNode)
