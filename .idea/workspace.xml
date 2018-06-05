@@ -42,8 +42,8 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="267">
-              <caret line="1271" column="36" selection-start-line="1271" selection-start-column="36" selection-end-line="1271" selection-end-column="36" />
+            <state relative-caret-position="204">
+              <caret line="1268" column="52" selection-start-line="1268" selection-start-column="52" selection-end-line="1268" selection-end-column="52" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#add_int_size#0;class#IRGenerator#0" />
@@ -71,11 +71,11 @@
       <find>=</find>
       <find>string.or</find>
       <find>load</find>
-      <find />
+      <find>new Basic</find>
       <find>ofFunc</find>
       <find>notnode</find>
       <find>exit</find>
-      <find />
+      <find>new Basi</find>
       <find>sprintf</find>
       <find>add</find>
       <find>constno</find>
@@ -85,7 +85,7 @@
       <find>store</find>
       <find>substring</find>
       <find>strc</find>
-      <find />
+      <find>wrong param</find>
       <find>strcmp</find>
       <find>slt</find>
       <find>&quot;&lt;&quot;</find>
@@ -177,7 +177,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="974" />
     <option name="y" value="138" />
     <option name="width" value="1390" />
@@ -423,12 +423,12 @@
       <workItem from="1528088546218" duration="7822000" />
       <workItem from="1528112922991" duration="40902000" />
       <workItem from="1528174237819" duration="2467000" />
-      <workItem from="1528185704886" duration="5015000" />
+      <workItem from="1528185704886" duration="5395000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="443040000" />
+    <option name="totallyTimeSpent" value="443420000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -454,7 +454,7 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.30716252" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.30578512" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
@@ -846,8 +846,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="267">
-          <caret line="1271" column="36" selection-start-line="1271" selection-start-column="36" selection-end-line="1271" selection-end-column="36" />
+        <state relative-caret-position="204">
+          <caret line="1268" column="52" selection-start-line="1268" selection-start-column="52" selection-end-line="1268" selection-end-column="52" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#add_int_size#0;class#IRGenerator#0" />
