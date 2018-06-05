@@ -958,7 +958,7 @@ public class NASMBuilder
 						pos2 = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
 						o.printf("\t\tdiv\t\tqword[%s]\n", pos2);
 					}
-					else if(c2 == 3)
+					else if(c2 == 2)
 					{
 						o.printf("\t\tdiv\t\tqword[%s]\n", ((ArithIns)ins).src2);
 					}

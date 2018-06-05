@@ -1690,6 +1690,17 @@ public class IRGenerator
 				temp.getValue().insList.add(ins);
 				return new Pair<>(null, temp.getValue());
 			}
+			else if(((AssignNode)now).leftExprNode instanceof IdNode
+					&& !(((IdNode)((AssignNode)now).leftExprNode).ofScope instanceof ClassScope))
+			{
+				MovIns ins = new MovIns();
+				ins.insName = "move";
+				ins.dest = pass(((AssignNode)now).leftExprNode, curScope, curBlock, true, true, recHead, trueBlock, falseBlock).getKey();
+				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+				ins.src = temp.getKey();
+				temp.getValue().insList.add(ins);
+				return new Pair<>(null, temp.getValue());
+			}
 			else
 			{
 				MemAccIns ins = new MemAccIns();
