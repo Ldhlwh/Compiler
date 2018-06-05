@@ -1266,7 +1266,10 @@ public class IRGenerator
 		else if(now instanceof PrefixIncDecNode)
 		{
 			ArithIns ins = new ArithIns();
-			ins.insName = "add";
+			if(((PrefixIncDecNode)now).op.equals("add"))
+				ins.insName = "add";
+			else
+				ins.insName = "sub";
 			ins.dest = ins.src1 = pass(((PrefixIncDecNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 			ins.src2 = "1";
 			curBlock.insList.add(ins);
