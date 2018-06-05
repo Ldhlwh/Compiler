@@ -695,6 +695,14 @@ public class IRGenerator
 				ins.src = "0";
 				temp.insList.add(ins);
 			}
+			else if(temp.insList.size() == 0
+				|| !temp.insList.get(temp.insList.size() - 1).insName.equals("ret"))
+			{
+				JumpIns ins = new JumpIns();
+				ins.insName = "ret";
+				ins.src = "0";
+				temp.insList.add(ins);
+			}
 			return new Pair<>(null, temp);
 		}
 		
@@ -1021,7 +1029,9 @@ public class IRGenerator
 		{
 			JumpIns ins = new JumpIns();
 			ins.insName = "ret";
-			ins.src = pass(((ReturnNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
+			Pair<String, BasicBlock> temp = pass(((ReturnNode)now).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+			ins.src = temp.getKey();
+			curBlock = temp.getValue();
 			curBlock.insList.add(ins);
 			return new Pair<>(null, curBlock);
 		}
@@ -1132,6 +1142,24 @@ public class IRGenerator
 			ains.dest = ains.src1 = outcome;
 			ains.src2 = "1";
 			curBlock.insList.add(ains);
+			
+			int ls = curBlock.insList.size();
+			//System.err.printf("HHH%d\n", ls);
+			if(ls >= 3)
+			{
+				Ins l2 = curBlock.insList.get(ls - 3);
+				if(l2.insName.equals("load"))
+				{
+					MemAccIns mins = new MemAccIns();
+					mins.insName = "store";
+					mins.addr = ((MemAccIns)l2).addr;
+					mins.src = ((MemAccIns)l2).dest;
+					mins.size = bytes.get("addr") + "";
+					mins.offset = 0;
+					curBlock.insList.add(mins);
+				}
+			}
+			
 			return new Pair<>(ins.dest, curBlock);
 		}
 		
