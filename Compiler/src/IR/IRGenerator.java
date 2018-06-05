@@ -1765,16 +1765,17 @@ public class IRGenerator
 				MemAccIns ins = new MemAccIns();
 				ins.insName = "alloc";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.size = len + "";
+				ins.size = "256";
 				curBlock.insList.add(ins);
 				
+				/*
 				MemAccIns ins2 = new MemAccIns();
 				ins2.insName = "store";
 				ins2.size = bytes.get("addr") + "";
 				ins2.addr = ins.dest;
 				ins2.src = len - 1 + "";
 				ins2.offset = 0;
-				curBlock.insList.add(ins2);
+				curBlock.insList.add(ins2);*/
 				
 				for(int i = 0; i < len; i++)
 				{

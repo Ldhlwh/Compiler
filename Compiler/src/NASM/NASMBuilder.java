@@ -494,7 +494,11 @@ public class NASMBuilder
 					int cs = isReg(((FuncCallIns)ins).ops.get(0));
 					int cd = isReg(((FuncCallIns)ins).dest);
 					String src = null, dest = null;
-					if(cs == 1)
+					if(cs == 0)
+					{
+						src = ((FuncCallIns)ins).ops.get(0);
+					}
+					else if(cs == 1)
 					{
 						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
 						src = "qword[" + pos + "]";

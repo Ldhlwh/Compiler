@@ -529,8 +529,11 @@ public class ASTMaker extends MxBaseVisitor<ASTNode>
 		{
 			constNode.type = "null";
 		}
-		else if(mid.length() >= 2 && mid.substring(0,1).equals("\"")) {
+		else if(mid.length() >= 2 && mid.substring(0,1).equals("\""))
+		{
 			constNode.type = "string";
+			constNode.text = editString(mid);
+			//System.err.println(constNode.text);
 		}
 		else {
 			constNode.type = "int";
@@ -545,5 +548,26 @@ public class ASTMaker extends MxBaseVisitor<ASTNode>
 		constructorNode.blockStmtNode = (BlockStmtNode) visit(ctx.blockStmt());
 		return constructorNode;
 	}
-
+	
+	private String editString(String src)
+	{
+		String dest = "";
+		int size = src.length();
+		for(int i = 0; i < size; i++)
+		{
+			if(src.substring(i, i + 1).equals("\\"))
+			{
+				if(src.substring(i + 1, i + 2).equals("\\"))
+					dest += "\\";
+				else if(src.substring(i + 1, i + 2).equals("n"))
+					dest += "\n";
+				else if(src.substring(i + 1, i + 2).equals("\""))
+					dest += "\"";
+				i++;
+			}
+			else
+				dest += src.substring(i, i + 1);
+		}
+		return dest;
+	}
 }
