@@ -388,7 +388,8 @@ public class IRGenerator
 		
 		BasicBlock bm = new BasicBlock(), bl = new BasicBlock();
 		bm.ofFunc = bl.ofFunc = f;
-		entry.to = bm;
+		entry.ifTrue = bm;
+		entry.ifFalse = bl;
 		bm.ifTrue = bl;
 		bm.ifFalse = bm;
 		
@@ -414,9 +415,19 @@ public class IRGenerator
 		i3.src2 = "$_st";
 		entry.insList.add(i3);
 		
+		CondSetIns i35 = new CondSetIns();
+		i35.insName = "sle";
+		i35.dest = "$_cond";
+		i35.src1 = "$_st";
+		i35.src2 = "$_ed";
+		entry.insList.add(i35);
+		
 		JumpIns i4 = new JumpIns();
-		i4.insName = "jump";
-		i4.target = bm.blockID;
+		i4.insName = "br";
+		i4.cond = "$_cond";
+		i4.ifTrue = bm.blockID;
+		i4.ifFalse = bl.blockID;
+		entry.insList.add(i4);
 		
 		MemAccIns i5 = new MemAccIns();
 		i5.insName = "load";
@@ -453,7 +464,7 @@ public class IRGenerator
 		bm.insList.add(i9);
 		
 		CondSetIns i10 = new CondSetIns();
-		i10.insName = "seq";
+		i10.insName = "sgt";
 		i10.dest = "$_cond";
 		i10.src1 = "$_st";
 		i10.src2 = "$_ed";
@@ -917,6 +928,8 @@ public class IRGenerator
 				ins.insName = "jump";
 				ins.target = bb.blockID;
 				curBlock.insList.add(ins);
+				curBlock.to = bb;
+				curBlock.ifFalse = finalBlock;
 			}
 			
 			BasicBlock nowBlock = pass(((ForNode)now).stmtNode, curScope, bb, false, true, curBlock, null, null).getValue();
@@ -1421,17 +1434,17 @@ public class IRGenerator
 			
 				CondSetIns cins = new CondSetIns();
 				if(((BinaryNode)now).op.equals("<"))
-					cins.insName = "slt";
+					cins.insName = "slt32";
 				if(((BinaryNode)now).op.equals(">"))
-					cins.insName = "sgt";
+					cins.insName = "sgt32";
 				if(((BinaryNode)now).op.equals("<="))
-					cins.insName = "sle";
+					cins.insName = "sle32";
 				if(((BinaryNode)now).op.equals(">="))
-					cins.insName = "sge";
+					cins.insName = "sge32";
 				if(((BinaryNode)now).op.equals("=="))
-					cins.insName = "seq";
+					cins.insName = "seq32";
 				if(((BinaryNode)now).op.equals("!="))
-					cins.insName = "sne";
+					cins.insName = "sne32";
 				cins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
 				cins.src1 = ins.dest;
 				cins.src2 = "0";
@@ -1663,7 +1676,8 @@ public class IRGenerator
 			if(((AssignNode)now).leftExprNode instanceof IdNode
 					&& !(((IdNode)((AssignNode)now).leftExprNode).ofScope instanceof ClassScope)
 					&& (((AssignNode)now).leftExprNode.ofType.equals("int")
-							|| ((AssignNode)now).leftExprNode.ofType.equals("bool")))
+							|| ((AssignNode)now).leftExprNode.ofType.equals("bool")
+							|| ((AssignNode)now).leftExprNode.ofType.equals("string")))
 			{
 				MovIns ins = new MovIns();
 				ins.insName = "move";
