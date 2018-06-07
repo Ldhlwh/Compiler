@@ -85,6 +85,7 @@ public class NASMBuilder
 		o.printf("\t\textern\t\tstrcat\n");
 		o.printf("\t\textern\t\tstrcmp\n");
 		o.printf("\t\textern\t\tord\n");
+		o.printf("\t\textern\t\tstrlen\n");
 		
 		o.printf("\n\t\tsection\t\t.data\n");
 		o.printf("_getInt:\t\tdb\t\t\"%%lld\", 0\n");
@@ -106,19 +107,12 @@ public class NASMBuilder
 			//blockLivenessAnalysis(fb, fb.entry);
 			livenessAnalysis(fb);
 			regAlloc(fb, fb.entry);
-			/*
-			o.printf("+++ Func : %s +++\n", fb.funcName);
-			for(Map.Entry<String, Integer> entry : fb.memPos.entrySet())
-			{
-				o.printf("%s\t%d\n", entry.getKey(), entry.getValue());
-			}*/
 		}
 		
 		for(FuncBlock fb : ir.funcBlock)
 		{
 			if(fb.used || fb.funcName.equals("__init"))
 			{
-				//System.err.printf("%s\n", fb.funcName);
 				generate(fb.entry);
 			}
 		}
@@ -1127,6 +1121,48 @@ public class NASMBuilder
 					String src = null, dest = null;
 					if(cs == 1)
 					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+						src = "qword[" + pos + "]";
+					}
+					else if(cs == 2)
+					{
+						src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+					}
+					
+					if(cd == 1)
+					{
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+						dest = pos;
+					}
+					else if(cd == 2)
+					{
+						dest = ((FuncCallIns)ins).dest;
+					}
+					
+					
+					o.printf("\t\tlea\t\t%s, [%s]\n", temp, dest);
+					storeAll(bb);
+					o.printf("\t\tmov\t\trdi, %s\n", src);
+					o.printf("\t\tmov\t\trsi, _getInt\n");
+					o.printf("\t\tmov\t\trdx, %s\n", temp);
+					o.printf("\t\tmov\t\trax, 0\n");
+					o.printf("\t\tcall\t\tsscanf\n");
+					loadAll(bb);
+					
+					if(getReg(bb.ofFunc, ((FuncCallIns)ins).dest) != null)
+					{
+						o.printf("\t\tmov\t\t%s, %s\n", getReg(bb.ofFunc, ((FuncCallIns)ins).dest), temp);
+					}
+				}
+				
+				else if(funcName.equals("string.length"))
+				{
+					int cs = isReg(((FuncCallIns)ins).ops.get(0));
+					int cd = isReg(((FuncCallIns)ins).dest);
+					
+					String src = null, dest = null;
+					if(cs == 1)
+					{
 						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
 						if(reg == null)
 						{
@@ -1158,7 +1194,7 @@ public class NASMBuilder
 						if(reg == null)
 						{
 							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-							dest = pos;
+							dest = "qword[" + pos + "]";
 						}
 						else
 						{
@@ -1171,7 +1207,7 @@ public class NASMBuilder
 						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
 						if(reg == null)
 						{
-							dest = ((FuncCallIns)ins).dest;
+							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
 						}
 						else
 						{
@@ -1179,16 +1215,13 @@ public class NASMBuilder
 							dest = reg;
 						}
 					}
-					
-					o.printf("\t\tlea\t\t%s, [%s]\n", temp, dest);
 					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, %s\n", src);
-					o.printf("\t\tmov\t\trsi, _getInt\n");
-					o.printf("\t\tmov\t\trdx, %s\n", temp);
-					o.printf("\t\tmov\t\trax, 0\n");
-					o.printf("\t\tcall\t\tsscanf\n");
+					o.printf("\t\tcall\t\tstrlen\n");
 					loadAll(bb);
+					o.printf("\t\tmov\t\t%s, rax\n", dest);
 				}
+				
 				else
 				{
 					FuncBlock curFB = null;
@@ -2563,6 +2596,8 @@ public class NASMBuilder
 			{
 				for(String d : curIns.def)
 				{
+					if(isReg(d) == 2)
+						continue;
 					Set<String> temp;
 					if(!fb.itf.containsKey(d))
 					{
@@ -2575,13 +2610,16 @@ public class NASMBuilder
 					}
 					for(String o : curIns.out)
 					{
-						if(o.equals(d))
+						if(o.equals(d)
+								|| isReg(o) == 2)
 							continue;
 						temp.add(o);
 					}
 				}
 				for(String o : curIns.out)
 				{
+					if(isReg(o) == 2)
+						continue;
 					Set<String> temp;
 					if(!fb.itf.containsKey(o))
 					{
@@ -2592,7 +2630,8 @@ public class NASMBuilder
 						temp = fb.itf.get(o);
 					for(String d : curIns.def)
 					{
-						if(o.equals(d))
+						if(o.equals(d)
+								|| isReg(d) == 2)
 							continue;
 						temp.add(d);
 					}

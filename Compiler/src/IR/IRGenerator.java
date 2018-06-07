@@ -533,7 +533,7 @@ public class IRGenerator
 		
 		add_alloc();
 		add_int_size();
-		add_string_length();
+		//add_string_length();
 		add_string_substring();
 		add_string_ord();
 		
