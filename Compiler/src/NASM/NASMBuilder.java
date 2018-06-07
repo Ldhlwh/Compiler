@@ -7,7 +7,7 @@ import IR.Instructions.*;
 import ScopeCheck.Instances.VariIns;
 
 import java.io.*;
-import java.util.Map;
+import java.util.*;
 
 public class NASMBuilder
 {
@@ -17,8 +17,21 @@ public class NASMBuilder
 	private String temp = "r15";
 	private String temp2 = "r14";
 	
+	public int regNum = 4; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
+	public ArrayList<String> realReg = new ArrayList<>();
+	
+	private void regMatch()
+	{
+		realReg.add("r10");
+		realReg.add("r11");
+		realReg.add("r12");
+		realReg.add("r13");
+	}
+	
 	public NASMBuilder(boolean submit)
 	{
+		regMatch();
+		
 		if(submit)
 			o = System.out;
 		else
@@ -70,14 +83,14 @@ public class NASMBuilder
 			o.printf("\t\tresq\t\t1\n");
 		}
 		
-		//o.printf("\n\t\tsection\t\t.data\n");
-		//o.printf("_outStr:\t\tdb\t\t\"%%s\"\n");
-		
 		o.printf("\n\t\tsection\t\t.text\n");
 		
 		for(FuncBlock fb : ir.funcBlock)
 		{
 			allocMem(fb, fb.entry);
+			blockLivenessAnalysis(fb, fb.entry);
+			livenessAnalysis(fb, fb.entry);
+			regAlloc(fb, fb.entry);
 			/*
 			o.printf("+++ Func : %s +++\n", fb.funcName);
 			for(Map.Entry<String, Integer> entry : fb.memPos.entrySet())
@@ -155,24 +168,42 @@ public class NASMBuilder
 			{
 				if(ins.insName.equals("ret"))
 				{
-					o.printf("\t\tmov\t\trax, ");
 					String rtn = ((JumpIns)ins).src;
 					int choice = isReg(rtn);
 					if(choice == 0)
 					{
-						o.printf("%s\n", rtn);
+						o.printf("\t\tmov\t\trax, %s\n", rtn);
 					}
 					else if(choice == 1)
 					{
-						String pos = "rbp - " + (bb.ofFunc.memPos.get(rtn) + 8);
-						o.printf("qword[%s]\n", pos);
+						String reg = getReg(bb.ofFunc, rtn);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (bb.ofFunc.memPos.get(rtn) + 8);
+							o.printf("\t\tmov\t\trax, qword[%s]\n", pos);
+						}
+						else
+						{
+							check(bb, rtn);
+							if(!reg.equals("rax"))
+								o.printf("\t\tmov\t\trax, %s\n", reg);
+						}
 					}
 					else if(choice == 2)
 					{
-						o.printf("qword[%s]\n", rtn);
+						String reg = getReg(bb.ofFunc, rtn);
+						if(reg == null)
+						{
+							o.printf("\t\tmov\t\trax, qword[%s]\n", rtn);
+						}
+						else
+						{
+							check(bb, rtn);
+							if(!reg.equals("rax"))
+								o.printf("\t\tmov\t\trax, %s\n", reg);
+						}
 					}
 					o.printf("\t\tleave\n");
-					//o.printf("\t\tpop\t\trbp\n");
 					o.printf("\t\tret\n");
 				}
 				else if(ins.insName.equals("jump"))
@@ -194,14 +225,33 @@ public class NASMBuilder
 						}
 						else if(choice == 1)
 						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(rtn));
-							o.printf("\t\tcmp\t\tqword[%s], 1\n", pos);
+							String reg = getReg(bb.ofFunc, rtn);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(rtn));
+								o.printf("\t\tcmp\t\tqword[%s], 1\n", pos);
+							}
+							else
+							{
+								check(bb, rtn);
+								o.printf("\t\tcmp\t\t%s, 1\n", reg);
+							}
+
 							o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
 							o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
 						}
 						else if(choice == 2)
 						{
-							o.printf("\t\tcmp\t\tqword[%s], 1\n", rtn);
+							String reg = getReg(bb.ofFunc, rtn);
+							if(reg == null)
+							{
+								o.printf("\t\tcmp\t\tqword[%s], 1\n", rtn);
+							}
+							else
+							{
+								check(bb, rtn);
+								o.printf("\t\tcmp\t\t%s, 1\n", reg);
+							}
 							o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
 							o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
 						}
@@ -225,41 +275,80 @@ public class NASMBuilder
 						}
 						else if(choice == 1)
 						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src1));
-							if(lastIns.insName.length() == 5)
-								o.printf("\t\tmov\t\t%sd, dword[%s]\n", temp, pos);
+							String reg = getReg(bb.ofFunc, src1);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src1));
+								if(lastIns.insName.length() == 5)
+									o.printf("\t\tmov\t\t%sd, dword[%s]\n", temp, pos);
+								else
+									o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, pos);
+								src1 = temp;
+							}
 							else
-								o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, pos);
-							src1 = temp;
+							{
+								check(bb, src1);
+								src1 = reg;
+							}
 						}
 						else if(choice == 2)
 						{
-							o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, src1);
-							src1 = temp;
+							String reg = getReg(bb.ofFunc, src1);
+							if(reg == null)
+							{
+								if(lastIns.insName.length() == 5)
+									o.printf("\t\tmov\t\t%sd, dword[%s]\n", temp, src1);
+								else
+									o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, src1);
+								src1 = temp;
+							}
+							else
+							{
+								check(bb, src1);
+								src1 = reg;
+							}
 						}
 						
 						choice = isReg(src2);
 						if(choice == 0)
 						{
 							if(lastIns.insName.length() == 5)
-								o.printf("\t\tcmp\t\t%sd, %s\n", temp, src2);
+								o.printf("\t\tcmp\t\t%sd, %s\n", src1, src2);
 							else
-								o.printf("\t\tcmp\t\t%s, %s\n", temp, src2);
+								o.printf("\t\tcmp\t\t%s, %s\n", src1, src2);
 						}
 						else if(choice == 1)
 						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src2));
-							if(lastIns.insName.length() == 5)
-								o.printf("\t\tcmp\t\t%sd, dword[%s]\n", temp, pos);
+							String reg = getReg(bb.ofFunc, src2);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src2));
+								if(lastIns.insName.length() == 5)
+									o.printf("\t\tcmp\t\t%sd, dword[%s]\n", src1, pos);
+								else
+									o.printf("\t\tcmp\t\t%s, qword[%s]\n", src1, pos);
+							}
 							else
-								o.printf("\t\tcmp\t\t%s, qword[%s]\n", temp, pos);
+							{
+								check(bb, src1);
+								o.printf("\t\tcmp\t\t%s, %s\n", src1, reg);
+							}
 						}
 						else if(choice == 2)
 						{
-							if(lastIns.insName.length() == 5)
-								o.printf("\t\tcmp\t\t%sd, dword[%s]\n", temp, src2);
+							String reg = getReg(bb.ofFunc, src2);
+							if(reg == null)
+							{
+								if(lastIns.insName.length() == 5)
+									o.printf("\t\tcmp\t\t%sd, dword[%s]\n", temp, src2);
+								else
+									o.printf("\t\tcmp\t\t%s, qword[%s]\n", temp, src2);
+							}
 							else
-								o.printf("\t\tcmp\t\t%s, qword[%s]\n", temp, src2);
+							{
+								check(bb, src1);
+								o.printf("\t\tcmp\t\t%s, %s\n", src1, reg);
+							}
 						}
 						
 						if(type.substring(0, 3).equals("slt"))
@@ -291,29 +380,64 @@ public class NASMBuilder
 					}
 					else if(choice == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).size));
-						src = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, src);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).size));
+							src = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).size);
+							src = reg;
+						}
 					}
 					else if(choice == 2)
 					{
-						src = "qword[" + ((MemAccIns)ins).size + "]";
+						String reg = getReg(bb.ofFunc, src);
+						if(reg == null)
+						{
+							src = "qword[" + ((MemAccIns)ins).size + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).size);
+							src = reg;
+						}
 					}
-					
-					o.printf("\t\tmov\t\trdi, %s\n", src);
-					o.printf("\t\tcall\t\tmalloc\n");
-					
 					int c2 = isReg(((MemAccIns)ins).dest);
 					String s2 = null;
 					if(c2 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
-						s2 = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
+							s2 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).dest);
+							s2= reg;
+						}
 					}
 					else if(c2 == 2)
 					{
-						s2 = "qword[" + ((MemAccIns)ins).dest + "]";
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
+						if(reg == null)
+						{
+							s2 = "qword[" + ((MemAccIns)ins).dest + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).dest);
+							s2= reg;
+						}
 					}
-					
+					storeAll(bb);
+					o.printf("\t\tmov\t\trdi, %s\n", src);
+					o.printf("\t\tcall\t\tmalloc\n");
+					loadAll(bb);
 					o.printf("\t\tmov\t\t%s, rax\n", s2);
 				}
 				else if(ins.insName.equals("store"))
@@ -324,13 +448,32 @@ public class NASMBuilder
 					String addr = null;
 					if(choice == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
-						addr = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
+							addr = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).addr);
+							addr= reg;
+						}
 						o.printf("\t\tmov\t\t%s, %s\n", temp, addr);
 					}
 					else if(choice == 2)
 					{
-						addr = ((MemAccIns)ins).addr;
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
+						if(reg == null)
+						{
+							addr = ((MemAccIns)ins).addr;
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).addr);
+							addr = reg;
+						}
+						
 						o.printf("\t\tlea\t\t%s, [%s]\n", temp, addr);
 					}
 					
@@ -343,12 +486,30 @@ public class NASMBuilder
 					}
 					else if(cs == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).src));
-						src = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).src);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).src));
+							src = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).src);
+							src = reg;
+						}
 					}
 					else if(cs == 2)
 					{
-						src = "qword[" + ((MemAccIns)ins).src + "]";
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).src);
+						if(reg == null)
+						{
+							src = "qword[" + ((MemAccIns)ins).src + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).src);
+							src = reg;
+						}
 					}
 					o.printf("\t\tmov\t\t%s, %s\n", temp2, src);
 					if(size.equals("1"))
@@ -364,12 +525,30 @@ public class NASMBuilder
 					String addr = null;
 					if(choice == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
-						addr = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
+							addr = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).addr);
+							addr = reg;
+						}
 					}
 					else if(choice == 2)
 					{
-						addr = "qword[" + ((MemAccIns)ins).addr + "]";
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
+						if(reg == null)
+						{
+							addr = "qword[" + ((MemAccIns)ins).addr + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).addr);
+							addr = reg;
+						}
 					}
 					o.printf("\t\tmov\t\t%s, %s\n", temp, addr);
 					o.printf("\t\tadd\t\t%s, %s\n", temp, offset);
@@ -382,12 +561,30 @@ public class NASMBuilder
 					}
 					else if(cs == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
-						dest = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
+							dest = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).dest);
+							dest = reg;
+						}
 					}
 					else if(cs == 2)
 					{
-						dest = "qword[" + ((MemAccIns)ins).dest + "]";
+						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
+						if(reg == null)
+						{
+							dest = "qword[" + ((MemAccIns)ins).dest + "]";
+						}
+						else
+						{
+							check(bb, ((MemAccIns)ins).dest);
+							dest = reg;
+						}
 					}
 					if(size.equals("1"))
 						o.printf("\t\tmov\t\t%sb, [%s]\n", temp2, temp);
@@ -412,41 +609,48 @@ public class NASMBuilder
 					}
 					else if(choice == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(str));
-						op = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, str);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(str));
+							op = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, str);
+							op = reg;
+						}
 					}
 					else if(choice == 2)
 					{
-						op = "qword[" + str + "]";
+						String reg = getReg(bb.ofFunc, str);
+						if(reg == null)
+						{
+							op = "qword[" + str + "]";
+						}
+						else
+						{
+							check(bb, str);
+							op = reg;
+						}
 					}
-					o.printf("\t\tmov\t\t%s, %s\n", temp, op);
 					
 					if(funcName.equals("println"))
 					{
-						o.printf("\t\tmov\t\trdi, %s\n", temp);
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, %s\n", op);
 						o.printf("\t\tcall\t\tputs\n");
+						loadAll(bb);
 					}
 					else if(funcName.equals("print"))
 					{
-						//o.printf("\t\tmov\t\trdi, _outStr\n");
-						o.printf("\t\tmov\t\trdi, %s\n", temp);
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, _getStr\n");
+						o.printf("\t\tmov\t\trsi, %s\n", op);
 						o.printf("\t\tmov\t\trax, 0\n");
 						o.printf("\t\tcall\t\tprintf\n");
+						loadAll(bb);
 					}
-					
-					int c2 = isReg(((FuncCallIns)ins).dest);
-					String s2 = null;
-					if(c2 == 1)
-					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						s2 = "qword[" + pos + "]";
-					}
-					else if(c2 == 2)
-					{
-						s2 = "qword[" + ((FuncCallIns)ins).dest + "]";
-					}
-					
-					o.printf("\t\tmov\t\t%s, rax\n", s2);
 				}
 				
 				else if(funcName.equals("getString"))
@@ -455,43 +659,92 @@ public class NASMBuilder
 					String dest = null;
 					if(choice == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						dest = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+							dest = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
 					else if(choice == 2)
 					{
-						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
 					
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, 256\n");
 					o.printf("\t\tcall\t\tmalloc\n");
+					loadAll(bb);
 					o.printf("\t\tmov\t\t%s, rax\n", dest);
-					
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, _getStr\n");
 					o.printf("\t\tmov\t\trsi, %s\n", dest);
 					o.printf("\t\tmov\t\trax, 0\n");
 					o.printf("\t\tcall\t\tscanf\n");
+					loadAll(bb, dest);
 				}
 				
 				else if(funcName.equals("getInt"))
 				{
 					int choice = isReg(((FuncCallIns)ins).dest);
 					String dest = null;
+					boolean fff = false;
 					if(choice == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						dest = "[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+							dest = "[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							String vr = bb.take.get(reg);
+							dest = "[" + "rbp - " + (8 + bb.ofFunc.memPos.get(vr)) + "]";
+							fff = true;
+						}
 					}
 					else if(choice == 2)
 					{
-						dest = "[" + ((FuncCallIns)ins).dest + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							dest = "[" + ((FuncCallIns)ins).dest + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							String vr = bb.take.get(reg);
+							dest = "[" + ((FuncCallIns)ins).dest + "]";
+							fff = true;
+						}
 					}
-
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, _getInt\n");
 					o.printf("\t\tlea\t\trax, %s\n", dest);
 					o.printf("\t\tmov\t\trsi, rax\n");
 					o.printf("\t\tmov\t\trax, 0\n");
 					o.printf("\t\tcall\t\tscanf\n");
+					loadAll(bb);
+					if(fff)
+					{
+						o.printf("\t\tmov\t\tqword%s, %s\n", dest, getReg(bb.ofFunc, ((FuncCallIns)ins).dest));
+					}
 				}
 				
 				else if(funcName.equals("toString"))
@@ -505,33 +758,73 @@ public class NASMBuilder
 					}
 					else if(cs == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-						src = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+							src = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src = reg;
+						}
 					}
 					else if(cs == 2)
 					{
-						src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src = reg;
+						}
 					}
 					
 					if(cd == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						dest = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+							dest = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
 					else if(cd == 2)
 					{
-						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
-					
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, 256\n");
 					o.printf("\t\tcall\t\tmalloc\n");
+					loadAll(bb);
 					o.printf("\t\tmov\t\t%s, rax\n", dest);
 					
+					
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, %s\n", dest);
 					o.printf("\t\tmov\t\trsi, _getInt\n");
 					o.printf("\t\tmov\t\trdx, %s\n", src);
 					o.printf("\t\tmov\t\trax, 0\n");
 					o.printf("\t\tcall\t\tsprintf\n");
+					loadAll(bb);
 				}
 				
 				else if(funcName.equals("string.copy"))
@@ -541,30 +834,70 @@ public class NASMBuilder
 					String dest = null, src = null;
 					if(cs == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-						src = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+							src = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src = reg;
+						}
 					}
 					else if(cs == 2)
 					{
-						src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src = reg;
+						}
 					}
 					if(cd == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						dest = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+							dest = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
 					else if(cd == 2)
 					{
-						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
-					
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, 256\n");
 					o.printf("\t\tcall\t\tmalloc\n");
+					loadAll(bb);
 					o.printf("\t\tmov\t\t%s, rax\n", dest);
 					
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, rax\n");
 					o.printf("\t\tmov\t\trsi, %s\n", src);
 					o.printf("\t\tcall\t\tstrcpy\n");
+					loadAll(bb, dest);
+					continue;
 				}
 				
 				else if(funcName.equals("string.cat"))
@@ -575,43 +908,102 @@ public class NASMBuilder
 					String dest = null, src1 = null, src2 = null;
 					if(cs1 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-						src1 = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+							src1 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src1 = reg;
+						}
 					}
 					else if(cs1 == 2)
 					{
-						src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src1 = reg;
+						}
 					}
 					if(cs2 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
-						src2 = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
+							src2 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(1));
+							src2 = reg;
+						}
 					}
 					else if(cs2 == 2)
 					{
-						src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
+						if(reg == null)
+						{
+							src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(1));
+							src2 = reg;
+						}
 					}
 					if(cd == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						dest = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+							dest = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
 					else if(cd == 2)
 					{
-						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
-					
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, 256\n");
 					o.printf("\t\tcall\t\tmalloc\n");
+					loadAll(bb);
 					o.printf("\t\tmov\t\t%s, rax\n", dest);
 					
-					o.printf("\t\tmov\t\trdi, rax\n");
+					storeAll(bb);
+					o.printf("\t\tmov\t\trdi, %s\n", dest);
 					o.printf("\t\tmov\t\trsi, %s\n", src1);
 					o.printf("\t\tcall\t\tstrcpy\n");
-					
+					loadAll(bb, dest);
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, %s\n", dest);
 					o.printf("\t\tmov\t\trsi, %s\n", src2);
 					o.printf("\t\tcall\t\tstrcat\n");
+					loadAll(bb, dest);
+					continue;
 				}
 				else if(funcName.equals("string.cmp"))
 				{
@@ -621,37 +1013,93 @@ public class NASMBuilder
 					String dest = null, src1 = null, src2 = null;
 					if(cs1 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-						src1 = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+							src1 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src1 = reg;
+						}
 					}
 					else if(cs1 == 2)
 					{
-						src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src1 = reg;
+						}
 					}
 					if(cs2 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
-						src2 = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
+							src2 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(1));
+							src2 = reg;
+						}
 					}
 					else if(cs2 == 2)
 					{
-						src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
+						if(reg == null)
+						{
+							src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(1));
+							src2 = reg;
+						}
 					}
 					if(cd == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						dest = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+							dest = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
 					else if(cd == 2)
 					{
-						dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
 					
 					
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, %s\n", src1);
 					o.printf("\t\tmov\t\trsi, %s\n", src2);
 					//o.printf("\t\tmov\t\trax, 0\n");
 					o.printf("\t\tcall\t\tstrcmp\n");
+					loadAll(bb);
 					
 					//o.printf("\t\tmov\t\t%s, 0\n", dest);
 					//o.printf("\t\tsub\t\t%s, rax\n", dest);
@@ -665,75 +1113,68 @@ public class NASMBuilder
 					String src = null, dest = null;
 					if(cs == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-						src = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+							src = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src = reg;
+						}
 					}
 					else if(cs == 2)
 					{
-						src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+						if(reg == null)
+						{
+							src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).ops.get(0));
+							src = reg;
+						}
 					}
-					
 					if(cd == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						dest = pos;
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+							dest = pos;
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
 					else if(cd == 2)
 					{
-						dest = ((FuncCallIns)ins).dest;
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						if(reg == null)
+						{
+							dest = ((FuncCallIns)ins).dest;
+						}
+						else
+						{
+							check(bb, ((FuncCallIns)ins).dest);
+							dest = reg;
+						}
 					}
 					
 					o.printf("\t\tlea\t\t%s, [%s]\n", temp, dest);
-					
+					storeAll(bb);
 					o.printf("\t\tmov\t\trdi, %s\n", src);
 					o.printf("\t\tmov\t\trsi, _getInt\n");
 					o.printf("\t\tmov\t\trdx, %s\n", temp);
 					o.printf("\t\tmov\t\trax, 0\n");
 					o.printf("\t\tcall\t\tsscanf\n");
+					loadAll(bb);
 				}
-				/*
-				else if(funcName.equals("string.ord"))
-				{
-					int cs1 = isReg(((FuncCallIns)ins).ops.get(0));
-					int cs2 = isReg(((FuncCallIns)ins).ops.get(1));
-					int cd = isReg(((FuncCallIns)ins).dest);
-					String dest = null, src1 = null, src2 = null;
-				
-					if(cd == 1)
-					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						dest = "qword[" + pos + "]";
-					}
-					if(cs1 == 1)
-					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-						src1 = "qword[" + pos + "]";
-					}
-					else if(cs1 == 2)
-					{
-						src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
-					}
-					if(cs2 == 0)
-					{
-						src2 = ((FuncCallIns)ins).ops.get(1);
-					}
-					else if(cs2 == 1)
-					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
-						src2 = "qword[" + pos + "]";
-					}
-					else if(cs2 == 2)
-					{
-						src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
-					}
-					
-					o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
-					o.printf("\t\tadd\t\t%s, %s\n", temp, src2);
-					o.printf("\t\tmov\t\trdi, %s\n", temp);
-					o.printf("\t\tcall\t\tord\n");
-					o.printf("\t\tmov\t\t%s, rax\n", dest);
-				}
-				*/
 				else
 				{
 					FuncBlock curFB = null;
@@ -834,38 +1275,83 @@ public class NASMBuilder
 			{
 				int choice = isReg(((MovIns)ins).dest);
 				int srcc = isReg(((MovIns)ins).src);
-				String src = "";
+				String src = "", dest = null;
+				
+				
+				String regd = getReg(bb.ofFunc, ((MovIns)ins).dest);
+				String regs = getReg(bb.ofFunc, ((MovIns)ins).src);
+				if(regd != null
+					&& regd.equals(regs))
+				{
+					store(bb, regs);
+					bb.take.put(regd, ((MovIns)ins).dest);
+					continue;
+				}
+				
 				if(srcc == 0)
 				{
 					src = ((MovIns)ins).src;
 				}
 				else if(srcc == 1)
 				{
-					String spos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).src));
-					src = "qword[" + spos + "]";
+					String reg = getReg(bb.ofFunc, ((MovIns)ins).src);
+					if(reg == null)
+					{
+						String spos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).src));
+						src = "qword[" + spos + "]";
+						o.printf("\t\tmov\t\t%s, %s\n", temp, src);
+						src = temp;
+					}
+					else
+					{
+						check(bb, ((MovIns)ins).src);
+						src = reg;
+					}
 				}
 				else if(srcc == 2)
 				{
-					src = "qword[" + ((MovIns)ins).src + "]";
-				}
-				if(choice == 1)
-				{
-					if(srcc > 0)
+					String reg = getReg(bb.ofFunc, ((MovIns)ins).src);
+					if(reg == null)
 					{
+						src = "qword[" + ((MovIns)ins).src + "]";
 						o.printf("\t\tmov\t\t%s, %s\n", temp, src);
 						src = temp;
 					}
-					String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).dest));
-					o.printf("\t\tmov\t\tqword[%s], %s\n", pos, src);
+					else
+					{
+						check(bb, ((MovIns)ins).src);
+						src = reg;
+					}
+				}
+				
+				if(choice == 1)
+				{
+					String reg = getReg(bb.ofFunc, ((MovIns)ins).dest);
+					if(reg == null)
+					{
+						String spos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).dest));
+						dest = "qword[" + spos + "]";
+					}
+					else
+					{
+						check(bb, ((MovIns)ins).dest);
+						dest = reg;
+					}
+					o.printf("\t\tmov\t\t%s, %s\n", dest, src);
 				}
 				else if(choice == 2)
 				{
-					if(srcc > 0)
+					String reg = getReg(bb.ofFunc, ((MovIns)ins).dest);
+					if(reg == null)
 					{
-						o.printf("\t\tmov\t\t%s, %s\n", temp, src);
-						src = temp;
+						dest = "qword[" + ((MovIns)ins).dest + "]";
 					}
-					o.printf("\t\tmov\t\tqword[%s], %s\n", ((MovIns)ins).dest, src);
+					else
+					{
+						check(bb, ((MovIns)ins).dest);
+						dest = reg;
+					}
+					o.printf("\t\tmov\t\t%s, %s\n", dest, src);
 				}
 			}
 			else if(ins instanceof ArithIns)
@@ -879,15 +1365,35 @@ public class NASMBuilder
 				{
 					int choice = isReg(((ArithIns)ins).src1);
 					String pos = "";
+					String src1 = null;
 					if(choice == 1)
 					{
-						pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+						if(reg == null)
+						{
+							pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
+							src1 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					else if(choice == 2)
 					{
-						pos = ((ArithIns)ins).src1;
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+						if(reg == null)
+						{
+							src1 = "qword[" + ((ArithIns)ins).src1 + "]";
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src1);
+							src1 = reg;
+						}
 					}
-					o.printf("\t\tneg\t\tqword[%s]\n", pos);
+					o.printf("\t\tneg\t\t%s\n", src1);
 				}
 				else if(ins.insName.equals("add")
 						|| ins.insName.equals("sub")
@@ -898,18 +1404,34 @@ public class NASMBuilder
 					String src1 = "", src2 = "";
 					if(c1 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
-						src1 = "qword[" + pos + "]";
-						o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
+							src1 = "qword[" + pos + "]";
+							o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
+							src1 = temp;
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					else if(c1 == 2)
 					{
-						src1 = "qword[" + ((ArithIns)ins).src1 + "]";
-						o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
-					}
-					else if(c1 == 0)
-					{
-						o.printf("\t\tmov\t\t%s, %s\n", temp, ((ArithIns)ins).src1);
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+						if(reg == null)
+						{
+							src1 = "qword[" + ((ArithIns)ins).src1 + "]";
+							o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
+							src1 = temp;
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					
 					if(c2 == 0)
@@ -918,38 +1440,75 @@ public class NASMBuilder
 					}
 					else if(c2 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
-						src2 = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
+							src2 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src2);
+							src2 = reg;
+						}
 					}
 					else if(c2 == 2)
 					{
-						src2 = "qword[" + ((ArithIns)ins).src2 + "]";
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
+						if(reg == null)
+						{
+							src2 = "qword[" + ((ArithIns)ins).src2 + "]";
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src2);
+							src2 = reg;
+						}
 					}
 					
 					String insName = ins.insName;
 					if(insName.equals("mul"))
 						insName = "imul";
-					o.printf("\t\t%s\t\t%s, %s\n", insName, temp, src2);
-					o.printf("\t\tmov\t\t%s, %s\n", src1, temp);
+					o.printf("\t\t%s\t\t%s, %s\n", insName, src1, src2);
 				}
 				else if(ins.insName.equals("div")
 						|| ins.insName.equals("rem"))
 				{
 					int choice = isReg(((ArithIns)ins).src1);
-					String pos = "";
-					String pos2 = "";
+					String pos = null, pos2 = null;
+					String src1 = null, src2 = null;
 					if(choice == 0)
 					{
 						o.printf("\t\tmov\t\trax, %s\n", ((ArithIns)ins).src1);
 					}
 					else if(choice == 1)
 					{
-						pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
-						o.printf("\t\tmov\t\trax, qword[%s]\n", pos);
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+						if(reg == null)
+						{
+							pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
+							src1 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src1);
+							src1 = reg;
+						}
+						o.printf("\t\tmov\t\trax, %s\n", src1);
 					}
 					else if(choice == 2)
 					{
-						o.printf("\t\tmov\t\trax, qword[%s]\n", ((ArithIns)ins).src1);
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+						if(reg == null)
+						{
+							src1 = "qword[" + ((ArithIns)ins).src1 + "]";
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src1);
+							src1 = reg;
+						}
+						o.printf("\t\tmov\t\trax, %s\n", src1);
 					}
 					o.printf("\t\tmov\t\trdx, 0\n");
 					int c2 = isReg(((ArithIns)ins).src2);
@@ -960,35 +1519,41 @@ public class NASMBuilder
 					}
 					else if(c2 == 1)
 					{
-						pos2 = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
-						o.printf("\t\tdiv\t\tqword[%s]\n", pos2);
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
+						if(reg == null)
+						{
+							pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
+							src2 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src2);
+							src2 = reg;
+						}
+						o.printf("\t\tdiv\t\t%s\n", src2);
 					}
 					else if(c2 == 2)
 					{
-						o.printf("\t\tdiv\t\tqword[%s]\n", ((ArithIns)ins).src2);
+						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
+						if(reg == null)
+						{
+							src2 = "qword[" + ((ArithIns)ins).src2 + "]";
+						}
+						else
+						{
+							check(bb, ((ArithIns)ins).src2);
+							src2 = reg;
+						}
+						o.printf("\t\tdiv\t\t%s\n", src2);
 					}
 					
 					if(ins.insName.equals("div"))
 					{
-						if(choice == 1)
-						{
-							o.printf("\t\tmov\t\tqword[%s], rax\n", pos);
-						}
-						else if(choice == 2)
-						{
-							o.printf("\t\tmov\t\tqword[%s], rax\n", ((ArithIns)ins).src2);
-						}
+						o.printf("\t\tmov\t\t%s, rax\n", src1);
 					}
 					else if(ins.insName.equals("rem"))
 					{
-						if(choice == 1)
-						{
-							o.printf("\t\tmov\t\tqword[%s], rdx\n", pos);
-						}
-						else if(choice == 2)
-						{
-							o.printf("\t\tmov\t\tqword[%s], rdx\n", ((ArithIns)ins).src2);
-						}
+						o.printf("\t\tmov\t\t%s, rdx\n", src1);
 					}
 				}
 			}
@@ -997,16 +1562,35 @@ public class NASMBuilder
 				if(ins.insName.equals("not"))
 				{
 					int choice = isReg(((BitIns)ins).src1);
-					String pos = "";
+					String pos = "", src1 = null;
 					if(choice == 1)
 					{
-						pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+						if(reg == null)
+						{
+							pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
+							src1 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					else if(choice == 2)
 					{
-						pos = ((BitIns)ins).src1;
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+						if(reg == null)
+						{
+							src1 = "qword[" + ((BitIns)ins).src1 + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src1);
+							src1 = reg;
+						}
 					}
-					o.printf("\t\tnot\t\tqword[%s]\n", pos);
+					o.printf("\t\tnot\t\t%s\n", src1);
 				}
 				else if(ins.insName.equals("shl")
 						|| ins.insName.equals("shr"))
@@ -1019,44 +1603,104 @@ public class NASMBuilder
 					}
 					else if(c2 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src2));
-						src2 = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src2));
+							src2 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src2);
+							src2 = reg;
+						}
 					}
 					else if(c2 == 2)
 					{
-						src2 = "qword[" + ((BitIns)ins).src2 + "]";
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
+						if(reg == null)
+						{
+							src2 = "qword[" + ((BitIns)ins).src2 + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src2);
+							src2 = reg;
+						}
 					}
 					o.printf("\t\tmov\t\trcx, %s\n", src2);
 					
 					int c1 = isReg(((BitIns)ins).src1);
 					String src1 = "";
-					if(c1 == 1)
+					if(c1 == 0)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
-						src1 = "qword[" + pos + "]";
+						src1 = ((BitIns)ins).src1;
+					}
+					else if(c1 == 1)
+					{
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
+							src1 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					else if(c1 == 2)
 					{
-						src1 = "qword[" + ((BitIns)ins).src1 + "]";
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+						if(reg == null)
+						{
+							src1 = "qword[" + ((BitIns)ins).src1 + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					
-					o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
-					o.printf("\t\t%s\t\t%s, cl\n", ins.insName, temp);
-					o.printf("\t\tmov\t\t%s, %s\n", src1, temp);
+					o.printf("\t\t%s\t\t%s, cl\n", ins.insName, src1);
 				}
 				else
 				{
 					int c1 = isReg(((BitIns)ins).src1);
 					int c2 = isReg(((BitIns)ins).src2);
 					String src1 = "", src2 = "";
-					if(c1 == 1)
+					if(c1 == 0)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
-						src1 = "qword[" + pos + "]";
+						src1 = ((BitIns)ins).src1;
+					}
+					else if(c1 == 1)
+					{
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
+							src1 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					else if(c1 == 2)
 					{
-						src1 = "qword[" + ((BitIns)ins).src1 + "]";
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+						if(reg == null)
+						{
+							src1 = "qword[" + ((BitIns)ins).src1 + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					
 					if(c2 == 0)
@@ -1065,36 +1709,67 @@ public class NASMBuilder
 					}
 					else if(c2 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src2));
-						src2 = "qword[" + pos + "]";
-						
-						o.printf("\t\tmov\t\t%s, %s\n", temp, src2);
-						src2 = temp;
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src2));
+							src2 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src2);
+							src2 = reg;
+						}
 					}
 					else if(c2 == 2)
 					{
-						src2 = "qword[" + ((BitIns)ins).src2 + "]";
-						
-						o.printf("\t\tmov\t\t%s, %s\n", temp, src2);
-						src2 = temp;
+						String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
+						if(reg == null)
+						{
+							src2 = "qword[" + ((BitIns)ins).src2 + "]";
+						}
+						else
+						{
+							check(bb, ((BitIns)ins).src2);
+							src2 = reg;
+						}
 					}
 					o.printf("\t\t%s\t\t%s, %s\n", ins.insName, src1, src2);
 				}
 			}
 			else if(ins instanceof CondSetIns)
 			{
+				/*
 				if(i == bb.insList.size() - 1 || !(bb.insList.get(i + 1).insName.equals("br")))
 				{
 					int cd = isReg(((CondSetIns)ins).dest);
 					String dest = null;
 					if(cd == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).dest));
-						dest = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).dest);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).dest));
+							dest = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((CondSetIns)ins).dest);
+							dest = reg;
+						}
 					}
 					else if(cd == 2)
 					{
-						dest = "qword[" + ((CondSetIns)ins).dest + "]";
+						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).dest);
+						if(reg == null)
+						{
+							dest = "qword[" + ((CondSetIns)ins).dest + "]";
+						}
+						else
+						{
+							check(bb, ((CondSetIns)ins).dest);
+							dest = reg;
+						}
 					}
 					
 					int cs1 = isReg(((CondSetIns)ins).src1);
@@ -1105,12 +1780,30 @@ public class NASMBuilder
 					}
 					else if(cs1 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).src1));
-						src1 = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).src1);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).src1));
+							src1 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((CondSetIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					else if(cs1 == 2)
 					{
-						src1 = "qword[" + ((CondSetIns)ins).src1 + "]";
+						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).src1);
+						if(reg == null)
+						{
+							src1 = "qword[" + ((CondSetIns)ins).src1 + "]";
+						}
+						else
+						{
+							check(bb, ((CondSetIns)ins).src1);
+							src1 = reg;
+						}
 					}
 					
 					o.printf("\t\tmov\t\t%s, %s\n", dest, src1);
@@ -1123,12 +1816,30 @@ public class NASMBuilder
 					}
 					else if(cs2 == 1)
 					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).src2));
-						src2 = "qword[" + pos + "]";
+						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).src2);
+						if(reg == null)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).src2));
+							src2 = "qword[" + pos + "]";
+						}
+						else
+						{
+							check(bb, ((CondSetIns)ins).src2);
+							src2 = reg;
+						}
 					}
 					else if(cs2 == 2)
 					{
-						src2 = "qword[" + ((CondSetIns)ins).src2 + "]";
+						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).src2);
+						if(reg == null)
+						{
+							src2 = "qword[" + ((CondSetIns)ins).src2+ "]";
+						}
+						else
+						{
+							check(bb, ((CondSetIns)ins).src2);
+							src2 = reg;
+						}
 					}
 					
 					if(ins.insName.equals("slt"))
@@ -1143,12 +1854,28 @@ public class NASMBuilder
 						o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
 					else if(ins.insName.equals("sne"))
 						o.printf("\t\tjne\t\t%s\n", ((JumpIns)ins).ifTrue);
-				}
+				}*/
 			}
 		}
 		
 		o.println();
+		
+		//printTake(bb);
+		
 		bb.generated = true;
+		
+		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		{
+			String from = entry.getKey();
+			String to = entry.getValue();
+			if(bb.to != null)
+				bb.to.take.put(from, to);
+			if(bb.ifTrue != null)
+				bb.to.take.put(from, to);
+			if(bb.ifFalse != null)
+				bb.to.take.put(from, to);
+		}
+		
 		if(bb.to != null && !bb.to.generated)
 		{
 			generate(bb.to);
@@ -1165,6 +1892,7 @@ public class NASMBuilder
 	
 	private void allocMem(FuncBlock fb, BasicBlock bb)
 	{
+		fb.blockList.add(bb);
 		for(String p : fb.param)
 		{
 			if(p.substring(0, 1).equals("$"))
@@ -1417,6 +2145,12 @@ public class NASMBuilder
 				}
 			}
 		}
+		
+		for(Map.Entry<String, Integer> entry : fb.memPos.entrySet())
+		{
+			System.err.printf("%s : %d\n", entry.getKey(), -entry.getValue() - 8);
+		}
+		
 		bb.allocated = true;
 		if(bb.to != null && !bb.to.allocated)
 		{
@@ -1439,5 +2173,630 @@ public class NASMBuilder
 		if(a.substring(0, 1).equals("$"))
 			return 1;
 		return 0;
+	}
+	
+	public static boolean isSetEqual(Set set1, Set set2)
+	{
+		
+		if (set1 == null && set2 == null)
+		{
+			return true; // Both are null
+		}
+		
+		if (set1 == null || set2 == null || set1.size() != set2.size())
+		{
+			return false;
+		}
+		
+		Iterator ite1 = set1.iterator();
+		Iterator ite2 = set2.iterator();
+		
+		boolean isFullEqual = true;
+		
+		while (ite2.hasNext())
+		{
+			if (!set1.contains(ite2.next()))
+			{
+				isFullEqual = false;
+			}
+		}
+		
+		return isFullEqual;
+	}
+	
+	private void blockLivenessAnalysis(FuncBlock fb, BasicBlock bb)
+	{
+		for(BasicBlock nowb : fb.blockList)
+		{
+			block_def_use(nowb);
+		}
+		int blockSize = fb.blockList.size();
+		while(true)
+		{
+			for(int i = blockSize - 1; i >= 0; i--)
+			{
+				//System.err.println(i);
+				BasicBlock curBlock = fb.blockList.get(i);
+				curBlock.inp = curBlock.in;
+				curBlock.outp = curBlock.out;
+				curBlock.in = new HashSet<>();
+				curBlock.out = new HashSet<>();
+				
+				if(curBlock.to != null)
+					curBlock.out.addAll(curBlock.to.in);
+				if(curBlock.ifTrue != null)
+					curBlock.out.addAll(curBlock.ifTrue.in);
+				if(curBlock.ifFalse != null)
+					curBlock.out.addAll(curBlock.ifFalse.in);
+				
+				curBlock.in.addAll(curBlock.use);
+				Iterator it = curBlock.out.iterator();
+				while(it.hasNext())
+				{
+					Object temp = it.next();
+					if(!curBlock.def.contains(temp))
+					{
+						curBlock.in.add(temp.toString());
+					}
+				}
+			}
+			boolean flag = true;
+			for(int i = 0; i < blockSize; i++)
+			{
+				BasicBlock curBlock = fb.blockList.get(i);
+				if(!isSetEqual(curBlock.in, curBlock.inp) || !isSetEqual(curBlock.out, curBlock.outp))
+				{
+					flag = false;
+					break;
+				}
+			}
+			if(flag)
+			{
+				break;
+			}
+		}
+		boolean print = false;
+		if(print)
+		{
+			for(int i = 0; i < blockSize; i++)
+			{
+				System.err.printf("[%s]:\n", fb.blockList.get(i).blockID);
+				printSet(fb.blockList.get(i).in);
+				printSet(fb.blockList.get(i).out);
+				System.err.println();
+			}
+		}
+	}
+	
+	private void block_def_use(BasicBlock bb)
+	{
+		for(Ins ins : bb.insList)
+		{
+			if(ins instanceof JumpIns)
+			{
+				if(ins.insName.equals("ret"))
+				{
+					if(isReg(((JumpIns)ins).src) > 0)
+						bb.use.add(((JumpIns)ins).src);
+				}
+				else if(ins.insName.equals("br"))
+				{
+					if(isReg(((JumpIns)ins).cond) > 0)
+						bb.use.add(((JumpIns)ins).cond);
+				}
+			}
+			else if(ins instanceof MemAccIns)
+			{
+				if(ins.insName.equals("store"))
+				{
+					if(isReg(((MemAccIns)ins).addr) > 0)
+						bb.use.add(((MemAccIns)ins).addr);
+					if(isReg(((MemAccIns)ins).src) > 0)
+						bb.use.add(((MemAccIns)ins).src);
+				}
+				else if(ins.insName.equals("load"))
+				{
+					if(isReg(((MemAccIns)ins).dest) > 0)
+						bb.def.add(((MemAccIns)ins).dest);
+					if(isReg(((MemAccIns)ins).addr) > 0)
+						bb.use.add(((MemAccIns)ins).addr);
+				}
+				else if(ins.insName.equals("alloc"))
+				{
+					if(isReg(((MemAccIns)ins).dest) > 0)
+						bb.def.add(((MemAccIns)ins).dest);
+					if(isReg(((MemAccIns)ins).size) > 0)
+						bb.use.add(((MemAccIns)ins).size);
+				}
+			}
+			else if(ins instanceof FuncCallIns)
+			{
+				if(isReg(((FuncCallIns)ins).dest) > 0)
+					bb.def.add(((FuncCallIns)ins).dest);
+				for(String op : ((FuncCallIns)ins).ops)
+				{
+					if(isReg(op) > 0)
+						bb.use.add(op);
+				}
+			}
+			else if(ins instanceof MovIns)
+			{
+				if(isReg(((MovIns)ins).dest) > 0)
+					bb.def.add(((MovIns)ins).dest);
+				if(isReg(((MovIns)ins).src) > 0)
+					bb.use.add(((MovIns)ins).src);
+			}
+			else if(ins instanceof ArithIns)
+			{
+				if(isReg(((ArithIns)ins).dest) > 0)
+					bb.def.add(((ArithIns)ins).dest);
+				if(isReg(((ArithIns)ins).src1) > 0)
+					bb.use.add(((ArithIns)ins).src1);
+				if(!ins.insName.equals("neg"))
+					if(isReg(((ArithIns)ins).src2) > 0)
+						bb.use.add(((ArithIns)ins).src2);
+			}
+			else if(ins instanceof BitIns)
+			{
+				if(isReg(((BitIns)ins).dest) > 0)
+					bb.def.add(((BitIns)ins).dest);
+				if(isReg(((BitIns)ins).src1) > 0)
+					bb.use.add(((BitIns)ins).src1);
+				if(!ins.insName.equals("not"))
+					if(isReg(((BitIns)ins).src2) > 0)
+						bb.use.add(((BitIns)ins).src2);
+			}
+			else if(ins instanceof CondSetIns)
+			{
+				if(isReg(((CondSetIns)ins).dest) > 0)
+					bb.def.add(((CondSetIns)ins).dest);
+				if(isReg(((CondSetIns)ins).src1) > 0)
+					bb.use.add(((CondSetIns)ins).src1);
+				if(isReg(((CondSetIns)ins).src2) > 0)
+					bb.use.add(((CondSetIns)ins).src2);
+			}
+		}
+	}
+	
+	private void livenessAnalysis(FuncBlock fb, BasicBlock bb)
+	{
+		int insSize = bb.insList.size();
+		for(int i = 0; i < insSize; i++)
+		{
+			Ins ins = bb.insList.get(i);
+			def_use(ins);
+		}
+		while(true)
+		{
+			for(int i = insSize - 1; i >= 0; i--)
+			{
+				Ins ins = bb.insList.get(i);
+				ins.inp = ins.in;
+				ins.outp = ins.out;
+				ins.in = new HashSet<>();
+				ins.out = new HashSet<>();
+				
+				if(i == insSize - 1)
+				{
+					if(bb.to != null)
+						ins.out.addAll(bb.to.in);
+					if(bb.ifTrue != null)
+						ins.out.addAll(bb.ifTrue.in);
+					if(bb.ifFalse != null)
+						ins.out.addAll(bb.ifFalse.in);
+				}
+				else
+				{
+					Ins nextIns = bb.insList.get(i + 1);
+					ins.out.addAll(nextIns.in);
+				}
+				
+				ins.in.addAll(ins.use);
+				Iterator it = ins.out.iterator();
+				while(it.hasNext())
+				{
+					Object temp = it.next();
+					if(!ins.def.contains(temp))
+					{
+						ins.in.add(temp.toString());
+					}
+				}
+			}
+			boolean flag = true;
+			for(int i = 0; i < insSize; i++)
+			{
+				Ins ins = bb.insList.get(i);
+				if(!isSetEqual(ins.in, ins.inp) || !isSetEqual(ins.out, ins.outp))
+				{
+					flag = false;
+					break;
+				}
+			}
+			if(flag)
+			{
+				break;
+			}
+		}
+		
+		boolean printInOut = false;
+		if(printInOut)
+		{
+			System.err.println("[" + bb.blockID + "]");
+			for(int i = 0; i < insSize; i++)
+			{
+				Ins ins = bb.insList.get(i);
+				System.err.printf("ins[%d]:\nin: ", i);
+				printSet(ins.in);
+				System.err.printf("\nout: ");
+				printSet(ins.out);
+				System.err.println("\n");
+			}
+		}
+		
+		bb.analyzed = true;
+		if(bb.to != null && !bb.to.analyzed)
+		{
+			livenessAnalysis(fb, bb.to);
+		}
+		if(bb.ifFalse != null && !bb.ifFalse.analyzed)
+		{
+			livenessAnalysis(fb, bb.ifFalse);
+		}
+		if(bb.ifTrue != null && !bb.ifTrue.analyzed)
+		{
+			livenessAnalysis(fb, bb.ifTrue);
+		}
+	}
+	
+	private void def_use(Ins ins)
+	{
+		if(ins instanceof JumpIns)
+		{
+			if(ins.insName.equals("ret"))
+			{
+				if(isReg(((JumpIns)ins).src) > 0)
+					ins.use.add(((JumpIns)ins).src);
+			}
+			else if(ins.insName.equals("br"))
+			{
+				if(isReg(((JumpIns)ins).cond) > 0)
+					ins.use.add(((JumpIns)ins).cond);
+			}
+		}
+		else if(ins instanceof MemAccIns)
+		{
+			if(ins.insName.equals("store"))
+			{
+				if(isReg(((MemAccIns)ins).addr) > 0)
+					ins.use.add(((MemAccIns)ins).addr);
+				if(isReg(((MemAccIns)ins).src) > 0)
+					ins.use.add(((MemAccIns)ins).src);
+			}
+			else if(ins.insName.equals("load"))
+			{
+				if(isReg(((MemAccIns)ins).dest) > 0)
+					ins.def.add(((MemAccIns)ins).dest);
+				if(isReg(((MemAccIns)ins).addr) > 0)
+					ins.use.add(((MemAccIns)ins).addr);
+			}
+			else if(ins.insName.equals("alloc"))
+			{
+				if(isReg(((MemAccIns)ins).dest) > 0)
+					ins.def.add(((MemAccIns)ins).dest);
+				if(isReg(((MemAccIns)ins).size) > 0)
+					ins.use.add(((MemAccIns)ins).size);
+			}
+		}
+		else if(ins instanceof FuncCallIns)
+		{
+			if(isReg(((FuncCallIns)ins).dest) > 0)
+			{
+				ins.def.add(((FuncCallIns)ins).dest);
+				ins.use.add(((FuncCallIns)ins).dest);
+			}
+			for(String op : ((FuncCallIns)ins).ops)
+			{
+				if(isReg(op) > 0)
+					ins.use.add(op);
+			}
+		}
+		else if(ins instanceof MovIns)
+		{
+			if(isReg(((MovIns)ins).dest) > 0)
+				ins.def.add(((MovIns)ins).dest);
+			if(isReg(((MovIns)ins).src) > 0)
+				ins.use.add(((MovIns)ins).src);
+		}
+		else if(ins instanceof ArithIns)
+		{
+			if(isReg(((ArithIns)ins).dest) > 0)
+				ins.def.add(((ArithIns)ins).dest);
+			if(isReg(((ArithIns)ins).src1) > 0)
+				ins.use.add(((ArithIns)ins).src1);
+			if(!ins.insName.equals("neg"))
+				if(isReg(((ArithIns)ins).src2) > 0)
+					ins.use.add(((ArithIns)ins).src2);
+		}
+		else if(ins instanceof BitIns)
+		{
+			if(isReg(((BitIns)ins).dest) > 0)
+				ins.def.add(((BitIns)ins).dest);
+			if(isReg(((BitIns)ins).src1) > 0)
+				ins.use.add(((BitIns)ins).src1);
+			if(!ins.insName.equals("not"))
+				if(isReg(((BitIns)ins).src2) > 0)
+					ins.use.add(((BitIns)ins).src2);
+		}
+		else if(ins instanceof CondSetIns)
+		{
+			if(isReg(((CondSetIns)ins).dest) > 0)
+				ins.def.add(((CondSetIns)ins).dest);
+			if(isReg(((CondSetIns)ins).src1) > 0)
+				ins.use.add(((CondSetIns)ins).src1);
+			if(isReg(((CondSetIns)ins).src2) > 0)
+				ins.use.add(((CondSetIns)ins).src2);
+		}
+	}
+	
+	private void printSet(Set set)
+	{
+		Iterator it = set.iterator();
+		while(it.hasNext())
+		{
+			System.err.printf("%s ", it.next().toString());
+		}
+		System.err.println();
+	}
+	
+	private void regAlloc(FuncBlock fb, BasicBlock bb)
+	{
+		for(BasicBlock curBlock : fb.blockList)
+		{
+			for(Ins curIns : curBlock.insList)
+			{
+				for(String d : curIns.def)
+				{
+					Set<String> temp;
+					if(!fb.itf.containsKey(d))
+					{
+						temp = new HashSet<>();
+						fb.itf.put(d, temp);
+					}
+					else
+					{
+						temp = fb.itf.get(d);
+					}
+					for(String o : curIns.out)
+					{
+						if(o.equals(d))
+							continue;
+						temp.add(o);
+					}
+				}
+				for(String o : curIns.out)
+				{
+					Set<String> temp;
+					if(!fb.itf.containsKey(o))
+					{
+						temp = new HashSet<>();
+						fb.itf.put(o, temp);
+					}
+					else
+						temp = fb.itf.get(o);
+					for(String d : curIns.def)
+					{
+						if(o.equals(d))
+							continue;
+						temp.add(d);
+					}
+				}
+			}
+		}
+		
+		for(Map.Entry<String, Set<String>> entry : fb.itf.entrySet())
+		{
+			fb.deg.put(entry.getKey(), entry.getValue().size());
+			fb.inGraph.put(entry.getKey(), true);
+		}
+		Stack<String> stack = new Stack<>();
+		while(true)
+		{
+			boolean flag = false;
+			for(Map.Entry<String, Integer> entry : fb.deg.entrySet())
+			{
+				if(entry.getValue() < regNum
+						&& fb.inGraph.get(entry.getKey()))
+				{
+					stack.push(entry.getKey());
+					fb.inGraph.put(entry.getKey(), false);
+					Set<String> temp = fb.itf.get(entry.getKey());
+					for(String str : temp)
+					{
+						fb.deg.put(str, fb.deg.get(str) - 1);
+					}
+					flag = true;
+					break;
+				}
+			}
+			if(flag)
+				continue;
+			
+			for(Map.Entry<String, Integer> entry : fb.deg.entrySet())
+			{
+				fb.inGraph.put(entry.getKey(), false);
+			}
+			break;			// Have not put those with degree > regNum in stack
+		}
+		
+		int allNum = fb.deg.size();
+		int canColor = stack.size();
+		int cannotColor = 0;
+		for(Map.Entry<String, Boolean> entry : fb.inGraph.entrySet())
+		{
+			if(entry.getValue())
+				cannotColor++;
+		}
+		
+		while(!stack.empty())
+		{
+			String now = stack.pop();
+			//System.err.println("now = " + now);
+			Boolean[] ok = new Boolean[regNum];
+			for(int i = 0; i < regNum; i++)
+				ok[i] = true;
+			
+			fb.deg.put(now, fb.itf.get(now).size());
+			fb.inGraph.put(now, true);
+			Set<String> temp = fb.itf.get(now);
+			for(String adj : temp)
+			{
+				if(fb.inGraph.get(adj))
+				{
+					ok[fb.color.get(adj)] = false;
+				}
+			}
+			
+			for(int i = 0; i < regNum; i++)
+			{
+				if(ok[i])
+				{
+					fb.color.put(now, i);
+					break;
+				}
+			}
+		}
+		
+		boolean printColor = true;
+		if(printColor)
+		{
+			System.err.println("FUNCTION : " + fb.funcName);
+			System.err.printf("Total : %d, colored : %d, uncolored : %d\n", allNum, canColor, cannotColor);
+			for(Map.Entry<String, Integer> entry : fb.color.entrySet())
+			{
+				System.err.printf("%s : %s\n", entry.getKey(), realReg.get(entry.getValue()));
+			}
+		}
+	}
+	
+	private String getReg(FuncBlock fb, String vr)
+	{
+		if(!fb.color.containsKey(vr))
+		{
+			return null;
+		}
+		return realReg.get(fb.color.get(vr));
+	}
+	
+	private String getTake(BasicBlock bb, String reg)
+	{
+		if(!bb.take.containsKey(reg))
+		{
+			bb.take.put(reg, null);
+			return null;
+		}
+		return bb.take.get(reg);
+	}
+
+	private void store(BasicBlock bb, String reg)
+	{
+		if(isReg(getTake(bb, reg)) == 1)
+		{
+			String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(getTake(bb, reg)));
+			o.printf("\t\tmov\t\tqword[%s], %s\n", pos, reg);
+		}
+		else
+		{
+			o.printf("\t\tmov\t\tqword[%s], %s\n", getTake(bb, reg), reg);
+		}
+	}
+
+	private void load(BasicBlock bb, String vr)
+	{
+		if(isReg(vr) == 1)
+		{
+			String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(vr));
+			o.printf("\t\tmov\t\t%s, qword[%s]\n", getReg(bb.ofFunc, vr), pos);
+		}
+		else
+		{
+			o.printf("\t\tmov\t\t%s, qword[%s]\n", getReg(bb.ofFunc, vr), vr);
+		}
+		bb.take.put(getReg(bb.ofFunc, vr), vr);
+	}
+	
+	private void check(BasicBlock bb, String vr)
+	{
+		String rR = getReg(bb.ofFunc, vr);
+		String tT = getTake(bb, rR);
+		if(tT == null)
+		{
+			load(bb, vr);
+		}
+		else if(!tT.equals(vr))
+		{
+			store(bb, rR);
+			load(bb, vr);
+		}
+		return;
+	}
+	
+	private void storeAll(BasicBlock bb)
+	{
+		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		{
+			if(entry.getValue() != null)
+			{
+				store(bb, entry.getKey());
+			}
+		}
+	}
+	
+	private void loadAll(BasicBlock bb)
+	{
+		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		{
+			if(entry.getValue() != null)
+			{
+				load(bb, entry.getValue());
+			}
+		}
+	}
+	
+	private void loadAll(BasicBlock bb, String ex)
+	{
+		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		{
+			if(entry.getValue() != null
+					&& !entry.getKey().equals(ex))
+			{
+				load(bb, entry.getValue());
+			}
+		}
+	}
+	
+	private void loadAll(BasicBlock bb, String ex, String ex2)
+	{
+		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		{
+			if(entry.getValue() != null
+					&& !entry.getKey().equals(ex)
+					&& !entry.getKey().equals(ex2))
+			{
+				load(bb, entry.getValue());
+			}
+		}
+	}
+	
+	private void printTake(BasicBlock bb)
+	{
+		System.err.println("------ TAKE ------");
+		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		{
+			System.err.printf("%s -> ", entry.getKey());
+			if(entry.getValue() != null)
+				System.err.printf("%s", entry.getValue());
+			System.err.println();
+		}
+		System.err.println();
 	}
 }

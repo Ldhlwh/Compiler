@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="273" />
+    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="362" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72816ae8-fb79-49b9-8a8d-6f8a5ecaffc8" name="默认" comment="" />
@@ -14,68 +14,77 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.67903644">
-      <split-first>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="210">
-                  <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="148">
-                  <caret line="874" column="30" selection-start-line="874" selection-start-column="27" selection-end-line="874" selection-end-column="30" />
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="148">
-                  <caret line="1146" column="24" selection-start-line="1146" selection-start-column="21" selection-end-line="1146" selection-end-column="24" />
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                    <element signature="method#add_int_size#0;class#IRGenerator#0" />
-                    <element signature="method#add_string_length#0;class#IRGenerator#0" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="31">
-                  <caret line="1315" column="45" selection-start-line="1315" selection-start-column="45" selection-end-line="1315" selection-end-column="45" />
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                    <element signature="method#add_int_size#0;class#IRGenerator#0" />
-                    <element signature="method#add_string_length#0;class#IRGenerator#0" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-77">
+              <caret line="659" column="62" selection-start-line="659" selection-start-column="62" selection-end-line="659" selection-end-column="62" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="method#add_alloc#0;class#IRGenerator#0" />
+                <element signature="method#add_int_size#0;class#IRGenerator#0" />
+                <element signature="method#add_string_length#0;class#IRGenerator#0" />
+                <element signature="method#add_string_substring#0;class#IRGenerator#0" />
+                <element signature="method#add_string_ord#0;class#IRGenerator#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="420">
+              <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="1349" column="12" selection-start-line="1349" selection-start-column="12" selection-end-line="1349" selection-end-column="12" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
+                <element signature="method#isReg#0;class#NASMBuilder#0" />
+                <element signature="method#isSetEqual#0;class#NASMBuilder#0" />
+                <element signature="method#blockLivenessAnalysis#0;class#NASMBuilder#0" />
+                <element signature="method#block_def_use#0;class#NASMBuilder#0" />
+                <element signature="method#livenessAnalysis#0;class#NASMBuilder#0" />
+                <element signature="method#printSet#0;class#NASMBuilder#0" />
+                <element signature="method#regAlloc#0;class#NASMBuilder#0" />
+                <element signature="method#getReg#0;class#NASMBuilder#0" />
+                <element signature="method#getTake#0;class#NASMBuilder#0" />
+                <element signature="method#store#0;class#NASMBuilder#0" />
+                <element signature="method#load#0;class#NASMBuilder#0" />
+                <element signature="method#check#0;class#NASMBuilder#0" />
+                <element signature="method#storeAll#0;class#NASMBuilder#0" />
+                <element signature="method#loadAll#0;class#NASMBuilder#0" />
+                <element signature="method#printTake#0;class#NASMBuilder#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BasicBlock.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="31" column="54" selection-start-line="31" selection-start-column="54" selection-end-line="31" selection-end-column="54" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -87,36 +96,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find />
-      <find>strcmp</find>
-      <find>slt</find>
-      <find>&quot;&lt;&quot;</find>
-      <find>gets</find>
-      <find>puts</find>
-      <find>constnode</find>
-      <find>printf</find>
-      <find>println</find>
-      <find>Prefix</find>
-      <find>store</find>
-      <find>assignnode</find>
-      <find>varidecl</find>
-      <find>get</find>
-      <find>prefix</find>
-      <find>Arith</find>
-      <find>&quot;ret&quot;</find>
-      <find>origin</find>
-      <find>membernode</find>
-      <find>HHH</find>
-      <find>improve</find>
-      <find>suffix</find>
-      <find>funccallnode</find>
       <find>oftype</find>
-      <find>funccall</find>
       <find>funcdecl</find>
       <find>lea</find>
       <find>funccal</find>
       <find>getDim</find>
       <find>err</find>
+      <find>null</find>
+      <find>[main]</find>
+      <find>printset</find>
+      <find />
+      <find>br</find>
+      <find>$_t</find>
+      <find>$_t4_1</find>
+      <find>div</find>
+      <find>funccallins</find>
+      <find>MovIns</find>
+      <find>malloc</find>
+      <find>loadAll</find>
+      <find>funccall</find>
+      <find>mov</find>
+      <find>getint</find>
+      <find>tostring</find>
+      <find>assignnode</find>
+      <find>alloc</find>
+      <find>toString</find>
+      <find>sprintf</find>
+      <find>scanf</find>
+      <find>varidecl</find>
+      <find>temp2</find>
+      <find>movins</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -130,7 +139,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/PrefixIncDecNode.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/VariInitScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Instances/FuncIns.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/ConstructorScope.java" />
@@ -171,13 +179,14 @@
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/NodeList" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/IdNode.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/ExprNode.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java" />
         <option value="$PROJECT_DIR$/MxGrammar/Mx.g4" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/ASTMaker.java" />
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/FuncCallNode.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java" />
+        <option value="$PROJECT_DIR$/LLIRTestingField/src/SetTest.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
@@ -212,30 +221,10 @@
     <panes>
       <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
-            <path>
-              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Compiler" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Compiler" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Compiler" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="AbstractSyntaxTree" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Compiler" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="ScopeCheck" type="462c0819:PsiDirectoryNode" />
-            </path>
             <path>
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
               <item name="MxGrammar" type="462c0819:PsiDirectoryNode" />
@@ -248,18 +237,17 @@
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="$PROJECT_DIR$/MxGrammar/Mx.g4::/auto-gen" value="true" />
     <property name="$PROJECT_DIR$/MxGrammar/Mx.g4::/gen-listener" value="false" />
     <property name="$PROJECT_DIR$/MxGrammar/Mx.g4::/gen-visitor" value="true" />
-    <property name="SearchEverywhereHistoryKey" value="ofType&#9;PSI&#9;JAVA://AbstractSyntaxTree.Nodes.ExprNode#ofType&#10;System.out&#9;null&#9;null&#10;paramList&#9;PSI&#9;JAVA://com.sun.xml.internal.ws.encoding.ParameterList" />
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://C:/Users/qydyx/Desktop/Compiler/Compiler/src/IR/FuncBlock.java&#10;ofType&#9;PSI&#9;JAVA://AbstractSyntaxTree.Nodes.ExprNode#ofType&#10;System.out&#9;null&#9;null&#10;paramList&#9;PSI&#9;JAVA://com.sun.xml.internal.ws.encoding.ParameterList" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="jdk.selected.JAVA_MODULE" value="10" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Compiler of CLQ" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Compiler - Codegen Backup" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="模块" />
@@ -308,9 +296,9 @@
       <module name="LLIRTestingField" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
-    <configuration name="LP" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="LP" />
-      <module name="Compiler" />
+    <configuration name="SetTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="SetTest" />
+      <module name="LLIRTestingField" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -365,19 +353,19 @@
       <listeners />
     </configuration>
     <list>
-      <item itemvalue="Application.LP" />
       <item itemvalue="Application.Compiler" />
       <item itemvalue="LLVM Application.hello.ll" />
       <item itemvalue="Application.LLIRInterpreter" />
       <item itemvalue="Application.test" />
+      <item itemvalue="Application.SetTest" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Compiler" />
+        <item itemvalue="Application.SetTest" />
         <item itemvalue="Application.LLIRInterpreter" />
         <item itemvalue="Application.test" />
         <item itemvalue="LLVM Application.hello.ll" />
-        <item itemvalue="Application.LP" />
       </list>
     </recent_temporary>
   </component>
@@ -446,12 +434,13 @@
       <workItem from="1528112922991" duration="40902000" />
       <workItem from="1528174237819" duration="2467000" />
       <workItem from="1528185704886" duration="5411000" />
-      <workItem from="1528195029275" duration="23650000" />
+      <workItem from="1528195029275" duration="24247000" />
+      <workItem from="1528276801968" duration="48007000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="467086000" />
+    <option name="totallyTimeSpent" value="515690000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -477,11 +466,11 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.41387025" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.3277405" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.18123667" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.53589314" visible="true" weight="0.18283582" />
       <window_info id="设计器" order="3" />
       <window_info anchor="right" id="Database" order="8" />
       <window_info anchor="bottom" x="87" y="202" width="1195" height="468" id="ANTLR Preview" order="14" type="WINDOWED" weight="0.5156599" />
@@ -544,12 +533,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="52" />
+      <option name="time" value="66" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Compiler/src/hello.ll" />
-    <entry file="file://$PROJECT_DIR$/LLIRTestingField/src/main.java" />
     <entry file="file://$PROJECT_DIR$/LLIRTestingField/src/LLIRTester.java" />
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/AssignNode.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -771,37 +758,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="651">
-          <caret line="41" selection-start-line="41" selection-end-line="41" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1344">
-          <caret line="64" selection-start-line="64" selection-end-line="64" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/BinaryNode.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="42">
           <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="17" column="32" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -857,31 +817,97 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+    <entry file="jar://D:/jdk1.8.0_171/src.zip!/java/util/Set.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="148">
-          <caret line="1146" column="24" selection-start-line="1146" selection-start-column="21" selection-end-line="1146" selection-end-column="24" />
+        <state relative-caret-position="-971">
+          <caret line="118" column="12" selection-start-line="118" selection-start-column="12" selection-end-line="118" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LLIRTestingField/src/SetTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="28" column="13" lean-forward="true" selection-start-line="28" selection-start-column="13" selection-end-line="28" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="12" column="4" selection-start-line="12" selection-start-column="4" selection-end-line="18" selection-end-column="4" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="31" column="54" selection-start-line="31" selection-start-column="54" selection-end-line="31" selection-end-column="54" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="19" column="52" selection-start-line="19" selection-start-column="52" selection-end-line="19" selection-end-column="52" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-77">
+          <caret line="659" column="62" selection-start-line="659" selection-start-column="62" selection-end-line="659" selection-end-column="62" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#add_alloc#0;class#IRGenerator#0" />
             <element signature="method#add_int_size#0;class#IRGenerator#0" />
             <element signature="method#add_string_length#0;class#IRGenerator#0" />
+            <element signature="method#add_string_substring#0;class#IRGenerator#0" />
+            <element signature="method#add_string_ord#0;class#IRGenerator#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="148">
-          <caret line="874" column="30" selection-start-line="874" selection-start-column="27" selection-end-line="874" selection-end-column="30" />
+        <state relative-caret-position="195">
+          <caret line="1349" column="12" selection-start-line="1349" selection-start-column="12" selection-end-line="1349" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
+            <element signature="method#isReg#0;class#NASMBuilder#0" />
+            <element signature="method#isSetEqual#0;class#NASMBuilder#0" />
+            <element signature="method#blockLivenessAnalysis#0;class#NASMBuilder#0" />
+            <element signature="method#block_def_use#0;class#NASMBuilder#0" />
+            <element signature="method#livenessAnalysis#0;class#NASMBuilder#0" />
+            <element signature="method#printSet#0;class#NASMBuilder#0" />
+            <element signature="method#regAlloc#0;class#NASMBuilder#0" />
+            <element signature="method#getReg#0;class#NASMBuilder#0" />
+            <element signature="method#getTake#0;class#NASMBuilder#0" />
+            <element signature="method#store#0;class#NASMBuilder#0" />
+            <element signature="method#load#0;class#NASMBuilder#0" />
+            <element signature="method#check#0;class#NASMBuilder#0" />
+            <element signature="method#storeAll#0;class#NASMBuilder#0" />
+            <element signature="method#loadAll#0;class#NASMBuilder#0" />
+            <element signature="method#printTake#0;class#NASMBuilder#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
+        <state relative-caret-position="420">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />

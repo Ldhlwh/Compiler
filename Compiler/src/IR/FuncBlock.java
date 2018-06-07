@@ -3,6 +3,7 @@ package IR;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 
 public class FuncBlock
@@ -14,6 +15,12 @@ public class FuncBlock
 	
 	public Map<String, Integer> memPos = new HashMap<>();
 	public int memSize = 0;
+	public ArrayList<BasicBlock> blockList = new ArrayList<>();
+	
+	public Map<String, Set<String>> itf = new HashMap<>();
+	public Map<String, Integer> deg = new HashMap<>();
+	public Map<String, Boolean> inGraph = new HashMap<>();
+	public Map<String, Integer> color = new HashMap<>();
 	
 	public boolean used = false;
 	

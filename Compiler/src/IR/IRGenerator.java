@@ -530,6 +530,7 @@ public class IRGenerator
 		__init.entry = __init_entry;
 		__init_entry.ofFunc = __init;
 		
+		
 		add_alloc();
 		add_int_size();
 		add_string_length();
@@ -607,6 +608,20 @@ public class IRGenerator
 								curBlock.insList.add(ins);
 							}
 						}
+						else if(((VariInitNode)node).exprNode instanceof FuncCallNode)
+						{
+							MovIns ins = new MovIns();
+							if(curScope == topScope)
+								ins.dest = "@" + ((VariInitNode)node).id;
+							else
+								ins.dest = "$" + ((VariInitNode)node).id + "_" + curScope.scopeID;
+							ins.insName = "move";
+							Pair<String, BasicBlock> temp = pass(((VariInitNode)node).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
+							ins.src = temp.getKey();
+							curBlock = temp.getValue();
+							Ins last = curBlock.insList.get(curBlock.insList.size() - 1);
+							((FuncCallIns)last).dest = ins.dest;
+						}
 						else
 						{
 							MovIns ins = new MovIns();
@@ -638,6 +653,12 @@ public class IRGenerator
 						Pair<String, BasicBlock> temp = pass(((VariInitNode)node).exprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 						ins.src = temp.getKey();
 						curBlock = temp.getValue();
+						if(((VariInitNode)node).exprNode instanceof FuncCallNode)
+						{
+							Ins last = curBlock.insList.get(curBlock.insList.size() - 1);
+							((FuncCallIns)last).dest = ins.dest;
+							return new Pair<>(null, curBlock);
+						}
 						curBlock.insList.add(ins);
 					}
 				}
@@ -1737,6 +1758,12 @@ public class IRGenerator
 				ins.dest = pass(((AssignNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 				ins.src = temp.getKey();
+				if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
+				{
+					Ins last = temp.getValue().insList.get(temp.getValue().insList.size() - 1);
+					((FuncCallIns)last).dest = ins.dest;
+					return new Pair<>(null, temp.getValue());
+				}
 				temp.getValue().insList.add(ins);
 				return new Pair<>(null, temp.getValue());
 			}
@@ -1748,6 +1775,12 @@ public class IRGenerator
 				ins.dest = pass(((AssignNode)now).leftExprNode, curScope, curBlock, true, true, recHead, trueBlock, falseBlock).getKey();
 				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 				ins.src = temp.getKey();
+				if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
+				{
+					Ins last = temp.getValue().insList.get(temp.getValue().insList.size() - 1);
+					((FuncCallIns)last).dest = ins.dest;
+					return new Pair<>(null, temp.getValue());
+				}
 				temp.getValue().insList.add(ins);
 				return new Pair<>(null, temp.getValue());
 			}
@@ -1758,6 +1791,12 @@ public class IRGenerator
 				ins.addr = pass(((AssignNode)now).leftExprNode, curScope, curBlock, true, true, recHead, trueBlock, falseBlock).getKey();
 				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 				ins.src = temp.getKey();
+				if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
+				{
+					Ins last = temp.getValue().insList.get(temp.getValue().insList.size() - 1);
+					((FuncCallIns)last).dest = ins.dest;
+					return new Pair<>(null, temp.getValue());
+				}
 				ins.size = bytes.get("addr") + "";
 				ins.offset = 0;
 				temp.getValue().insList.add(ins);

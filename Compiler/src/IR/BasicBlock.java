@@ -3,9 +3,7 @@ package IR;
 
 import IR.Instructions.Ins;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class BasicBlock
 {
@@ -14,14 +12,24 @@ public class BasicBlock
 	
 	public BasicBlock to;
 	public BasicBlock ifTrue, ifFalse;
+	//public ArrayList<BasicBlock> from = new ArrayList<>();
 	
 	public static int bbNum = 0;
 	
 	public boolean printed = false;		// While printing the IR
 	public boolean allocated = false;	// While allocating the Regs to Mem
 	public boolean generated = false;	// While generating NASM code
+	public boolean analyzed = false;	// While analyzing liveness
 	
 	public FuncBlock ofFunc;
+	public Set<String> def = new HashSet<>();
+	public Set<String> use = new HashSet<>();
+	public Set<String> out = new HashSet<>();
+	public Set<String> in = new HashSet<>();
+	public Set<String> outp = new HashSet<>();
+	public Set<String> inp = new HashSet<>();
+	
+	public Map<String, String> take = new HashMap<>();
 	
 	public BasicBlock()
 	{

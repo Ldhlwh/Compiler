@@ -1,8 +1,21 @@
 package IR.Instructions;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 public abstract class Ins
 {
 	public String insName;
+	
+	//public ArrayList<Integer> pred = new ArrayList<>();
+	//public ArrayList<Integer> succ = new ArrayList<>();
+	public Set<String> def = new HashSet<>();
+	public Set<String> use = new HashSet<>();
+	public Set<String> out = new HashSet<>();
+	public Set<String> in = new HashSet<>();
+	public Set<String> outp = new HashSet<>();
+	public Set<String> inp = new HashSet<>();
 	
 	public void print()
 	{
