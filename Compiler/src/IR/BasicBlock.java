@@ -29,7 +29,7 @@ public class BasicBlock
 	public Set<String> outp = new HashSet<>();
 	public Set<String> inp = new HashSet<>();
 	
-	public Map<String, String> take = new HashMap<>();
+	//public Map<String, String> take = new HashMap<>();
 	
 	public BasicBlock()
 	{

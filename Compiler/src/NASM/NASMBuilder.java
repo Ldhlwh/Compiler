@@ -23,9 +23,8 @@ public class NASMBuilder
 	public ArrayList<String> realReg = new ArrayList<>();
 	
 	
-	
-	public boolean printTake = true;
-	public boolean printAllocMem = true;
+	public boolean printTake = false;
+	public boolean printAllocMem = false;
 	public boolean printInOutDefUse = false;
 	public boolean printColor = true;
 	
@@ -102,7 +101,7 @@ public class NASMBuilder
 		{
 			allocMem(fb, fb.entry);
 			//blockLivenessAnalysis(fb, fb.entry);
-			livenessAnalysis(fb, fb.entry);
+			livenessAnalysis(fb);
 			regAlloc(fb, fb.entry);
 			/*
 			o.printf("+++ Func : %s +++\n", fb.funcName);
@@ -172,7 +171,6 @@ public class NASMBuilder
 			}
 		}
 		
-		String l, r;
 		int max = bb.insList.size();
 		for(int i = 0; i < max; i++)
 		{
@@ -727,7 +725,7 @@ public class NASMBuilder
 						else
 						{
 							check(bb, ((FuncCallIns)ins).dest);
-							String vr = bb.take.get(reg);
+							String vr = bb.ofFunc.take.get(reg);
 							dest = "[" + "rbp - " + (8 + bb.ofFunc.memPos.get(vr)) + "]";
 							fff = true;
 						}
@@ -742,7 +740,7 @@ public class NASMBuilder
 						else
 						{
 							check(bb, ((FuncCallIns)ins).dest);
-							String vr = bb.take.get(reg);
+							String vr = bb.ofFunc.take.get(reg);
 							dest = "[" + ((FuncCallIns)ins).dest + "]";
 							fff = true;
 						}
@@ -1334,7 +1332,20 @@ public class NASMBuilder
 					if(regd != null
 							&& regd.equals(regs))
 					{
-						check(bb, ((MovIns)ins).dest);
+						/*
+						//check(bb, ((MovIns)ins).dest);
+						String rR = getReg(bb.ofFunc, vr);
+						String tT = getTake(bb, rR);
+						if(tT == null)
+						{
+							load(bb, vr);
+						}
+						else if(!tT.equals(vr))
+						{
+							//store(bb, rR);
+							load(bb, vr);
+						}
+						return;
 						String nsrc = null;
 						if(isReg(((MovIns)ins).src) == 1)
 						{
@@ -1345,7 +1356,8 @@ public class NASMBuilder
 						{
 							nsrc = "qword[" + ((MovIns)ins).src + "]";
 						}
-						o.printf("\t\tmov\t\t%s, %s\n", regd, nsrc);
+						o.printf("\t\tmov\t\t%s, %s\n", regd, nsrc);*/
+						bb.ofFunc.take.put(regd, ((MovIns)ins).dest);
 						continue;
 					}
 				}
@@ -1396,6 +1408,7 @@ public class NASMBuilder
 					else
 					{
 						check(bb, ((MovIns)ins).dest);
+						//System.err.printf(bb.ofFunc.take.get(getReg(bb.ofFunc, ((MovIns)ins).dest)));
 						dest = reg;
 					}
 					o.printf("\t\tmov\t\t%s, %s\n", dest, src);
@@ -1814,122 +1827,7 @@ public class NASMBuilder
 			}
 			else if(ins instanceof CondSetIns)
 			{
-				/*
-				if(i == bb.insList.size() - 1 || !(bb.insList.get(i + 1).insName.equals("br")))
-				{
-					int cd = isReg(((CondSetIns)ins).dest);
-					String dest = null;
-					if(cd == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).dest));
-							dest = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((CondSetIns)ins).dest);
-							dest = reg;
-						}
-					}
-					else if(cd == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).dest);
-						if(reg == null)
-						{
-							dest = "qword[" + ((CondSetIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((CondSetIns)ins).dest);
-							dest = reg;
-						}
-					}
-					
-					int cs1 = isReg(((CondSetIns)ins).src1);
-					String src1 = null;
-					if(cs1 == 0)
-					{
-						src1 = ((CondSetIns)ins).src1;
-					}
-					else if(cs1 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).src1);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).src1));
-							src1 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((CondSetIns)ins).src1);
-							src1 = reg;
-						}
-					}
-					else if(cs1 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).src1);
-						if(reg == null)
-						{
-							src1 = "qword[" + ((CondSetIns)ins).src1 + "]";
-						}
-						else
-						{
-							check(bb, ((CondSetIns)ins).src1);
-							src1 = reg;
-						}
-					}
-					
-					o.printf("\t\tmov\t\t%s, %s\n", dest, src1);
-					
-					int cs2 = isReg(((CondSetIns)ins).src2);
-					String src2 = null;
-					if(cs2 == 0)
-					{
-						src2 = ((CondSetIns)ins).src2;
-					}
-					else if(cs2 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).src2);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((CondSetIns)ins).src2));
-							src2 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((CondSetIns)ins).src2);
-							src2 = reg;
-						}
-					}
-					else if(cs2 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((CondSetIns)ins).src2);
-						if(reg == null)
-						{
-							src2 = "qword[" + ((CondSetIns)ins).src2+ "]";
-						}
-						else
-						{
-							check(bb, ((CondSetIns)ins).src2);
-							src2 = reg;
-						}
-					}
-					
-					if(ins.insName.equals("slt"))
-						o.printf("\t\tjl\t\t%s\n", ((JumpIns)ins).ifTrue);
-					else if(ins.insName.equals("sgt"))
-						o.printf("\t\tjg\t\t%s\n", ((JumpIns)ins).ifTrue);
-					else if(ins.insName.equals("sle"))
-						o.printf("\t\tjle\t\t%s\n", ((JumpIns)ins).ifTrue);
-					else if(ins.insName.equals("sge"))
-						o.printf("\t\tjge\t\t%s\n", ((JumpIns)ins).ifTrue);
-					else if(ins.insName.equals("seq"))
-						o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
-					else if(ins.insName.equals("sne"))
-						o.printf("\t\tjne\t\t%s\n", ((JumpIns)ins).ifTrue);
-				}*/
+			
 			}
 		}
 		
@@ -1942,17 +1840,11 @@ public class NASMBuilder
 		if(printTake)
 		{
 			System.err.println(bb.blockID + ":");
-			for(Map.Entry<String, String> entry : bb.take.entrySet())
+			for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 			{
 				String from = entry.getKey();
 				String to = entry.getValue();
 				System.err.println(from + " " + to);
-				if(bb.to != null)
-					bb.to.take.put(from, to);
-				if(bb.ifTrue != null)
-					bb.ifTrue.take.put(from, to);
-				if(bb.ifFalse != null)
-					bb.ifFalse.take.put(from, to);
 			}
 		}
 		
@@ -2458,22 +2350,28 @@ public class NASMBuilder
 		}
 	}
 	
-	private void livenessAnalysis(FuncBlock fb, BasicBlock bb)
+	private void livenessAnalysis(FuncBlock fb)
 	{
-		int insSize = bb.insList.size();
-		for(int i = 0; i < insSize; i++)
-		{
-			Ins ins = bb.insList.get(i);
-			def_use(ins);
-		}
 		int blockSize = fb.blockList.size();
+		for(int j = 0; j < blockSize; j++)
+		{
+			BasicBlock cur = fb.blockList.get(j);
+			int insSize = cur.insList.size();
+			for(int i = 0; i < insSize; i++)
+			{
+				Ins ins = cur.insList.get(i);
+				def_use(ins);
+			}
+		}
 		while(true)
 		{
 			for(int j = blockSize - 1; j >= 0; j--)
 			{
+				BasicBlock cur = fb.blockList.get(j);
+				int insSize = cur.insList.size();
 				for(int i = insSize - 1; i >= 0; i--)
 				{
-					Ins ins = bb.insList.get(i);
+					Ins ins = cur.insList.get(i);
 					ins.inp = ins.in;
 					ins.outp = ins.out;
 					ins.in = new HashSet<>();
@@ -2482,19 +2380,16 @@ public class NASMBuilder
 					if(ins instanceof JumpIns)
 					{
 						if(ins.insName.equals("jump"))
-							if(bb.to != null)
-								ins.out.addAll(bb.to.insList.get(0).in);
+							ins.out.addAll(cur.to.insList.get(0).in);
 						else if(ins.insName.equals("br"))
 						{
-							if(bb.ifTrue != null)
-								ins.out.addAll(bb.ifTrue.insList.get(0).in);
-							if(bb.ifFalse != null)
-								ins.out.addAll(bb.ifFalse.insList.get(0).in);
+							ins.out.addAll(cur.ifTrue.insList.get(0).in);
+							ins.out.addAll(cur.ifFalse.insList.get(0).in);
 						}
 					}
 					else
 					{
-						Ins nextIns = bb.insList.get(i + 1);
+						Ins nextIns = cur.insList.get(i + 1);
 						ins.out.addAll(nextIns.in);
 					}
 					
@@ -2513,9 +2408,11 @@ public class NASMBuilder
 			boolean flag = true;
 			for(int j = 0; j < blockSize; j++)
 			{
+				BasicBlock cur = fb.blockList.get(j);
+				int insSize = cur.insList.size();
 				for(int i = 0; i < insSize; i++)
 				{
-					Ins ins = bb.insList.get(i);
+					Ins ins = cur.insList.get(i);
 					if(!isSetEqual(ins.in, ins.inp) || !isSetEqual(ins.out, ins.outp))
 					{
 						flag = false;
@@ -2533,34 +2430,25 @@ public class NASMBuilder
 		
 		if(printInOutDefUse)
 		{
-			System.err.println("[" + bb.blockID + "]");
-			for(int i = 0; i < insSize; i++)
+			for(int j = 0; j < blockSize; j++)
 			{
-				Ins ins = bb.insList.get(i);
-				System.err.printf("ins[%d]:\nin: ", i);
-				printSet(ins.in);
-				System.err.printf("out: ");
-				printSet(ins.out);
-				System.err.printf("def: ");
-				printSet(ins.def);
-				System.err.printf("use: ");
-				printSet(ins.use);
-				System.err.println("\n");
+				BasicBlock cur = fb.blockList.get(j);
+				System.err.println("[" + cur.blockID + "]");
+				int insSize = cur.insList.size();
+				for(int i = 0; i < insSize; i++)
+				{
+					Ins ins = cur.insList.get(i);
+					System.err.printf("ins[%d]:\nin: ", i);
+					printSet(ins.in);
+					System.err.printf("out: ");
+					printSet(ins.out);
+					System.err.printf("def: ");
+					printSet(ins.def);
+					System.err.printf("use: ");
+					printSet(ins.use);
+					System.err.println("\n");
+				}
 			}
-		}
-		
-		bb.analyzed = true;
-		if(bb.to != null && !bb.to.analyzed)
-		{
-			livenessAnalysis(fb, bb.to);
-		}
-		if(bb.ifFalse != null && !bb.ifFalse.analyzed)
-		{
-			livenessAnalysis(fb, bb.ifFalse);
-		}
-		if(bb.ifTrue != null && !bb.ifTrue.analyzed)
-		{
-			livenessAnalysis(fb, bb.ifTrue);
 		}
 	}
 	
@@ -2805,13 +2693,14 @@ public class NASMBuilder
 	
 	private String getTake(BasicBlock bb, String reg)
 	{
-		if(!bb.take.containsKey(reg))
+		if(!bb.ofFunc.take.containsKey(reg)
+				|| bb.ofFunc.take.get(reg) == null)
 		{
 			//System.err.println(reg + " -- null");
-			bb.take.put(reg, null);
+			bb.ofFunc.take.put(reg, null);
 			return null;
 		}
-		return bb.take.get(reg);
+		return bb.ofFunc.take.get(reg);
 	}
 
 	private void store(BasicBlock bb, String reg)
@@ -2839,7 +2728,7 @@ public class NASMBuilder
 			o.printf("\t\tmov\t\t%s, qword[%s]\n", getReg(bb.ofFunc, vr), vr);
 		}
 		//System.err.println(getReg(bb.ofFunc, vr) + "--" + vr);
-		bb.take.put(getReg(bb.ofFunc, vr), vr);
+		bb.ofFunc.take.put(getReg(bb.ofFunc, vr), vr);
 	}
 	
 	private void check(BasicBlock bb, String vr)
@@ -2852,7 +2741,7 @@ public class NASMBuilder
 		}
 		else if(!tT.equals(vr))
 		{
-			store(bb, rR);
+			//store(bb, rR);
 			load(bb, vr);
 		}
 		return;
@@ -2860,7 +2749,7 @@ public class NASMBuilder
 	
 	private void storeAll(BasicBlock bb)
 	{
-		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
 			if(entry.getValue() != null)
 			{
@@ -2872,7 +2761,7 @@ public class NASMBuilder
 	
 	private void loadAll(BasicBlock bb)
 	{
-		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
 			if(entry.getValue() != null)
 			{
@@ -2883,7 +2772,7 @@ public class NASMBuilder
 	
 	private void loadAll(BasicBlock bb, String ex)
 	{
-		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
 			if(entry.getValue() != null
 					&& entry.getKey() != null
@@ -2896,7 +2785,7 @@ public class NASMBuilder
 	
 	private void loadAll(BasicBlock bb, String ex, String ex2)
 	{
-		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
 			if(entry.getValue() != null
 					&& !entry.getKey().equals(ex)
@@ -2910,7 +2799,7 @@ public class NASMBuilder
 	private void printTake(BasicBlock bb)
 	{
 		System.err.println("------ TAKE ------");
-		for(Map.Entry<String, String> entry : bb.take.entrySet())
+		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
 			System.err.printf("%s -> ", entry.getKey());
 			if(entry.getValue() != null)

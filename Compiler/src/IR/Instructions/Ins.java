@@ -8,7 +8,6 @@ public abstract class Ins
 {
 	public String insName;
 	
-	public ArrayList<Ins> pred = new ArrayList<>();
 	public ArrayList<Ins> succ = new ArrayList<>();
 	public Set<String> def = new HashSet<>();
 	public Set<String> use = new HashSet<>();

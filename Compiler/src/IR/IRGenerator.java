@@ -1758,12 +1758,12 @@ public class IRGenerator
 				ins.dest = pass(((AssignNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock).getKey();
 				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 				ins.src = temp.getKey();
-				if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
+				/*if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
 				{
 					Ins last = temp.getValue().insList.get(temp.getValue().insList.size() - 1);
 					((FuncCallIns)last).dest = ins.dest;
 					return new Pair<>(null, temp.getValue());
-				}
+				}*/
 				temp.getValue().insList.add(ins);
 				return new Pair<>(null, temp.getValue());
 			}
@@ -1775,12 +1775,12 @@ public class IRGenerator
 				ins.dest = pass(((AssignNode)now).leftExprNode, curScope, curBlock, true, true, recHead, trueBlock, falseBlock).getKey();
 				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 				ins.src = temp.getKey();
-				if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
+				/*if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
 				{
 					Ins last = temp.getValue().insList.get(temp.getValue().insList.size() - 1);
 					((FuncCallIns)last).dest = ins.dest;
 					return new Pair<>(null, temp.getValue());
-				}
+				}*/
 				temp.getValue().insList.add(ins);
 				return new Pair<>(null, temp.getValue());
 			}
@@ -1791,12 +1791,12 @@ public class IRGenerator
 				ins.addr = pass(((AssignNode)now).leftExprNode, curScope, curBlock, true, true, recHead, trueBlock, falseBlock).getKey();
 				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
 				ins.src = temp.getKey();
-				if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
+				/*if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
 				{
 					Ins last = temp.getValue().insList.get(temp.getValue().insList.size() - 1);
 					((FuncCallIns)last).dest = ins.dest;
 					return new Pair<>(null, temp.getValue());
-				}
+				}*/
 				ins.size = bytes.get("addr") + "";
 				ins.offset = 0;
 				temp.getValue().insList.add(ins);
