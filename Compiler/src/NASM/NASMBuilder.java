@@ -17,11 +17,14 @@ public class NASMBuilder
 	private String temp = "r15";
 	private String temp2 = "r14";
 	
-	public int regNum = 4; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
+	public int regNum = 7; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
 	
 	private void regMatch()
 	{
+		realReg.add("rbx");
+		realReg.add("rsi");
+		realReg.add("rdi");
 		realReg.add("r10");
 		realReg.add("r11");
 		realReg.add("r12");
@@ -88,7 +91,7 @@ public class NASMBuilder
 		for(FuncBlock fb : ir.funcBlock)
 		{
 			allocMem(fb, fb.entry);
-			blockLivenessAnalysis(fb, fb.entry);
+			//blockLivenessAnalysis(fb, fb.entry);
 			livenessAnalysis(fb, fb.entry);
 			regAlloc(fb, fb.entry);
 			/*
@@ -1188,6 +1191,7 @@ public class NASMBuilder
 					}
 					int paramNum = curFB.param.size();
 					int up = (paramNum < 6) ? paramNum : 6;
+					storeAll(bb);
 					for(int j = 0; j < up; j++)
 					{
 						String str = ((FuncCallIns)ins).ops.get(j);
@@ -1256,7 +1260,7 @@ public class NASMBuilder
 					if(funcName.equals("main"))
 						funcName = "_main";
 					o.printf("\t\tcall\t\t%s\n", funcName);
-					
+					loadAll(bb);
 					int choice = isReg(((FuncCallIns)ins).dest);
 					String src = null;
 					if(choice == 1)
@@ -1871,9 +1875,9 @@ public class NASMBuilder
 			if(bb.to != null)
 				bb.to.take.put(from, to);
 			if(bb.ifTrue != null)
-				bb.to.take.put(from, to);
+				bb.ifTrue.take.put(from, to);
 			if(bb.ifFalse != null)
-				bb.to.take.put(from, to);
+				bb.ifFalse.take.put(from, to);
 		}
 		
 		if(bb.to != null && !bb.to.generated)
@@ -1904,8 +1908,24 @@ public class NASMBuilder
 				}
 			}
 		}
-		for(Ins ins : bb.insList)
+		int insSize = bb.insList.size();
+		for(int i = 0; i < insSize - 1; i++)
 		{
+			Ins ins = bb.insList.get(i);
+			if(ins instanceof JumpIns)
+			{
+				if(bb.to != null)
+					ins.succ.add(bb.to.insList.get(0));
+				if(bb.ifTrue != null)
+					ins.succ.add(bb.ifTrue.insList.get(0));
+				if(bb.ifFalse != null)
+					ins.succ.add(bb.ifFalse.insList.get(0));
+			}
+			else
+			{
+				ins.succ.add(bb.insList.get(i + 1));
+			}
+			
 			if(ins instanceof JumpIns)
 			{
 				if(ins.insName.equals("ret"))
@@ -2146,9 +2166,13 @@ public class NASMBuilder
 			}
 		}
 		
-		for(Map.Entry<String, Integer> entry : fb.memPos.entrySet())
+		boolean printThis = false;
+		if(printThis)
 		{
-			System.err.printf("%s : %d\n", entry.getKey(), -entry.getValue() - 8);
+			for(Map.Entry<String, Integer> entry : fb.memPos.entrySet())
+			{
+				System.err.printf("%s : %d\n", entry.getKey(), -entry.getValue() - 8);
+			}
 		}
 		
 		bb.allocated = true;
@@ -2366,56 +2390,65 @@ public class NASMBuilder
 			Ins ins = bb.insList.get(i);
 			def_use(ins);
 		}
+		int blockSize = fb.blockList.size();
 		while(true)
 		{
-			for(int i = insSize - 1; i >= 0; i--)
+			for(int j = blockSize - 1; j >= 0; j--)
 			{
-				Ins ins = bb.insList.get(i);
-				ins.inp = ins.in;
-				ins.outp = ins.out;
-				ins.in = new HashSet<>();
-				ins.out = new HashSet<>();
-				
-				if(i == insSize - 1)
+				for(int i = insSize - 1; i >= 0; i--)
 				{
-					if(bb.to != null)
-						ins.out.addAll(bb.to.in);
-					if(bb.ifTrue != null)
-						ins.out.addAll(bb.ifTrue.in);
-					if(bb.ifFalse != null)
-						ins.out.addAll(bb.ifFalse.in);
-				}
-				else
-				{
-					Ins nextIns = bb.insList.get(i + 1);
-					ins.out.addAll(nextIns.in);
-				}
-				
-				ins.in.addAll(ins.use);
-				Iterator it = ins.out.iterator();
-				while(it.hasNext())
-				{
-					Object temp = it.next();
-					if(!ins.def.contains(temp))
+					Ins ins = bb.insList.get(i);
+					ins.inp = ins.in;
+					ins.outp = ins.out;
+					ins.in = new HashSet<>();
+					ins.out = new HashSet<>();
+					
+					if(i == insSize - 1)
 					{
-						ins.in.add(temp.toString());
+						if(bb.to != null)
+							ins.out.addAll(bb.to.insList.get(0).in);
+						if(bb.ifTrue != null)
+							ins.out.addAll(bb.ifTrue.insList.get(0).in);
+						if(bb.ifFalse != null)
+							ins.out.addAll(bb.ifFalse.insList.get(0).in);
+					}
+					else
+					{
+						Ins nextIns = bb.insList.get(i + 1);
+						ins.out.addAll(nextIns.in);
+					}
+					
+					ins.in.addAll(ins.use);
+					Iterator it = ins.out.iterator();
+					while(it.hasNext())
+					{
+						Object temp = it.next();
+						if(!ins.def.contains(temp))
+						{
+							ins.in.add(temp.toString());
+						}
 					}
 				}
 			}
 			boolean flag = true;
-			for(int i = 0; i < insSize; i++)
+			for(int j = 0; j < blockSize; j++)
 			{
-				Ins ins = bb.insList.get(i);
-				if(!isSetEqual(ins.in, ins.inp) || !isSetEqual(ins.out, ins.outp))
+				for(int i = 0; i < insSize; i++)
 				{
-					flag = false;
+					Ins ins = bb.insList.get(i);
+					if(!isSetEqual(ins.in, ins.inp) || !isSetEqual(ins.out, ins.outp))
+					{
+						flag = false;
+						break;
+					}
+				}
+				if(!flag)
+				{
 					break;
 				}
 			}
 			if(flag)
-			{
 				break;
-			}
 		}
 		
 		boolean printInOut = false;
@@ -2618,14 +2651,10 @@ public class NASMBuilder
 					break;
 				}
 			}
-			if(flag)
-				continue;
+			if(!flag)
+				break;
 			
-			for(Map.Entry<String, Integer> entry : fb.deg.entrySet())
-			{
-				fb.inGraph.put(entry.getKey(), false);
-			}
-			break;			// Have not put those with degree > regNum in stack
+			// Have not put those with degree > regNum in stack
 		}
 		
 		int allNum = fb.deg.size();
@@ -2635,6 +2664,10 @@ public class NASMBuilder
 		{
 			if(entry.getValue())
 				cannotColor++;
+		}
+		for(Map.Entry<String, Integer> entry : fb.deg.entrySet())
+		{
+			fb.inGraph.put(entry.getKey(), false);
 		}
 		
 		while(!stack.empty())
@@ -2671,10 +2704,11 @@ public class NASMBuilder
 		{
 			System.err.println("FUNCTION : " + fb.funcName);
 			System.err.printf("Total : %d, colored : %d, uncolored : %d\n", allNum, canColor, cannotColor);
+			/*
 			for(Map.Entry<String, Integer> entry : fb.color.entrySet())
 			{
 				System.err.printf("%s : %s\n", entry.getKey(), realReg.get(entry.getValue()));
-			}
+			}*/
 		}
 	}
 	
@@ -2767,7 +2801,7 @@ public class NASMBuilder
 		for(Map.Entry<String, String> entry : bb.take.entrySet())
 		{
 			if(entry.getValue() != null
-					&& !entry.getKey().equals(ex))
+					&& !(entry.getKey().equals(ex)))
 			{
 				load(bb, entry.getValue());
 			}
