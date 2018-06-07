@@ -45,7 +45,10 @@ public class NASMBuilder
 		regMatch();
 		
 		if(submit)
+		{
 			o = System.out;
+			printTake = printAllocMem = printColor = printInOutDefUse = false;
+		}
 		else
 		{
 			try
