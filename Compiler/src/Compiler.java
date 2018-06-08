@@ -75,10 +75,10 @@ public class Compiler {
 		//printer.print(rootNode);
 		
 		System.err.println("------IR Generation------");
-		IRGenerator IR = new IRGenerator((ASTRootNode)rootNode);
+		IRGenerator IR = new IRGenerator((ASTRootNode)rootNode, SUBMIT);
 		IR.passRoot();
-		//if(!SUBMIT)
-		//	IR.print();
+		if(!SUBMIT)
+			IR.print();
 		
 		System.err.println("------NASM Code Generation------");
 		NASMBuilder nasm = new NASMBuilder(SUBMIT);

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static java.lang.System.exit;
+
 
 public class FuncBlock
 {
@@ -22,6 +24,7 @@ public class FuncBlock
 	public Map<String, Boolean> inGraph = new HashMap<>();
 	public Map<String, Integer> color = new HashMap<>();
 	public Map<String, String> take = new HashMap<>();
+	
 	
 	public boolean used = false;
 	

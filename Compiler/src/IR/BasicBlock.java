@@ -1,9 +1,10 @@
 package IR;
 
-
 import IR.Instructions.Ins;
 
 import java.util.*;
+
+import static java.lang.System.exit;
 
 public class BasicBlock
 {

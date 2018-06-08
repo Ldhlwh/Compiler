@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="484" />
+    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="487" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72816ae8-fb79-49b9-8a8d-6f8a5ecaffc8" name="默认" comment="" />
@@ -21,15 +21,32 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="21">
-              <caret line="1336" column="16" selection-start-line="1336" selection-start-column="16" selection-end-line="1336" selection-end-column="16" />
+            <state relative-caret-position="72">
+              <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="method#print#0;class#IRGenerator#0" />
                 <element signature="method#add_alloc#0;class#IRGenerator#0" />
                 <element signature="method#add_int_size#0;class#IRGenerator#0" />
                 <element signature="method#add_string_length#0;class#IRGenerator#0" />
                 <element signature="method#add_string_substring#0;class#IRGenerator#0" />
                 <element signature="method#add_string_ord#0;class#IRGenerator#0" />
+                <element signature="method#passRoot#0;class#IRGenerator#0" />
+                <element signature="method#pass#0;class#IRGenerator#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BasicBlock.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1054">
+              <caret line="67" column="14" selection-start-line="67" selection-start-column="14" selection-end-line="67" selection-end-column="14" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#1116#1117#0" expanded="true" />
+                <element signature="e#1137#1138#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -38,7 +55,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
+            <state relative-caret-position="248">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -50,15 +67,13 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="47" column="22" lean-forward="true" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="22" />
+            <state relative-caret-position="-3383">
+              <caret line="1047" selection-start-line="1047" selection-end-line="1047" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
-                <element signature="method#generate#0;class#NASMBuilder#0" />
                 <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
                 <element signature="method#makeFrom#0;class#NASMBuilder#0" />
-                <element signature="method#generate#1;class#NASMBuilder#0" />
                 <element signature="method#allocMem#0;class#NASMBuilder#0" />
                 <element signature="method#isReg#0;class#NASMBuilder#0" />
                 <element signature="method#isSetEqual#0;class#NASMBuilder#0" />
@@ -73,11 +88,8 @@
                 <element signature="method#store#0;class#NASMBuilder#0" />
                 <element signature="method#load#0;class#NASMBuilder#0" />
                 <element signature="method#check#0;class#NASMBuilder#0" />
-                <element signature="method#storeAll#0;class#NASMBuilder#0" />
-                <element signature="method#loadAll#0;class#NASMBuilder#0" />
                 <element signature="method#loadAll#1;class#NASMBuilder#0" />
                 <element signature="method#loadAll#2;class#NASMBuilder#0" />
-                <element signature="method#printTake#0;class#NASMBuilder#0" />
               </folding>
             </state>
           </provider>
@@ -95,16 +107,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>store</find>
-      <find>bb_17</find>
-      <find>livenessana</find>
-      <find>[bb_12]</find>
-      <find>[bb_17]</find>
-      <find>lea</find>
-      <find>loadAll(bb,</find>
-      <find>fff</find>
-      <find>parse</find>
-      <find>getint</find>
       <find>strlen</find>
       <find>FuncCallIns</find>
       <find>movins</find>
@@ -124,13 +126,26 @@
       <find>initial</find>
       <find>4dimen</find>
       <find>bitins</find>
+      <find>err</find>
       <find>printColor</find>
+      <find>System.err.print</find>
+      <find>o.print</find>
+      <find>err.prin</find>
+      <find>sprintf</find>
+      <find>take.put</find>
+      <find>funccall</find>
+      <find>storeall(bb)</find>
+      <find>tostring</find>
+      <find>toString</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
       <replace>err</replace>
       <replace />
       <replace>bb.ofFunc.take</replace>
+      <replace>o.print</replace>
+      <replace>System.err.print</replace>
+      <replace>if(donotstoredest)</replace>
     </replaceStrings>
   </component>
   <component name="HighlightingSettingsPerFile">
@@ -183,11 +198,11 @@
         <option value="$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/FuncCallNode.java" />
         <option value="$PROJECT_DIR$/LLIRTestingField/src/SetTest.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/Scopes/EmptyScope.java" />
         <option value="$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopeChecker.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
       </list>
@@ -237,7 +252,7 @@
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
               <item name="Compiler" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="ScopeCheck" type="462c0819:PsiDirectoryNode" />
+              <item name="IR" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Compiler" type="b2602c69:ProjectViewProjectNode" />
@@ -452,12 +467,12 @@
       <workItem from="1528195029275" duration="24247000" />
       <workItem from="1528276801968" duration="78665000" />
       <workItem from="1528369347357" duration="39144000" />
-      <workItem from="1528451368945" duration="7674000" />
+      <workItem from="1528451368945" duration="12503000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="593166000" />
+    <option name="totallyTimeSpent" value="597995000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -472,28 +487,29 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32997763" />
       <window_info anchor="bottom" id="Tool Output" order="12" weight="0.18008949" />
-      <window_info anchor="bottom" id="调试" order="9" weight="0.37919462" />
-      <window_info anchor="bottom" id="Messages" order="14" sideWeight="0.29850745" weight="0.3489933" />
-      <window_info anchor="right" id="Palette&#9;" order="4" />
-      <window_info id="Image Layers" order="1" />
-      <window_info anchor="right" id="Capture Analysis" order="5" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5010661" side_tool="true" weight="0.18568233" />
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" visible="true" weight="0.2572707" />
       <window_info anchor="right" id="调色板" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.5156599" visible="true" weight="0.18710022" />
-      <window_info id="设计器" order="3" />
       <window_info anchor="right" id="Database" order="8" />
       <window_info anchor="bottom" x="87" y="202" width="1195" height="468" id="ANTLR Preview" order="13" type="WINDOWED" weight="0.5156599" />
       <window_info anchor="right" id="Structure" order="1" sideWeight="0.46410686" side_tool="true" weight="0.15565032" />
       <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
       <window_info id="UI Designer" order="4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32997763" />
+      <window_info anchor="bottom" id="调试" order="9" weight="0.37919462" />
+      <window_info anchor="bottom" id="Messages" order="14" sideWeight="0.29850745" weight="0.3489933" />
+      <window_info anchor="right" id="Palette&#9;" order="4" />
+      <window_info id="Image Layers" order="1" />
+      <window_info anchor="right" id="Capture Analysis" order="5" />
+      <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
+      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.89597315" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.5156599" visible="true" weight="0.18710022" />
+      <window_info id="设计器" order="3" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32997763" />
       <window_info anchor="right" id="Theme Preview" order="9" />
       <window_info id="Favorites" order="5" sideWeight="0.48434004" side_tool="true" weight="0.18710022" />
       <window_info anchor="bottom" id="Debug" order="2" weight="0.4" />
@@ -504,7 +520,6 @@
       <window_info id="Designer" order="6" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
       <window_info anchor="right" id="Palette" order="10" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32997763" />
     </layout>
     <layout-to-restore>
       <window_info id="Designer" order="6" />
@@ -550,7 +565,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="87" />
+      <option name="time" value="90" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
@@ -828,28 +843,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="483">
-          <caret line="23" column="54" selection-start-line="23" selection-start-column="54" selection-end-line="23" selection-end-column="54" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/Compiler.iml">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="23" column="36" selection-start-line="23" selection-start-column="36" selection-end-line="23" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/ScopeCheck/ScopePrinter.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -893,32 +888,57 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="1336" column="16" selection-start-line="1336" selection-start-column="16" selection-end-line="1336" selection-end-column="16" />
+        <state relative-caret-position="42">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#802#803#0" expanded="true" />
+            <element signature="e#824#825#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#print#0;class#IRGenerator#0" />
             <element signature="method#add_alloc#0;class#IRGenerator#0" />
             <element signature="method#add_int_size#0;class#IRGenerator#0" />
             <element signature="method#add_string_length#0;class#IRGenerator#0" />
             <element signature="method#add_string_substring#0;class#IRGenerator#0" />
             <element signature="method#add_string_ord#0;class#IRGenerator#0" />
+            <element signature="method#passRoot#0;class#IRGenerator#0" />
+            <element signature="method#pass#0;class#IRGenerator#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1054">
+          <caret line="67" column="14" selection-start-line="67" selection-start-column="14" selection-end-line="67" selection-end-column="14" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1116#1117#0" expanded="true" />
+            <element signature="e#1137#1138#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="47" column="22" lean-forward="true" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="22" />
+        <state relative-caret-position="-3383">
+          <caret line="1047" selection-start-line="1047" selection-end-line="1047" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
-            <element signature="method#generate#0;class#NASMBuilder#0" />
             <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
             <element signature="method#makeFrom#0;class#NASMBuilder#0" />
-            <element signature="method#generate#1;class#NASMBuilder#0" />
             <element signature="method#allocMem#0;class#NASMBuilder#0" />
             <element signature="method#isReg#0;class#NASMBuilder#0" />
             <element signature="method#isSetEqual#0;class#NASMBuilder#0" />
@@ -933,18 +953,15 @@
             <element signature="method#store#0;class#NASMBuilder#0" />
             <element signature="method#load#0;class#NASMBuilder#0" />
             <element signature="method#check#0;class#NASMBuilder#0" />
-            <element signature="method#storeAll#0;class#NASMBuilder#0" />
-            <element signature="method#loadAll#0;class#NASMBuilder#0" />
             <element signature="method#loadAll#1;class#NASMBuilder#0" />
             <element signature="method#loadAll#2;class#NASMBuilder#0" />
-            <element signature="method#printTake#0;class#NASMBuilder#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
+        <state relative-caret-position="248">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />

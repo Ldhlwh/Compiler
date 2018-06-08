@@ -8,9 +8,12 @@ import ScopeCheck.Instances.VariIns;
 import ScopeCheck.Scopes.*;
 import javafx.util.Pair;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.System.exit;
 
 public class IRGenerator
 {
@@ -23,7 +26,8 @@ public class IRGenerator
 	
 	public int tempRegNum = 0;
 	
-	public IRGenerator(ASTRootNode root)
+	
+	public IRGenerator(ASTRootNode root, boolean submit)
 	{
 		rootNode = root;
 		topScope = root.scope;
