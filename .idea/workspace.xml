@@ -21,7 +21,7 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4">
+            <state relative-caret-position="336">
               <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -41,7 +41,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="231">
+            <state relative-caret-position="105">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -53,12 +53,12 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-668">
-              <caret line="1547" column="24" selection-start-line="1547" selection-start-column="24" selection-end-line="1547" selection-end-column="24" />
+            <state relative-caret-position="72">
+              <caret line="514" column="41" selection-start-line="514" selection-start-column="41" selection-end-line="514" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="method#regMatch#0;class#NASMBuilder#0" />
                 <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
+                <element signature="method#generate#0;class#NASMBuilder#0" />
                 <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
                 <element signature="method#makeFrom#0;class#NASMBuilder#0" />
                 <element signature="method#allocMem#0;class#NASMBuilder#0" />
@@ -118,12 +118,12 @@
       <find>storeall(bb)</find>
       <find>tostring</find>
       <find>toString</find>
-      <find>err.prin</find>
       <find>printtake</find>
       <find>err</find>
       <find>println</find>
-      <find>call</find>
+      <find>err.prin</find>
       <find>isParamReg</find>
+      <find>call</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -454,12 +454,12 @@
       <workItem from="1528195029275" duration="24247000" />
       <workItem from="1528276801968" duration="78665000" />
       <workItem from="1528369347357" duration="39144000" />
-      <workItem from="1528451368945" duration="17580000" />
+      <workItem from="1528451368945" duration="21380000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="603072000" />
+    <option name="totallyTimeSpent" value="606872000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -492,7 +492,7 @@
       <window_info id="Image Layers" order="1" />
       <window_info anchor="right" id="Capture Analysis" order="5" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.89597315" />
+      <window_info active="true" anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" visible="true" weight="0.6689038" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.5156599" visible="true" weight="0.18710022" />
       <window_info id="设计器" order="3" />
@@ -909,7 +909,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4">
+        <state relative-caret-position="336">
           <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -927,12 +927,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-668">
-          <caret line="1547" column="24" selection-start-line="1547" selection-start-column="24" selection-end-line="1547" selection-end-column="24" />
+        <state relative-caret-position="72">
+          <caret line="514" column="41" selection-start-line="514" selection-start-column="41" selection-end-line="514" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#regMatch#0;class#NASMBuilder#0" />
             <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
+            <element signature="method#generate#0;class#NASMBuilder#0" />
             <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
             <element signature="method#makeFrom#0;class#NASMBuilder#0" />
             <element signature="method#allocMem#0;class#NASMBuilder#0" />
@@ -957,7 +957,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
+        <state relative-caret-position="105">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
