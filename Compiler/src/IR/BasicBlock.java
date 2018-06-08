@@ -21,6 +21,7 @@ public class BasicBlock
 	public boolean generated = false;	// While generating NASM code
 	public boolean analyzed = false;	// While analyzing liveness
 	public boolean added = false;
+	public boolean allequal = false;
 	
 	public FuncBlock ofFunc;
 	public Set<String> def = new HashSet<>();

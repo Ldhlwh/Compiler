@@ -24,9 +24,10 @@ public class NASMBuilder
 	
 	
 	public boolean printTake = false;
-	public boolean printAllocMem = true;
+	public boolean printAllocMem = false;
 	public boolean printInOutDefUse = false;
-	public boolean printColor = true;
+	public boolean printColor = false;
+	public boolean printTime = false;
 	
 	private void regMatch()
 	{
@@ -113,8 +114,22 @@ public class NASMBuilder
 			makeFrom(fb);
 			allocMem(fb, fb.entry);
 			//blockLivenessAnalysis(fb, fb.entry);
+			
+			long st = System.currentTimeMillis();
+			
 			livenessAnalysis(fb);
+			
+			long mid = System.currentTimeMillis();
+			
 			regAlloc(fb, fb.entry);
+			
+			long ed = System.currentTimeMillis();
+			
+			if(printTime)
+			{
+				System.err.println("LA Time : " + (mid - st) + "ms");
+				System.err.println("RA Time : " + (ed - mid) + "ms");
+			}
 			if(printAllocMem)
 			{
 				System.err.printf("------ AllocMem & RegAlloc Func : %s ------\n", fb.funcName);
@@ -144,6 +159,30 @@ public class NASMBuilder
 	
 	private void makeBlockList(FuncBlock fb, BasicBlock bb)
 	{
+		Queue<BasicBlock> queue = new LinkedList<>();
+		((LinkedList<BasicBlock>)queue).push(fb.entry);
+		fb.entry.added = true;
+		while(!queue.isEmpty())
+		{
+			BasicBlock temp = queue.poll();
+			fb.blockList.add(temp);
+			if(temp.to != null && !temp.to.added)
+			{
+				((LinkedList<BasicBlock>)queue).push(temp.to);
+				temp.to.added = true;
+			}
+			if(temp.ifFalse != null && !temp.ifFalse.added)
+			{
+				((LinkedList<BasicBlock>)queue).push(temp.ifFalse);
+				temp.ifFalse.added = true;
+			}
+			if(temp.ifTrue != null && !temp.ifTrue.added)
+			{
+				((LinkedList<BasicBlock>)queue).push(temp.ifTrue);
+				temp.ifTrue.added = true;
+			}
+		}
+		/*
 		fb.blockList.add(bb);
 		bb.added = true;
 		if(bb.to != null && !bb.to.added)
@@ -152,6 +191,7 @@ public class NASMBuilder
 			makeBlockList(fb, bb.ifFalse);
 		if(bb.ifTrue != null && !bb.ifTrue.added)
 			makeBlockList(fb, bb.ifTrue);
+		*/
 	}
 	
 	private void makeFrom(FuncBlock fb)
@@ -2446,8 +2486,11 @@ public class NASMBuilder
 		{
 			for(int j = blockSize - 1; j >= 0; j--)
 			{
+				//System.err.println(blockSize);
 				BasicBlock cur = fb.blockList.get(j);
 				int insSize = cur.insList.size();
+				boolean jumped = false;
+				//System.err.println(cur.blockID + "analyzed : " + cur.analyzed);
 				for(int i = insSize - 1; i >= 0; i--)
 				{
 					Ins ins = cur.insList.get(i);
@@ -2482,7 +2525,25 @@ public class NASMBuilder
 							ins.in.add(temp.toString());
 						}
 					}
+					
+					
+					if((cur.to != null || cur.ifFalse != null || cur.ifTrue != null)
+							&& cur.analyzed && cur.allequal)
+					{
+						if(i == insSize - 2)
+						{
+							if(isSetEqual(ins.out, ins.outp) && isSetEqual(ins.in, ins.inp))
+							{
+								jumped = true;
+								//System.err.println("JUMP");
+								break;
+							}
+						}
+					}
+					
 				}
+				if(!jumped)
+					cur.analyzed = true;
 			}
 			boolean flag = true;
 			for(int j = 0; j < blockSize; j++)
@@ -2492,17 +2553,20 @@ public class NASMBuilder
 				for(int i = 0; i < insSize; i++)
 				{
 					Ins ins = cur.insList.get(i);
-					//if(!isSetEqual(ins.in, ins.inp) || !isSetEqual(ins.out, ins.outp))
+					//(!isSetEqual(ins.in, ins.inp) || !isSetEqual(ins.out, ins.outp))
 					if(ins.in.size() != ins.inp.size() || ins.out.size() != ins.outp.size())
 					{
+						//System.err.printf("Changed : %s\n", cur.blockID);
 						flag = false;
 						break;
 					}
 				}
 				if(!flag)
 				{
+					cur.allequal = false;
 					break;
 				}
+				cur.allequal = true;
 			}
 			if(flag)
 				break;
