@@ -1964,6 +1964,12 @@ public class NASMBuilder
 								src2 = reg;
 							}
 						}
+						if(src1.substring(0, 1).equals("q")
+								&& src2.substring(0, 1).equals("q"))
+						{
+							o.printf("\t\tmov\t\t%s, %s\n", temp, src2);
+							src2 = temp;
+						}
 						o.printf("\t\t%s\t\t%s, %s\n", ins.insName, src1, src2);
 					}
 				}
