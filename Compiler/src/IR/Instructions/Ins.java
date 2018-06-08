@@ -49,6 +49,13 @@ public abstract class Ins
 			{
 				System.err.printf("\t%s = %s %s\n", ((MemAccIns)this).dest, this.insName, ((MemAccIns)this).size);
 			}
+			else if(this.insName.equals("storeStr"))
+			{
+				System.err.printf("\tstoreStr %s", ((MemAccIns)this).addr);
+				for(int i = 0; i < ((MemAccIns)this).constStr.size(); i++)
+					System.err.printf(" %d", ((MemAccIns)this).constStr.get(i));
+				System.err.println();
+			}
 		}
 		
 		else if(this instanceof FuncCallIns)

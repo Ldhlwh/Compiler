@@ -1888,32 +1888,23 @@ public class IRGenerator
 				text = text + "\0";
 				int len = text.length();
 				
+				/*
 				MemAccIns ins = new MemAccIns();
 				ins.insName = "alloc";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
 				ins.size = "256";
 				curBlock.insList.add(ins);
+				*/
 				
-				/*
-				MemAccIns ins2 = new MemAccIns();
-				ins2.insName = "store";
-				ins2.size = bytes.get("addr") + "";
-				ins2.addr = ins.dest;
-				ins2.src = len - 1 + "";
-				ins2.offset = 0;
-				curBlock.insList.add(ins2);*/
-				
+				MemAccIns ins3 = new MemAccIns();
+				ins3.insName = "storeStr";
+				ins3.addr = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
 				for(int i = 0; i < len; i++)
 				{
-					MemAccIns ins3 = new MemAccIns();
-					ins3.insName = "store";
-					ins3.size = bytes.get("char") + "";
-					ins3.addr = ins.dest;
-					ins3.src = (int)(text.charAt(i)) + "";
-					ins3.offset = i;
-					curBlock.insList.add(ins3);
+					ins3.constStr.add((int)(text.charAt(i)));
 				}
-				return new Pair<>(ins.dest, curBlock);
+				curBlock.insList.add(ins3);
+				return new Pair<>(ins3.addr, curBlock);
 			}
 		}
 		

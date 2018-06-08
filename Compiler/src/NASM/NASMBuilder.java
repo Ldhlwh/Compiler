@@ -20,15 +20,16 @@ public class NASMBuilder
 	private String temp = "r15";
 	private String temp2 = "r14";
 	
-	public int regNum = 8; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
+	public int regNum = 11; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
 	
 	public Set<String> paramReg = new HashSet<>();
+	public ArrayList<Data> data = new ArrayList<>();
 	
 	
 	public boolean printTake = false;
 	public boolean printAllocMem = true;
-	public boolean printInOutDefUse = true;
+	public boolean printInOutDefUse = false;
 	public boolean printColor = true;
 	public boolean printTime = false;
 	
@@ -41,7 +42,7 @@ public class NASMBuilder
 		if(regNum > 2)
 			realReg.add("r12");
 		if(regNum > 3)
-			realReg.add("r13");
+			realReg.add("r13");		// Safe : 4
 		if(regNum > 4)
 			realReg.add("rdi");
 		if(regNum > 5)
@@ -49,7 +50,13 @@ public class NASMBuilder
 		if(regNum > 6)
 			realReg.add("r8");
 		if(regNum > 7)
-			realReg.add("r9");
+			realReg.add("r9");		// Parameter Reg : 8
+		if(regNum > 8)
+			realReg.add("rbx");		// Unknown Reg : 9
+		if(regNum > 9)
+			realReg.add("rcx");
+		if(regNum > 10)
+			realReg.add("rdx");		// shl, shr, div, rem : 11
 		
 		paramReg.add("rdi");
 		paramReg.add("rsi");
@@ -111,9 +118,12 @@ public class NASMBuilder
 		o.printf("\t\textern\t\tord\n");
 		o.printf("\t\textern\t\tstrlen\n");
 		
-		o.printf("\n\t\tsection\t\t.data\n");
-		o.printf("_getInt:\t\tdb\t\t\"%%lld\", 0\n");
-		o.printf("_getStr:\t\tdb\t\t\"%%s\", 0\n");
+		Data dt = new Data();
+		dt.data += "_getInt\t\tdb\t\t\"%lld\", 0\n";
+		data.add(dt);
+		Data ndt = new Data();
+		ndt.data += "_getStr:\t\tdb\t\t\"%s\", 0\n";
+		data.add(ndt);
 		
 		o.printf("\n\t\tsection\t\t.bss\n");
 		
@@ -177,6 +187,12 @@ public class NASMBuilder
 			{
 				generate(fb);
 			}
+		}
+		
+		o.printf("\n\t\tsection\t\t.data\n");
+		for(Data d : data)
+		{
+			o.println(d.data);
 		}
 	}
 	
@@ -243,7 +259,6 @@ public class NASMBuilder
 	
 	public void generate(FuncBlock fb)
 	{
-		//System.err.println(fb.funcName + ":");
 		int blockSize = fb.blockList.size();
 		for(int now = 0; now < blockSize; now++)
 		{
@@ -604,6 +619,52 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", s2b);
+					}
+					else if(ins.insName.equals("storeStr"))
+					{
+						Data dd = new Data();
+						data.add(dd);
+						dd.data = dd.dataID + ":\t\tdb\t\t";
+						for(int a : ((MemAccIns)ins).constStr)
+						{
+							dd.data += " " + a + ",";
+						}
+						dd.data += "\n";
+						
+						int choice = isReg(((MemAccIns)ins).addr);
+						String addr = null;
+						if(choice == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
+								addr = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).addr);
+								addr = reg;
+							}
+							o.printf("\t\tmov\t\t%s, %s\n", addr, dd.dataID);
+						}
+						else if(choice == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
+							if(reg == null)
+							{
+								addr = ((MemAccIns)ins).addr;
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).addr);
+								addr = reg;
+							}
+							
+							//o.printf("\t\tlea\t\t%s, [%s]\n", temp, addr);
+							o.printf("\t\tmov\t\tqword[%s], %s\n", addr, dd.dataID);
+						}
+						
 					}
 					else if(ins.insName.equals("store"))
 					{
@@ -1962,6 +2023,7 @@ public class NASMBuilder
 							}
 							o.printf("\t\tmov\t\trax, %s\n", src1);
 						}
+						o.printf("\t\tpush\t\trdx\n");
 						o.printf("\t\tmov\t\trdx, 0\n");
 						int c2 = isReg(((ArithIns)ins).src2);
 						if(c2 == 0)
@@ -2007,6 +2069,7 @@ public class NASMBuilder
 						{
 							o.printf("\t\tmov\t\t%s, rdx\n", src1);
 						}
+						o.printf("\t\tpop\t\trdx\n");
 					}
 				}
 				else if(ins instanceof BitIns)
@@ -2080,8 +2143,6 @@ public class NASMBuilder
 								src2 = reg;
 							}
 						}
-						o.printf("\t\tmov\t\trcx, %s\n", src2);
-						
 						int c1 = isReg(((BitIns)ins).src1);
 						String src1 = "";
 						if(c1 == 0)
@@ -2115,8 +2176,10 @@ public class NASMBuilder
 								src1 = reg;
 							}
 						}
-						
+						o.printf("\t\tpush\t\trcx\n");
+						o.printf("\t\tmov\t\trcx, %s\n", src2);
 						o.printf("\t\t%s\t\t%s, cl\n", ins.insName, src1);
+						o.printf("\t\tpop\t\trcx\n");
 					}
 					else
 					{
@@ -2344,6 +2407,17 @@ public class NASMBuilder
 						if(!fb.memPos.containsKey(((MemAccIns)ins).dest))
 						{
 							fb.memPos.put(((MemAccIns)ins).dest, fb.memSize);
+							fb.memSize += ir.bytes.get("addr");
+						}
+					}
+				}
+				else if(ins.insName.equals("storeStr"))
+				{
+					if(((MemAccIns)ins).addr.substring(0, 1).equals("$"))
+					{
+						if(!fb.memPos.containsKey(((MemAccIns)ins).addr))
+						{
+							fb.memPos.put(((MemAccIns)ins).addr, fb.memSize);
 							fb.memSize += ir.bytes.get("addr");
 						}
 					}
@@ -2731,7 +2805,6 @@ public class NASMBuilder
 					{
 						if(ins.insName.equals("jump"))
 						{
-							System.err.printf("jump to : %s\n", ((JumpIns)ins).target);
 							ins.out.addAll(cur.to.insList.get(0).in);
 						}
 						else if(ins.insName.equals("br"))
@@ -2864,6 +2937,11 @@ public class NASMBuilder
 					ins.def.add(((MemAccIns)ins).dest);
 				if(isReg(((MemAccIns)ins).size) > 0)
 					ins.use.add(((MemAccIns)ins).size);
+			}
+			else if(ins.insName.equals("storeStr"))
+			{
+				if(isReg(((MemAccIns)ins).addr) > 0)
+					ins.def.add(((MemAccIns)ins).addr);
 			}
 		}
 		else if(ins instanceof FuncCallIns)
