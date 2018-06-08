@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="482" />
+    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="486" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72816ae8-fb79-49b9-8a8d-6f8a5ecaffc8" name="默认" comment="" />
@@ -38,7 +38,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
+            <state relative-caret-position="315">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -50,7 +50,7 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
+            <state relative-caret-position="231">
               <caret line="21" column="25" selection-start-line="21" selection-start-column="25" selection-end-line="21" selection-end-column="25" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -452,12 +452,12 @@
       <workItem from="1528195029275" duration="24247000" />
       <workItem from="1528276801968" duration="78665000" />
       <workItem from="1528369347357" duration="39144000" />
-      <workItem from="1528451368945" duration="6616000" />
+      <workItem from="1528451368945" duration="7389000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="592108000" />
+    <option name="totallyTimeSpent" value="592881000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -483,7 +483,7 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.60738254" />
+      <window_info active="true" anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" visible="true" weight="0.2572707" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
@@ -841,21 +841,6 @@
     <entry file="file://$PROJECT_DIR$/Compiler/Compiler.iml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="1336" column="16" selection-start-line="1336" selection-start-column="16" selection-end-line="1336" selection-end-column="16" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#add_alloc#0;class#IRGenerator#0" />
-            <element signature="method#add_int_size#0;class#IRGenerator#0" />
-            <element signature="method#add_string_length#0;class#IRGenerator#0" />
-            <element signature="method#add_string_substring#0;class#IRGenerator#0" />
-            <element signature="method#add_string_ord#0;class#IRGenerator#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/BasicBlock.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="273">
@@ -908,9 +893,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="21">
+          <caret line="1336" column="16" selection-start-line="1336" selection-start-column="16" selection-end-line="1336" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#add_alloc#0;class#IRGenerator#0" />
+            <element signature="method#add_int_size#0;class#IRGenerator#0" />
+            <element signature="method#add_string_length#0;class#IRGenerator#0" />
+            <element signature="method#add_string_substring#0;class#IRGenerator#0" />
+            <element signature="method#add_string_ord#0;class#IRGenerator#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
+        <state relative-caret-position="231">
           <caret line="21" column="25" selection-start-line="21" selection-start-column="25" selection-end-line="21" selection-end-column="25" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -944,7 +944,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
+        <state relative-caret-position="315">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />

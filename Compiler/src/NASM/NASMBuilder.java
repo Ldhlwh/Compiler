@@ -19,7 +19,7 @@ public class NASMBuilder
 	private String temp = "r15";
 	private String temp2 = "r14";
 	
-	public int regNum = 7; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
+	public int regNum = 9; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
 	
 	
@@ -45,6 +45,10 @@ public class NASMBuilder
 			realReg.add("rsi");
 		if(regNum > 6)
 			realReg.add("rdx");
+		if(regNum > 7)
+			realReg.add("r8");
+		if(regNum > 8)
+			realReg.add("r9");
 	}
 	
 	public NASMBuilder(boolean submit)
