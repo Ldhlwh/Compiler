@@ -2492,7 +2492,8 @@ public class NASMBuilder
 				for(int i = 0; i < insSize; i++)
 				{
 					Ins ins = cur.insList.get(i);
-					if(!isSetEqual(ins.in, ins.inp) || !isSetEqual(ins.out, ins.outp))
+					//if(!isSetEqual(ins.in, ins.inp) || !isSetEqual(ins.out, ins.outp))
+					if(ins.in.size() != ins.inp.size() || ins.out.size() != ins.outp.size())
 					{
 						flag = false;
 						break;
