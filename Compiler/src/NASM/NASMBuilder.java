@@ -189,6 +189,14 @@ public class NASMBuilder
 		{
 			BasicBlock temp = queue.poll();
 			fb.blockList.add(temp);
+			
+			int insSize = temp.insList.size();
+			if(insSize > 1 && temp.insList.get(insSize - 1).insName.equals("jump")
+					&& temp.insList.get(insSize - 2).insName.equals("jump"))
+			{
+				temp.to = ((JumpIns)temp.insList.get(insSize - 2)).toBlock;
+				temp.insList.remove(insSize - 1);
+			}
 			if(temp.to != null && !temp.to.added)
 			{
 				((LinkedList<BasicBlock>)queue).push(temp.to);
@@ -2722,7 +2730,10 @@ public class NASMBuilder
 					if(ins instanceof JumpIns)
 					{
 						if(ins.insName.equals("jump"))
+						{
+							System.err.printf("jump to : %s\n", ((JumpIns)ins).target);
 							ins.out.addAll(cur.to.insList.get(0).in);
+						}
 						else if(ins.insName.equals("br"))
 						{
 							ins.out.addAll(cur.ifTrue.insList.get(0).in);
