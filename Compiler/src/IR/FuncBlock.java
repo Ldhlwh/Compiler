@@ -24,6 +24,7 @@ public class FuncBlock
 	public Map<String, Boolean> inGraph = new HashMap<>();
 	public Map<String, Integer> color = new HashMap<>();
 	public Map<String, String> take = new HashMap<>();
+	public Map<String, Boolean> dirty = new HashMap<>();
 	
 	
 	public boolean used = false;
