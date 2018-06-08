@@ -321,10 +321,13 @@ public class ScopeChecker
 			String expSingleType = ((FuncScope) scope).singleRtnType;;
 			if( rtnType.equals("null"))
 			{
+				if(expDimNum > 0)
+					return new EmptyScope();
 				if(expSingleType.equals("int")
 						|| expSingleType.equals("bool")
 						|| expSingleType.equals("string"))
 				{
+					System.err.printf("%s\n", expSingleType);
 					System.err.printf("Wrong returned type or 4dimension.\n");
 					System.exit(1);
 				}

@@ -19,14 +19,14 @@ public class NASMBuilder
 	private String temp = "r15";
 	private String temp2 = "r14";
 	
-	public int regNum = 4; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
+	public int regNum = 7; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
 	
 	
 	public boolean printTake = false;
 	public boolean printAllocMem = false;
 	public boolean printInOutDefUse = false;
-	public boolean printColor = false;
+	public boolean printColor = true;
 	public boolean printTime = false;
 	
 	private void regMatch()
@@ -130,6 +130,12 @@ public class NASMBuilder
 				System.err.println("LA Time : " + (mid - st) + "ms");
 				System.err.println("RA Time : " + (ed - mid) + "ms");
 			}
+			if(printColor)
+			{
+				System.err.printf("------ Colored : %s ------\n", fb.funcName);
+				System.err.printf("Total : %d\nColored : %d\nUncolored : %d\n\n", fb.memSize / 8, fb.color.size(), fb.memSize / 8 - fb.color.size());
+			}
+			
 			if(printAllocMem)
 			{
 				System.err.printf("------ AllocMem & RegAlloc Func : %s ------\n", fb.funcName);
