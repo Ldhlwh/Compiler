@@ -12,7 +12,7 @@ public class BasicBlock
 	
 	public BasicBlock to;
 	public BasicBlock ifTrue, ifFalse;
-	//public ArrayList<BasicBlock> from = new ArrayList<>();
+	public ArrayList<BasicBlock> from = new ArrayList<>();
 	
 	public static int bbNum = 0;
 	
@@ -20,6 +20,7 @@ public class BasicBlock
 	public boolean allocated = false;	// While allocating the Regs to Mem
 	public boolean generated = false;	// While generating NASM code
 	public boolean analyzed = false;	// While analyzing liveness
+	public boolean added = false;
 	
 	public FuncBlock ofFunc;
 	public Set<String> def = new HashSet<>();

@@ -24,20 +24,26 @@ public class NASMBuilder
 	
 	
 	public boolean printTake = false;
-	public boolean printAllocMem = false;
+	public boolean printAllocMem = true;
 	public boolean printInOutDefUse = false;
 	public boolean printColor = true;
 	
-	
 	private void regMatch()
 	{
-		//realReg.add("rbx");
-		//realReg.add("rsi");
-		//realReg.add("rdi");
-		realReg.add("r10");
-		realReg.add("r11");
-		realReg.add("r12");
-		realReg.add("r13");
+		if(regNum > 0)
+			realReg.add("r10");
+		if(regNum > 1)
+			realReg.add("r11");
+		if(regNum > 2)
+			realReg.add("r12");
+		if(regNum > 3)
+			realReg.add("r13");
+		if(regNum > 4)
+			realReg.add("rdi");
+		if(regNum > 5)
+			realReg.add("rsi");
+		if(regNum > 6)
+			realReg.add("rdx");
 	}
 	
 	public NASMBuilder(boolean submit)
@@ -103,1142 +109,571 @@ public class NASMBuilder
 		
 		for(FuncBlock fb : ir.funcBlock)
 		{
+			makeBlockList(fb, fb.entry);
+			makeFrom(fb);
 			allocMem(fb, fb.entry);
 			//blockLivenessAnalysis(fb, fb.entry);
 			livenessAnalysis(fb);
 			regAlloc(fb, fb.entry);
+			if(printAllocMem)
+			{
+				System.err.printf("------ AllocMem & RegAlloc Func : %s ------\n", fb.funcName);
+				for(Map.Entry<String, Integer> entry : fb.memPos.entrySet())
+				{
+					if(fb.color.containsKey(entry.getKey()))
+					{
+						System.err.printf("%10s : %d\t\t%s\n", entry.getKey(), -entry.getValue() - 8, realReg.get(fb.color.get(entry.getKey())));
+					}
+					else
+					{
+						System.err.printf("%10s : %d\n", entry.getKey(), -entry.getValue() - 8);
+					}
+				}
+				System.err.println();
+			}
 		}
 		
 		for(FuncBlock fb : ir.funcBlock)
 		{
 			if(fb.used || fb.funcName.equals("__init"))
 			{
-				generate(fb.entry);
+				generate(fb);
 			}
 		}
 	}
 	
-	public void generate(BasicBlock bb)
+	private void makeBlockList(FuncBlock fb, BasicBlock bb)
 	{
-		if(bb.blockID.equals("__init"))
-			o.printf("main:\n");
-		else if(bb.blockID.equals("main"))
-			o.printf("_main:\n");
-		else
-			o.printf("%s:\n", bb.blockID);
-		
-		if(bb.ofFunc.entry == bb)
+		fb.blockList.add(bb);
+		bb.added = true;
+		if(bb.to != null && !bb.to.added)
+			makeBlockList(fb, bb.to);
+		if(bb.ifFalse != null && !bb.ifFalse.added)
+			makeBlockList(fb, bb.ifFalse);
+		if(bb.ifTrue != null && !bb.ifTrue.added)
+			makeBlockList(fb, bb.ifTrue);
+	}
+	
+	private void makeFrom(FuncBlock fb)
+	{
+		int blockSize = fb.blockList.size();
+		for(int i = 0; i < blockSize; i++)
 		{
-			o.printf("\t\tpush\t\trbp\n");
-			o.printf("\t\tmov\t\trbp, rsp\n");
-			o.printf("\t\tsub\t\trsp, %d\n", bb.ofFunc.memSize);
-			
-			int paramNum = bb.ofFunc.param.size();
-			int up = (paramNum < 6) ? paramNum : 6;
-			for(int j = 0; j < up; j++)
-			{
-				String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(bb.ofFunc.param.get(j)));
-				String reg = null;
-				if(j == 0)
-					reg = "rdi";
-				else if(j == 1)
-					reg = "rsi";
-				else if(j == 2)
-					reg = "rdx";
-				else if(j == 3)
-					reg = "rcx";
-				else if(j == 4)
-					reg = "r8";
-				else if(j == 5)
-					reg = "r9";
-				
-				o.printf("\t\tmov\t\tqword[%s], %s\n", pos, reg);
-			}
-			if(paramNum > 6)
-			{
-				int nowPos = 16;
-				for(int j = 6; j < paramNum; j++)
-				{
-					String memPos = "rbp + " + nowPos;
-					o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, memPos);
-					String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(bb.ofFunc.param.get(j)));
-					o.printf("\t\tmov\t\tqword[%s], %s\n", pos, temp);
-					nowPos += 8;
-				}
-			}
+			BasicBlock bb = fb.blockList.get(i);
+			if(bb.to != null)
+				bb.to.from.add(bb);
+			if(bb.ifFalse != null)
+				bb.ifFalse.from.add(bb);
+			if(bb.ifTrue != null)
+				bb.ifTrue.from.add(bb);
 		}
-		
-		int max = bb.insList.size();
-		for(int i = 0; i < max; i++)
+	}
+	
+	
+	public void generate(FuncBlock fb)
+	{
+		int blockSize = fb.blockList.size();
+		for(int now = 0; now < blockSize; now++)
 		{
-			Ins ins = bb.insList.get(i);
-			if(ins instanceof JumpIns)
+			BasicBlock bb = fb.blockList.get(now);
+			if(bb.blockID.equals("__init"))
+				o.printf("main:\n");
+			else if(bb.blockID.equals("main"))
+				o.printf("_main:\n");
+			else
+				o.printf("%s:\n", bb.blockID);
+			
+			if(bb.ofFunc.entry == bb)
 			{
-				if(ins.insName.equals("ret"))
+				o.printf("\t\tpush\t\trbp\n");
+				o.printf("\t\tmov\t\trbp, rsp\n");
+				o.printf("\t\tsub\t\trsp, %d\n", bb.ofFunc.memSize);
+				
+				int paramNum = bb.ofFunc.param.size();
+				int up = (paramNum < 6) ? paramNum : 6;
+				for(int j = 0; j < up; j++)
 				{
-					String rtn = ((JumpIns)ins).src;
-					int choice = isReg(rtn);
-					if(choice == 0)
-					{
-						o.printf("\t\tmov\t\trax, %s\n", rtn);
-					}
-					else if(choice == 1)
-					{
-						String reg = getReg(bb.ofFunc, rtn);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (bb.ofFunc.memPos.get(rtn) + 8);
-							o.printf("\t\tmov\t\trax, qword[%s]\n", pos);
-						}
-						else
-						{
-							check(bb, rtn);
-							if(!reg.equals("rax"))
-								o.printf("\t\tmov\t\trax, %s\n", reg);
-						}
-					}
-					else if(choice == 2)
-					{
-						String reg = getReg(bb.ofFunc, rtn);
-						if(reg == null)
-						{
-							o.printf("\t\tmov\t\trax, qword[%s]\n", rtn);
-						}
-						else
-						{
-							check(bb, rtn);
-							if(!reg.equals("rax"))
-								o.printf("\t\tmov\t\trax, %s\n", reg);
-						}
-					}
-					o.printf("\t\tleave\n");
-					o.printf("\t\tret\n");
+					String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(bb.ofFunc.param.get(j)));
+					String reg = null;
+					if(j == 0)
+						reg = "rdi";
+					else if(j == 1)
+						reg = "rsi";
+					else if(j == 2)
+						reg = "rdx";
+					else if(j == 3)
+						reg = "rcx";
+					else if(j == 4)
+						reg = "r8";
+					else if(j == 5)
+						reg = "r9";
+					
+					o.printf("\t\tmov\t\tqword[%s], %s\n", pos, reg);
 				}
-				else if(ins.insName.equals("jump"))
+				if(paramNum > 6)
 				{
-					o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).target);
-				}
-				else if(ins.insName.equals("br"))
-				{
-					if(i == 0 || !(bb.insList.get(i - 1) instanceof CondSetIns))
+					int nowPos = 16;
+					for(int j = 6; j < paramNum; j++)
 					{
-						String rtn = ((JumpIns)ins).cond;
+						String memPos = "rbp + " + nowPos;
+						o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, memPos);
+						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(bb.ofFunc.param.get(j)));
+						o.printf("\t\tmov\t\tqword[%s], %s\n", pos, temp);
+						nowPos += 8;
+					}
+				}
+				
+				for(String p : bb.ofFunc.param)
+				{
+					String reg = getReg(bb.ofFunc, p);
+					if(reg != null)
+					{
+						o.printf("\t\tmov\t\t%s, qword[%s]\n", reg, "rbp - " + (8 + bb.ofFunc.memPos.get(p)));
+					}
+				}
+			}
+			
+			int max = bb.insList.size();
+			for(int i = 0; i < max; i++)
+			{
+				Ins ins = bb.insList.get(i);
+				if(ins instanceof JumpIns)
+				{
+					if(ins.insName.equals("ret"))
+					{
+						String rtn = ((JumpIns)ins).src;
 						int choice = isReg(rtn);
 						if(choice == 0)
 						{
-							o.printf("\t\tmov\t\t%s, %s\n", temp, rtn);
-							o.printf("\t\tcmp\t\t%s, 1\n", temp);
-							o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
-							o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+							o.printf("\t\tmov\t\trax, %s\n", rtn);
 						}
 						else if(choice == 1)
 						{
 							String reg = getReg(bb.ofFunc, rtn);
 							if(reg == null)
 							{
-								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(rtn));
-								o.printf("\t\tcmp\t\tqword[%s], 1\n", pos);
+								String pos = "rbp - " + (bb.ofFunc.memPos.get(rtn) + 8);
+								o.printf("\t\tmov\t\trax, qword[%s]\n", pos);
 							}
 							else
 							{
 								check(bb, rtn);
-								o.printf("\t\tcmp\t\t%s, 1\n", reg);
+								if(!reg.equals("rax"))
+									o.printf("\t\tmov\t\trax, %s\n", reg);
 							}
-
-							o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
-							o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
 						}
 						else if(choice == 2)
 						{
 							String reg = getReg(bb.ofFunc, rtn);
 							if(reg == null)
 							{
-								o.printf("\t\tcmp\t\tqword[%s], 1\n", rtn);
+								o.printf("\t\tmov\t\trax, qword[%s]\n", rtn);
 							}
 							else
 							{
 								check(bb, rtn);
-								o.printf("\t\tcmp\t\t%s, 1\n", reg);
+								if(!reg.equals("rax"))
+									o.printf("\t\tmov\t\trax, %s\n", reg);
 							}
-							o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
+						}
+						o.printf("\t\tleave\n");
+						o.printf("\t\tret\n");
+					}
+					else if(ins.insName.equals("jump"))
+					{
+						o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).target);
+					}
+					else if(ins.insName.equals("br"))
+					{
+						if(i == 0 || !(bb.insList.get(i - 1) instanceof CondSetIns))
+						{
+							String rtn = ((JumpIns)ins).cond;
+							int choice = isReg(rtn);
+							if(choice == 0)
+							{
+								o.printf("\t\tmov\t\t%s, %s\n", temp, rtn);
+								o.printf("\t\tcmp\t\t%s, 1\n", temp);
+								o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
+								o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+							}
+							else if(choice == 1)
+							{
+								String reg = getReg(bb.ofFunc, rtn);
+								if(reg == null)
+								{
+									String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(rtn));
+									o.printf("\t\tcmp\t\tqword[%s], 1\n", pos);
+								}
+								else
+								{
+									check(bb, rtn);
+									o.printf("\t\tcmp\t\t%s, 1\n", reg);
+								}
+								
+								o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
+								o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+							}
+							else if(choice == 2)
+							{
+								String reg = getReg(bb.ofFunc, rtn);
+								if(reg == null)
+								{
+									o.printf("\t\tcmp\t\tqword[%s], 1\n", rtn);
+								}
+								else
+								{
+									check(bb, rtn);
+									o.printf("\t\tcmp\t\t%s, 1\n", reg);
+								}
+								o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
+								o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+							}
+						}
+						else
+						{
+							Ins lastIns = bb.insList.get(i - 1);
+							if(!(((CondSetIns)lastIns).dest.equals(((JumpIns)ins).cond)))
+							{
+								System.err.println("ERROR");
+								exit(1);
+							}
+							String type = lastIns.insName;
+							String src1 = ((CondSetIns)lastIns).src1;
+							String src2 = ((CondSetIns)lastIns).src2;
+							int choice = isReg(src1);
+							if(choice == 0)
+							{
+								o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
+								src1 = temp;
+							}
+							else if(choice == 1)
+							{
+								String reg = getReg(bb.ofFunc, src1);
+								if(reg == null)
+								{
+									String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src1));
+									if(lastIns.insName.length() == 5)
+										o.printf("\t\tmov\t\t%sd, dword[%s]\n", temp, pos);
+									else
+										o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, pos);
+									src1 = temp;
+								}
+								else
+								{
+									check(bb, src1);
+									src1 = reg;
+								}
+							}
+							else if(choice == 2)
+							{
+								String reg = getReg(bb.ofFunc, src1);
+								if(reg == null)
+								{
+									if(lastIns.insName.length() == 5)
+										o.printf("\t\tmov\t\t%sd, dword[%s]\n", temp, src1);
+									else
+										o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, src1);
+									src1 = temp;
+								}
+								else
+								{
+									check(bb, src1);
+									src1 = reg;
+								}
+							}
+							
+							choice = isReg(src2);
+							if(choice == 0)
+							{
+								if(lastIns.insName.length() == 5)
+									o.printf("\t\tcmp\t\t%sd, %s\n", src1, src2);
+								else
+									o.printf("\t\tcmp\t\t%s, %s\n", src1, src2);
+							}
+							else if(choice == 1)
+							{
+								String reg = getReg(bb.ofFunc, src2);
+								if(reg == null)
+								{
+									String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src2));
+									if(lastIns.insName.length() == 5)
+										o.printf("\t\tcmp\t\t%sd, dword[%s]\n", src1, pos);
+									else
+										o.printf("\t\tcmp\t\t%s, qword[%s]\n", src1, pos);
+								}
+								else
+								{
+									check(bb, src2);
+									o.printf("\t\tcmp\t\t%s, %s\n", src1, reg);
+								}
+							}
+							else if(choice == 2)
+							{
+								String reg = getReg(bb.ofFunc, src2);
+								if(reg == null)
+								{
+									if(lastIns.insName.length() == 5)
+										o.printf("\t\tcmp\t\t%sd, dword[%s]\n", src1, src2);
+									else
+										o.printf("\t\tcmp\t\t%s, qword[%s]\n", src1, src2);
+								}
+								else
+								{
+									check(bb, src2);
+									o.printf("\t\tcmp\t\t%s, %s\n", src1, reg);
+								}
+							}
+							
+							if(type.substring(0, 3).equals("slt"))
+								o.printf("\t\tjl\t\t%s\n", ((JumpIns)ins).ifTrue);
+							else if(type.substring(0, 3).equals("sgt"))
+								o.printf("\t\tjg\t\t%s\n", ((JumpIns)ins).ifTrue);
+							else if(type.substring(0, 3).equals("sle"))
+								o.printf("\t\tjle\t\t%s\n", ((JumpIns)ins).ifTrue);
+							else if(type.substring(0, 3).equals("sge"))
+								o.printf("\t\tjge\t\t%s\n", ((JumpIns)ins).ifTrue);
+							else if(type.substring(0, 3).equals("seq"))
+								o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
+							else if(type.substring(0, 3).equals("sne"))
+								o.printf("\t\tjne\t\t%s\n", ((JumpIns)ins).ifTrue);
+							
 							o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
 						}
 					}
-					else
+				}
+				else if(ins instanceof MemAccIns)
+				{
+					if(ins.insName.equals("alloc"))
 					{
-						Ins lastIns = bb.insList.get(i - 1);
-						if(!(((CondSetIns)lastIns).dest.equals(((JumpIns)ins).cond)))
-						{
-							System.err.println("ERROR");
-							exit(1);
-						}
-						String type = lastIns.insName;
-						String src1 = ((CondSetIns)lastIns).src1;
-						String src2 = ((CondSetIns)lastIns).src2;
-						int choice = isReg(src1);
+						int choice = isReg(((MemAccIns)ins).size);
+						String src = null;
 						if(choice == 0)
 						{
-							o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
-							src1 = temp;
+							src = ((MemAccIns)ins).size;
 						}
 						else if(choice == 1)
 						{
-							String reg = getReg(bb.ofFunc, src1);
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).size);
 							if(reg == null)
 							{
-								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src1));
-								if(lastIns.insName.length() == 5)
-									o.printf("\t\tmov\t\t%sd, dword[%s]\n", temp, pos);
-								else
-									o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, pos);
-								src1 = temp;
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).size));
+								src = "qword[" + pos + "]";
 							}
 							else
 							{
-								check(bb, src1);
-								src1 = reg;
+								check(bb, ((MemAccIns)ins).size);
+								src = reg;
 							}
 						}
 						else if(choice == 2)
 						{
-							String reg = getReg(bb.ofFunc, src1);
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).size);
 							if(reg == null)
 							{
-								if(lastIns.insName.length() == 5)
-									o.printf("\t\tmov\t\t%sd, dword[%s]\n", temp, src1);
-								else
-									o.printf("\t\tmov\t\t%s, qword[%s]\n", temp, src1);
-								src1 = temp;
+								src = "qword[" + ((MemAccIns)ins).size + "]";
 							}
 							else
 							{
-								check(bb, src1);
-								src1 = reg;
+								check(bb, ((MemAccIns)ins).size);
+								src = reg;
 							}
+						}
+						int c2 = isReg(((MemAccIns)ins).dest);
+						String s2 = null;
+						if(c2 == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
+								s2 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).dest);
+								s2 = reg;
+							}
+						}
+						else if(c2 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
+							if(reg == null)
+							{
+								s2 = "qword[" + ((MemAccIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).dest);
+								s2 = reg;
+							}
+						}
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, %s\n", src);
+						o.printf("\t\tcall\t\tmalloc\n");
+						loadAll(bb);
+						o.printf("\t\tmov\t\t%s, rax\n", s2);
+					}
+					else if(ins.insName.equals("store"))
+					{
+						String size = ((MemAccIns)ins).size;
+						String offset = ((MemAccIns)ins).offset + "";
+						int choice = isReg(((MemAccIns)ins).addr);
+						String addr = null;
+						if(choice == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
+								addr = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).addr);
+								addr = reg;
+							}
+							o.printf("\t\tmov\t\t%s, %s\n", temp, addr);
+						}
+						else if(choice == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
+							if(reg == null)
+							{
+								addr = ((MemAccIns)ins).addr;
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).addr);
+								addr = reg;
+							}
+							
+							o.printf("\t\tlea\t\t%s, [%s]\n", temp, addr);
 						}
 						
-						choice = isReg(src2);
-						if(choice == 0)
+						
+						int cs = isReg(((MemAccIns)ins).src);
+						String src = null;
+						if(cs == 0)
 						{
-							if(lastIns.insName.length() == 5)
-								o.printf("\t\tcmp\t\t%sd, %s\n", src1, src2);
-							else
-								o.printf("\t\tcmp\t\t%s, %s\n", src1, src2);
+							src = ((MemAccIns)ins).src;
 						}
-						else if(choice == 1)
+						else if(cs == 1)
 						{
-							String reg = getReg(bb.ofFunc, src2);
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).src);
 							if(reg == null)
 							{
-								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src2));
-								if(lastIns.insName.length() == 5)
-									o.printf("\t\tcmp\t\t%sd, dword[%s]\n", src1, pos);
-								else
-									o.printf("\t\tcmp\t\t%s, qword[%s]\n", src1, pos);
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).src));
+								src = "qword[" + pos + "]";
 							}
 							else
 							{
-								check(bb, src2);
-								o.printf("\t\tcmp\t\t%s, %s\n", src1, reg);
+								check(bb, ((MemAccIns)ins).src);
+								src = reg;
+							}
+						}
+						else if(cs == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).src);
+							if(reg == null)
+							{
+								src = "qword[" + ((MemAccIns)ins).src + "]";
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).src);
+								src = reg;
+							}
+						}
+						o.printf("\t\tmov\t\t%s, %s\n", temp2, src);
+						if(size.equals("1"))
+							o.printf("\t\tmov\t\t[%s + %d], %s\n", temp, ((MemAccIns)ins).offset, temp2);
+						else if(size.equals("8"))
+							o.printf("\t\tmov\t\tqword[%s + %d], %s\n", temp, ((MemAccIns)ins).offset, temp2);
+					}
+					else if(ins.insName.equals("load"))
+					{
+						String size = ((MemAccIns)ins).size;
+						String offset = ((MemAccIns)ins).offset + "";
+						int choice = isReg(((MemAccIns)ins).addr);
+						String addr = null;
+						if(choice == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
+								addr = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).addr);
+								addr = reg;
 							}
 						}
 						else if(choice == 2)
 						{
-							String reg = getReg(bb.ofFunc, src2);
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
 							if(reg == null)
 							{
-								if(lastIns.insName.length() == 5)
-									o.printf("\t\tcmp\t\t%sd, dword[%s]\n", temp, src2);
-								else
-									o.printf("\t\tcmp\t\t%s, qword[%s]\n", temp, src2);
+								addr = "qword[" + ((MemAccIns)ins).addr + "]";
 							}
 							else
 							{
-								check(bb, src2);
-								o.printf("\t\tcmp\t\t%s, %s\n", src1, reg);
+								check(bb, ((MemAccIns)ins).addr);
+								addr = reg;
 							}
-						}
-						
-						if(type.substring(0, 3).equals("slt"))
-							o.printf("\t\tjl\t\t%s\n", ((JumpIns)ins).ifTrue);
-						else if(type.substring(0, 3).equals("sgt"))
-							o.printf("\t\tjg\t\t%s\n", ((JumpIns)ins).ifTrue);
-						else if(type.substring(0, 3).equals("sle"))
-							o.printf("\t\tjle\t\t%s\n", ((JumpIns)ins).ifTrue);
-						else if(type.substring(0, 3).equals("sge"))
-							o.printf("\t\tjge\t\t%s\n", ((JumpIns)ins).ifTrue);
-						else if(type.substring(0, 3).equals("seq"))
-							o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
-						else if(type.substring(0, 3).equals("sne"))
-							o.printf("\t\tjne\t\t%s\n", ((JumpIns)ins).ifTrue);
-						
-						o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
-					}
-				}
-			}
-			else if(ins instanceof MemAccIns)
-			{
-				if(ins.insName.equals("alloc"))
-				{
-					int choice = isReg(((MemAccIns)ins).size);
-					String src = null;
-					if(choice == 0)
-					{
-						src = ((MemAccIns)ins).size;
-					}
-					else if(choice == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).size);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).size));
-							src = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).size);
-							src = reg;
-						}
-					}
-					else if(choice == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).size);
-						if(reg == null)
-						{
-							src = "qword[" + ((MemAccIns)ins).size + "]";
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).size);
-							src = reg;
-						}
-					}
-					int c2 = isReg(((MemAccIns)ins).dest);
-					String s2 = null;
-					if(c2 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
-							s2 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).dest);
-							s2= reg;
-						}
-					}
-					else if(c2 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
-						if(reg == null)
-						{
-							s2 = "qword[" + ((MemAccIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).dest);
-							s2= reg;
-						}
-					}
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, %s\n", src);
-					o.printf("\t\tcall\t\tmalloc\n");
-					loadAll(bb);
-					o.printf("\t\tmov\t\t%s, rax\n", s2);
-				}
-				else if(ins.insName.equals("store"))
-				{
-					String size = ((MemAccIns)ins).size;
-					String offset = ((MemAccIns)ins).offset + "";
-					int choice = isReg(((MemAccIns)ins).addr);
-					String addr = null;
-					if(choice == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
-							addr = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).addr);
-							addr= reg;
 						}
 						o.printf("\t\tmov\t\t%s, %s\n", temp, addr);
-					}
-					else if(choice == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
-						if(reg == null)
-						{
-							addr = ((MemAccIns)ins).addr;
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).addr);
-							addr = reg;
-						}
+						o.printf("\t\tadd\t\t%s, %s\n", temp, offset);
 						
-						o.printf("\t\tlea\t\t%s, [%s]\n", temp, addr);
-					}
-					
-					
-					int cs = isReg(((MemAccIns)ins).src);
-					String src = null;
-					if(cs == 0)
-					{
-						src = ((MemAccIns)ins).src;
-					}
-					else if(cs == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).src);
-						if(reg == null)
+						int cs = isReg(((MemAccIns)ins).dest);
+						String dest = null;
+						if(cs == 0)
 						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).src));
-							src = "qword[" + pos + "]";
+							dest = ((MemAccIns)ins).dest;
 						}
-						else
+						else if(cs == 1)
 						{
-							check(bb, ((MemAccIns)ins).src);
-							src = reg;
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
+								dest = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).dest);
+								dest = reg;
+							}
 						}
-					}
-					else if(cs == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).src);
-						if(reg == null)
+						else if(cs == 2)
 						{
-							src = "qword[" + ((MemAccIns)ins).src + "]";
+							String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
+							if(reg == null)
+							{
+								dest = "qword[" + ((MemAccIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((MemAccIns)ins).dest);
+								dest = reg;
+							}
 						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).src);
-							src = reg;
-						}
-					}
-					o.printf("\t\tmov\t\t%s, %s\n", temp2, src);
-					if(size.equals("1"))
-						o.printf("\t\tmov\t\t[%s + %d], %s\n", temp, ((MemAccIns)ins).offset, temp2);
-					else if(size.equals("8"))
-						o.printf("\t\tmov\t\tqword[%s + %d], %s\n", temp, ((MemAccIns)ins).offset, temp2);
-				}
-				else if(ins.insName.equals("load"))
-				{
-					String size = ((MemAccIns)ins).size;
-					String offset = ((MemAccIns)ins).offset + "";
-					int choice = isReg(((MemAccIns)ins).addr);
-					String addr = null;
-					if(choice == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).addr));
-							addr = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).addr);
-							addr = reg;
-						}
-					}
-					else if(choice == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).addr);
-						if(reg == null)
-						{
-							addr = "qword[" + ((MemAccIns)ins).addr + "]";
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).addr);
-							addr = reg;
-						}
-					}
-					o.printf("\t\tmov\t\t%s, %s\n", temp, addr);
-					o.printf("\t\tadd\t\t%s, %s\n", temp, offset);
-					
-					int cs = isReg(((MemAccIns)ins).dest);
-					String dest = null;
-					if(cs == 0)
-					{
-						dest = ((MemAccIns)ins).dest;
-					}
-					else if(cs == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MemAccIns)ins).dest));
-							dest = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).dest);
-							dest = reg;
-						}
-					}
-					else if(cs == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((MemAccIns)ins).dest);
-						if(reg == null)
-						{
-							dest = "qword[" + ((MemAccIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((MemAccIns)ins).dest);
-							dest = reg;
-						}
-					}
-					if(size.equals("1"))
-						o.printf("\t\tmov\t\t%sb, [%s]\n", temp2, temp);
-					else if(size.equals("8"))
-						o.printf("\t\tmov\t\t%s, qword[%s]\n", temp2, temp);
-					o.printf("\t\tmov\t\t%s, %s\n", dest, temp2);
-				}
-			}
-			else if(ins instanceof FuncCallIns)
-			{
-				String funcName = ((FuncCallIns)ins).funcName;
-				
-				if(funcName.equals("println")
-						|| funcName.equals("print"))
-				{
-					String str = ((FuncCallIns)ins).ops.get(0);
-					int choice = isReg(str);
-					String op = null;
-					if(choice == 0)
-					{
-						op = str;
-					}
-					else if(choice == 1)
-					{
-						String reg = getReg(bb.ofFunc, str);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(str));
-							op = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, str);
-							op = reg;
-						}
-					}
-					else if(choice == 2)
-					{
-						String reg = getReg(bb.ofFunc, str);
-						if(reg == null)
-						{
-							op = "qword[" + str + "]";
-						}
-						else
-						{
-							check(bb, str);
-							op = reg;
-						}
-					}
-					
-					if(funcName.equals("println"))
-					{
-						storeAll(bb);
-						o.printf("\t\tmov\t\trdi, %s\n", op);
-						o.printf("\t\tcall\t\tputs\n");
-						loadAll(bb);
-					}
-					else if(funcName.equals("print"))
-					{
-						storeAll(bb);
-						o.printf("\t\tmov\t\trdi, _getStr\n");
-						o.printf("\t\tmov\t\trsi, %s\n", op);
-						o.printf("\t\tmov\t\trax, 0\n");
-						o.printf("\t\tcall\t\tprintf\n");
-						loadAll(bb);
+						if(size.equals("1"))
+							o.printf("\t\tmov\t\t%sb, [%s]\n", temp2, temp);
+						else if(size.equals("8"))
+							o.printf("\t\tmov\t\t%s, qword[%s]\n", temp2, temp);
+						o.printf("\t\tmov\t\t%s, %s\n", dest, temp2);
 					}
 				}
-				
-				else if(funcName.equals("getString"))
+				else if(ins instanceof FuncCallIns)
 				{
-					int choice = isReg(((FuncCallIns)ins).dest);
-					String dest = null;
-					if(choice == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-							dest = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					else if(choice == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
+					String funcName = ((FuncCallIns)ins).funcName;
 					
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, 256\n");
-					o.printf("\t\tcall\t\tmalloc\n");
-					loadAll(bb);
-					o.printf("\t\tmov\t\t%s, rax\n", dest);
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, _getStr\n");
-					o.printf("\t\tmov\t\trsi, %s\n", dest);
-					o.printf("\t\tmov\t\trax, 0\n");
-					o.printf("\t\tcall\t\tscanf\n");
-					loadAll(bb, dest);
-				}
-				
-				else if(funcName.equals("getInt"))
-				{
-					int choice = isReg(((FuncCallIns)ins).dest);
-					String dest = null;
-					boolean fff = false;
-					if(choice == 1)
+					if(funcName.equals("println")
+							|| funcName.equals("print"))
 					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-							dest = "[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							String vr = bb.ofFunc.take.get(reg);
-							dest = "[" + "rbp - " + (8 + bb.ofFunc.memPos.get(vr)) + "]";
-							fff = true;
-						}
-					}
-					else if(choice == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							dest = "[" + ((FuncCallIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							String vr = bb.ofFunc.take.get(reg);
-							dest = "[" + ((FuncCallIns)ins).dest + "]";
-							fff = true;
-						}
-					}
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, _getInt\n");
-					o.printf("\t\tlea\t\trax, %s\n", dest);
-					o.printf("\t\tmov\t\trsi, rax\n");
-					o.printf("\t\tmov\t\trax, 0\n");
-					o.printf("\t\tcall\t\tscanf\n");
-					loadAll(bb);
-					if(fff)
-					{
-						o.printf("\t\tmov\t\tqword%s, %s\n", dest, getReg(bb.ofFunc, ((FuncCallIns)ins).dest));
-					}
-				}
-				
-				else if(funcName.equals("toString"))
-				{
-					int cs = isReg(((FuncCallIns)ins).ops.get(0));
-					int cd = isReg(((FuncCallIns)ins).dest);
-					String src = null, dest = null;
-					if(cs == 0)
-					{
-						src = ((FuncCallIns)ins).ops.get(0);
-					}
-					else if(cs == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-							src = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src = reg;
-						}
-					}
-					else if(cs == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src = reg;
-						}
-					}
-					
-					if(cd == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-							dest = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					else if(cd == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, 256\n");
-					o.printf("\t\tcall\t\tmalloc\n");
-					loadAll(bb);
-					o.printf("\t\tmov\t\t%s, rax\n", dest);
-					
-					
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, %s\n", dest);
-					o.printf("\t\tmov\t\trsi, _getInt\n");
-					o.printf("\t\tmov\t\trdx, %s\n", src);
-					o.printf("\t\tmov\t\trax, 0\n");
-					o.printf("\t\tcall\t\tsprintf\n");
-					loadAll(bb);
-				}
-				
-				else if(funcName.equals("string.copy"))
-				{
-					int cd = isReg(((FuncCallIns)ins).dest);
-					int cs = isReg(((FuncCallIns)ins).ops.get(0));
-					String dest = null, src = null;
-					if(cs == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-							src = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src = reg;
-						}
-					}
-					else if(cs == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src = reg;
-						}
-					}
-					if(cd == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-							dest = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					else if(cd == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, 256\n");
-					o.printf("\t\tcall\t\tmalloc\n");
-					loadAll(bb);
-					o.printf("\t\tmov\t\t%s, rax\n", dest);
-					
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, rax\n");
-					o.printf("\t\tmov\t\trsi, %s\n", src);
-					o.printf("\t\tcall\t\tstrcpy\n");
-					loadAll(bb, dest);
-					continue;
-				}
-				
-				else if(funcName.equals("string.cat"))
-				{
-					int cd = isReg(((FuncCallIns)ins).dest);
-					int cs1 = isReg(((FuncCallIns)ins).ops.get(0));
-					int cs2 = isReg(((FuncCallIns)ins).ops.get(1));
-					String dest = null, src1 = null, src2 = null;
-					if(cs1 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-							src1 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src1 = reg;
-						}
-					}
-					else if(cs1 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src1 = reg;
-						}
-					}
-					if(cs2 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
-							src2 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(1));
-							src2 = reg;
-						}
-					}
-					else if(cs2 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
-						if(reg == null)
-						{
-							src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(1));
-							src2 = reg;
-						}
-					}
-					if(cd == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-							dest = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					else if(cd == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, 256\n");
-					o.printf("\t\tcall\t\tmalloc\n");
-					loadAll(bb);
-					o.printf("\t\tmov\t\t%s, rax\n", dest);
-					
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, %s\n", dest);
-					o.printf("\t\tmov\t\trsi, %s\n", src1);
-					o.printf("\t\tcall\t\tstrcpy\n");
-					loadAll(bb);
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, %s\n", dest);
-					o.printf("\t\tmov\t\trsi, %s\n", src2);
-					o.printf("\t\tcall\t\tstrcat\n");
-					loadAll(bb);
-					continue;
-				}
-				else if(funcName.equals("string.cmp"))
-				{
-					int cd = isReg(((FuncCallIns)ins).dest);
-					int cs1 = isReg(((FuncCallIns)ins).ops.get(0));
-					int cs2 = isReg(((FuncCallIns)ins).ops.get(1));
-					String dest = null, src1 = null, src2 = null;
-					if(cs1 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-							src1 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src1 = reg;
-						}
-					}
-					else if(cs1 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src1 = reg;
-						}
-					}
-					if(cs2 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
-							src2 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(1));
-							src2 = reg;
-						}
-					}
-					else if(cs2 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
-						if(reg == null)
-						{
-							src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(1));
-							src2 = reg;
-						}
-					}
-					if(cd == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-							dest = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					else if(cd == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					
-					
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, %s\n", src1);
-					o.printf("\t\tmov\t\trsi, %s\n", src2);
-					//o.printf("\t\tmov\t\trax, 0\n");
-					o.printf("\t\tcall\t\tstrcmp\n");
-					loadAll(bb);
-					
-					//o.printf("\t\tmov\t\t%s, 0\n", dest);
-					//o.printf("\t\tsub\t\t%s, rax\n", dest);
-					o.printf("\t\tmov\t\t%s, rax\n", dest);
-				}
-				
-				else if(funcName.equals("string.parseInt"))
-				{
-					int cs = isReg(((FuncCallIns)ins).ops.get(0));
-					int cd = isReg(((FuncCallIns)ins).dest);
-					String src = null, dest = null;
-					if(cs == 1)
-					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-						src = "qword[" + pos + "]";
-					}
-					else if(cs == 2)
-					{
-						src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
-					}
-					
-					if(cd == 1)
-					{
-						String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-						dest = pos;
-					}
-					else if(cd == 2)
-					{
-						dest = ((FuncCallIns)ins).dest;
-					}
-					
-					
-					o.printf("\t\tlea\t\t%s, [%s]\n", temp, dest);
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, %s\n", src);
-					o.printf("\t\tmov\t\trsi, _getInt\n");
-					o.printf("\t\tmov\t\trdx, %s\n", temp);
-					o.printf("\t\tmov\t\trax, 0\n");
-					o.printf("\t\tcall\t\tsscanf\n");
-					loadAll(bb);
-					
-					if(getReg(bb.ofFunc, ((FuncCallIns)ins).dest) != null)
-					{
-						o.printf("\t\tmov\t\t%s, %s\n", getReg(bb.ofFunc, ((FuncCallIns)ins).dest), temp);
-					}
-				}
-				
-				else if(funcName.equals("string.length"))
-				{
-					int cs = isReg(((FuncCallIns)ins).ops.get(0));
-					int cd = isReg(((FuncCallIns)ins).dest);
-					
-					String src = null, dest = null;
-					if(cs == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-							src = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src = reg;
-						}
-					}
-					else if(cs == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-						if(reg == null)
-						{
-							src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).ops.get(0));
-							src = reg;
-						}
-					}
-					if(cd == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-							dest = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					else if(cd == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-						if(reg == null)
-						{
-							dest = "qword[" + ((FuncCallIns)ins).dest + "]";
-						}
-						else
-						{
-							check(bb, ((FuncCallIns)ins).dest);
-							dest = reg;
-						}
-					}
-					storeAll(bb);
-					o.printf("\t\tmov\t\trdi, %s\n", src);
-					o.printf("\t\tcall\t\tstrlen\n");
-					loadAll(bb);
-					o.printf("\t\tmov\t\t%s, rax\n", dest);
-				}
-				
-				else
-				{
-					FuncBlock curFB = null;
-					for(FuncBlock block : ir.funcBlock)
-					{
-						if(block.funcName.equals(funcName))
-						{
-							curFB = block;
-							break;
-						}
-					}
-					int paramNum = curFB.param.size();
-					int up = (paramNum < 6) ? paramNum : 6;
-					storeAll(bb);
-					for(int j = 0; j < up; j++)
-					{
-						String str = ((FuncCallIns)ins).ops.get(j);
+						String str = ((FuncCallIns)ins).ops.get(0);
 						int choice = isReg(str);
 						String op = null;
 						if(choice == 0)
@@ -1273,30 +708,600 @@ public class NASMBuilder
 							}
 						}
 						
-						String reg = null;
-						if(j == 0)
-							reg = "rdi";
-						else if(j == 1)
-							reg = "rsi";
-						else if(j == 2)
-							reg = "rdx";
-						else if(j == 3)
-							reg = "rcx";
-						else if(j == 4)
-							reg = "r8";
-						else if(j == 5)
-							reg = "r9";
-						
-						o.printf("\t\tmov\t\t%s, %s\n", reg, op);
-					}
-					if(paramNum > 6)
-					{
-						if(paramNum % 2 == 1)
+						if(funcName.equals("println"))
 						{
-							o.printf("\t\tmov\t\t%s, 0\n", temp);
-							o.printf("\t\tpush\t\t%s\n", temp);
+							storeAll(bb);
+							o.printf("\t\tmov\t\trdi, %s\n", op);
+							o.printf("\t\tcall\t\tputs\n");
+							loadAll(bb);
 						}
-						for(int j = paramNum - 1; j >= 6; j--)
+						else if(funcName.equals("print"))
+						{
+							storeAll(bb);
+							o.printf("\t\tmov\t\trdi, _getStr\n");
+							o.printf("\t\tmov\t\trsi, %s\n", op);
+							o.printf("\t\tmov\t\trax, 0\n");
+							o.printf("\t\tcall\t\tprintf\n");
+							loadAll(bb);
+						}
+					}
+					
+					else if(funcName.equals("getString"))
+					{
+						int choice = isReg(((FuncCallIns)ins).dest);
+						String dest = null;
+						if(choice == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+								dest = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						else if(choice == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, 256\n");
+						o.printf("\t\tcall\t\tmalloc\n");
+						loadAll(bb);
+						o.printf("\t\tmov\t\t%s, rax\n", dest);
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, _getStr\n");
+						o.printf("\t\tmov\t\trsi, %s\n", dest);
+						o.printf("\t\tmov\t\trax, 0\n");
+						o.printf("\t\tcall\t\tscanf\n");
+						loadAll(bb, dest);
+					}
+					
+					else if(funcName.equals("getInt"))
+					{
+						int choice = isReg(((FuncCallIns)ins).dest);
+						String dest = null;
+						boolean fff = false;
+						if(choice == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+								dest = "[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								String vr = bb.ofFunc.take.get(reg);
+								dest = "[" + "rbp - " + (8 + bb.ofFunc.memPos.get(vr)) + "]";
+								fff = true;
+							}
+						}
+						else if(choice == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								dest = "[" + ((FuncCallIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								String vr = bb.ofFunc.take.get(reg);
+								dest = "[" + ((FuncCallIns)ins).dest + "]";
+								fff = true;
+							}
+						}
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, _getInt\n");
+						o.printf("\t\tlea\t\trax, %s\n", dest);
+						o.printf("\t\tmov\t\trsi, rax\n");
+						o.printf("\t\tmov\t\trax, 0\n");
+						o.printf("\t\tcall\t\tscanf\n");
+						loadAll(bb);
+						if(fff)
+						{
+							o.printf("\t\tmov\t\tqword%s, %s\n", dest, getReg(bb.ofFunc, ((FuncCallIns)ins).dest));
+						}
+					}
+					
+					else if(funcName.equals("toString"))
+					{
+						int cs = isReg(((FuncCallIns)ins).ops.get(0));
+						int cd = isReg(((FuncCallIns)ins).dest);
+						String src = null, dest = null;
+						if(cs == 0)
+						{
+							src = ((FuncCallIns)ins).ops.get(0);
+						}
+						else if(cs == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+								src = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src = reg;
+							}
+						}
+						else if(cs == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src = reg;
+							}
+						}
+						
+						if(cd == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+								dest = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						else if(cd == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, 256\n");
+						o.printf("\t\tcall\t\tmalloc\n");
+						loadAll(bb);
+						o.printf("\t\tmov\t\t%s, rax\n", dest);
+						
+						
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, %s\n", dest);
+						o.printf("\t\tmov\t\trsi, _getInt\n");
+						o.printf("\t\tmov\t\trdx, %s\n", src);
+						o.printf("\t\tmov\t\trax, 0\n");
+						o.printf("\t\tcall\t\tsprintf\n");
+						loadAll(bb);
+					}
+					
+					else if(funcName.equals("string.copy"))
+					{
+						int cd = isReg(((FuncCallIns)ins).dest);
+						int cs = isReg(((FuncCallIns)ins).ops.get(0));
+						String dest = null, src = null;
+						if(cs == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+								src = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src = reg;
+							}
+						}
+						else if(cs == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src = reg;
+							}
+						}
+						if(cd == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+								dest = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						else if(cd == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, 256\n");
+						o.printf("\t\tcall\t\tmalloc\n");
+						loadAll(bb);
+						o.printf("\t\tmov\t\t%s, rax\n", dest);
+						
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, rax\n");
+						o.printf("\t\tmov\t\trsi, %s\n", src);
+						o.printf("\t\tcall\t\tstrcpy\n");
+						loadAll(bb, dest);
+						continue;
+					}
+					
+					else if(funcName.equals("string.cat"))
+					{
+						int cd = isReg(((FuncCallIns)ins).dest);
+						int cs1 = isReg(((FuncCallIns)ins).ops.get(0));
+						int cs2 = isReg(((FuncCallIns)ins).ops.get(1));
+						String dest = null, src1 = null, src2 = null;
+						if(cs1 == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+								src1 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src1 = reg;
+							}
+						}
+						else if(cs1 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src1 = reg;
+							}
+						}
+						if(cs2 == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
+								src2 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(1));
+								src2 = reg;
+							}
+						}
+						else if(cs2 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
+							if(reg == null)
+							{
+								src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(1));
+								src2 = reg;
+							}
+						}
+						if(cd == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+								dest = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						else if(cd == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, 256\n");
+						o.printf("\t\tcall\t\tmalloc\n");
+						loadAll(bb);
+						o.printf("\t\tmov\t\t%s, rax\n", dest);
+						
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, %s\n", dest);
+						o.printf("\t\tmov\t\trsi, %s\n", src1);
+						o.printf("\t\tcall\t\tstrcpy\n");
+						loadAll(bb);
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, %s\n", dest);
+						o.printf("\t\tmov\t\trsi, %s\n", src2);
+						o.printf("\t\tcall\t\tstrcat\n");
+						loadAll(bb);
+						continue;
+					}
+					else if(funcName.equals("string.cmp"))
+					{
+						int cd = isReg(((FuncCallIns)ins).dest);
+						int cs1 = isReg(((FuncCallIns)ins).ops.get(0));
+						int cs2 = isReg(((FuncCallIns)ins).ops.get(1));
+						String dest = null, src1 = null, src2 = null;
+						if(cs1 == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+								src1 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src1 = reg;
+							}
+						}
+						else if(cs1 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								src1 = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src1 = reg;
+							}
+						}
+						if(cs2 == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(1)));
+								src2 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(1));
+								src2 = reg;
+							}
+						}
+						else if(cs2 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(1));
+							if(reg == null)
+							{
+								src2 = "qword[" + ((FuncCallIns)ins).ops.get(1) + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(1));
+								src2 = reg;
+							}
+						}
+						if(cd == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+								dest = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						else if(cd == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						
+						
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, %s\n", src1);
+						o.printf("\t\tmov\t\trsi, %s\n", src2);
+						//o.printf("\t\tmov\t\trax, 0\n");
+						o.printf("\t\tcall\t\tstrcmp\n");
+						loadAll(bb);
+						
+						//o.printf("\t\tmov\t\t%s, 0\n", dest);
+						//o.printf("\t\tsub\t\t%s, rax\n", dest);
+						o.printf("\t\tmov\t\t%s, rax\n", dest);
+					}
+					
+					else if(funcName.equals("string.parseInt"))
+					{
+						int cs = isReg(((FuncCallIns)ins).ops.get(0));
+						int cd = isReg(((FuncCallIns)ins).dest);
+						String src = null, dest = null;
+						if(cs == 1)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+							src = "qword[" + pos + "]";
+						}
+						else if(cs == 2)
+						{
+							src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+						}
+						
+						if(cd == 1)
+						{
+							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+							dest = pos;
+						}
+						else if(cd == 2)
+						{
+							dest = ((FuncCallIns)ins).dest;
+						}
+						
+						
+						o.printf("\t\tlea\t\t%s, [%s]\n", temp, dest);
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, %s\n", src);
+						o.printf("\t\tmov\t\trsi, _getInt\n");
+						o.printf("\t\tmov\t\trdx, %s\n", temp);
+						o.printf("\t\tmov\t\trax, 0\n");
+						o.printf("\t\tcall\t\tsscanf\n");
+						loadAll(bb);
+						
+						if(getReg(bb.ofFunc, ((FuncCallIns)ins).dest) != null)
+						{
+							o.printf("\t\tmov\t\t%s, %s\n", getReg(bb.ofFunc, ((FuncCallIns)ins).dest), temp);
+						}
+					}
+					
+					else if(funcName.equals("string.length"))
+					{
+						int cs = isReg(((FuncCallIns)ins).ops.get(0));
+						int cd = isReg(((FuncCallIns)ins).dest);
+						
+						String src = null, dest = null;
+						if(cs == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
+								src = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src = reg;
+							}
+						}
+						else if(cs == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
+							if(reg == null)
+							{
+								src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).ops.get(0));
+								src = reg;
+							}
+						}
+						if(cd == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+								dest = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						else if(cd == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								dest = "qword[" + ((FuncCallIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								dest = reg;
+							}
+						}
+						storeAll(bb);
+						o.printf("\t\tmov\t\trdi, %s\n", src);
+						o.printf("\t\tcall\t\tstrlen\n");
+						loadAll(bb);
+						o.printf("\t\tmov\t\t%s, rax\n", dest);
+					}
+					
+					else
+					{
+						FuncBlock curFB = null;
+						for(FuncBlock block : ir.funcBlock)
+						{
+							if(block.funcName.equals(funcName))
+							{
+								curFB = block;
+								break;
+							}
+						}
+						int paramNum = curFB.param.size();
+						int up = (paramNum < 6) ? paramNum : 6;
+						storeAll(bb);
+						for(int j = 0; j < up; j++)
 						{
 							String str = ((FuncCallIns)ins).ops.get(j);
 							int choice = isReg(str);
@@ -1307,600 +1312,644 @@ public class NASMBuilder
 							}
 							else if(choice == 1)
 							{
-								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(str));
-								op = "qword[" + pos + "]";
+								String reg = getReg(bb.ofFunc, str);
+								if(reg == null)
+								{
+									String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(str));
+									op = "qword[" + pos + "]";
+								}
+								else
+								{
+									check(bb, str);
+									op = reg;
+								}
 							}
 							else if(choice == 2)
 							{
-								op = "qword[" + str + "]";
+								String reg = getReg(bb.ofFunc, str);
+								if(reg == null)
+								{
+									op = "qword[" + str + "]";
+								}
+								else
+								{
+									check(bb, str);
+									op = reg;
+								}
 							}
 							
-							o.printf("\t\tmov\t\t%s, %s\n", temp, op);
-							o.printf("\t\tpush\t\t%s\n", temp);
+							String reg = null;
+							if(j == 0)
+								reg = "rdi";
+							else if(j == 1)
+								reg = "rsi";
+							else if(j == 2)
+								reg = "rdx";
+							else if(j == 3)
+								reg = "rcx";
+							else if(j == 4)
+								reg = "r8";
+							else if(j == 5)
+								reg = "r9";
+							
+							o.printf("\t\tmov\t\t%s, %s\n", reg, op);
+						}
+						if(paramNum > 6)
+						{
+							if(paramNum % 2 == 1)
+							{
+								o.printf("\t\tmov\t\t%s, 0\n", temp);
+								o.printf("\t\tpush\t\t%s\n", temp);
+							}
+							for(int j = paramNum - 1; j >= 6; j--)
+							{
+								String str = ((FuncCallIns)ins).ops.get(j);
+								int choice = isReg(str);
+								String op = null;
+								if(choice == 0)
+								{
+									op = str;
+								}
+								else if(choice == 1)
+								{
+									String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(str));
+									op = "qword[" + pos + "]";
+								}
+								else if(choice == 2)
+								{
+									op = "qword[" + str + "]";
+								}
+								
+								o.printf("\t\tmov\t\t%s, %s\n", temp, op);
+								o.printf("\t\tpush\t\t%s\n", temp);
+							}
+						}
+						if(funcName.equals("main"))
+							funcName = "_main";
+						o.printf("\t\tcall\t\t%s\n", funcName);
+						loadAll(bb);
+						int choice = isReg(((FuncCallIns)ins).dest);
+						String src = null;
+						if(choice == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
+								src = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								src = reg;
+							}
+						}
+						else if(choice == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+							if(reg == null)
+							{
+								src = "qword[" + ((FuncCallIns)ins).dest + "]";
+							}
+							else
+							{
+								check(bb, ((FuncCallIns)ins).dest);
+								src = reg;
+							}
+						}
+						o.printf("\t\tmov\t\t%s, rax\n", src);
+					}
+				}
+				else if(ins instanceof MovIns)
+				{
+					int choice = isReg(((MovIns)ins).dest);
+					int srcc = isReg(((MovIns)ins).src);
+					String src = "", dest = null;
+					
+					if(choice > 0 && srcc > 0)
+					{
+						String regd = getReg(bb.ofFunc, ((MovIns)ins).dest);
+						String regs = getReg(bb.ofFunc, ((MovIns)ins).src);
+						if(regd != null
+								&& regd.equals(regs))
+						{
+							/*
+							//check(bb, ((MovIns)ins).dest);
+							String rR = getReg(bb.ofFunc, vr);
+							String tT = getTake(bb, rR);
+							if(tT == null)
+							{
+								load(bb, vr);
+							}
+							else if(!tT.equals(vr))
+							{
+								//store(bb, rR);
+								load(bb, vr);
+							}
+							return;
+							String nsrc = null;
+							if(isReg(((MovIns)ins).src) == 1)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).src));
+								nsrc = "qword[" + pos + "]";
+							}
+							else if(isReg(((MovIns)ins).src) == 2)
+							{
+								nsrc = "qword[" + ((MovIns)ins).src + "]";
+							}
+							o.printf("\t\tmov\t\t%s, %s\n", regd, nsrc);*/
+							bb.ofFunc.take.put(regd, ((MovIns)ins).dest);
+							continue;
 						}
 					}
-					if(funcName.equals("main"))
-						funcName = "_main";
-					o.printf("\t\tcall\t\t%s\n", funcName);
-					loadAll(bb);
-					int choice = isReg(((FuncCallIns)ins).dest);
-					String src = null;
-					if(choice == 1)
+					if(srcc == 0)
 					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						src = ((MovIns)ins).src;
+					}
+					else if(srcc == 1)
+					{
+						String reg = getReg(bb.ofFunc, ((MovIns)ins).src);
 						if(reg == null)
 						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-							src = "qword[" + pos + "]";
+							String spos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).src));
+							src = "qword[" + spos + "]";
+							o.printf("\t\tmov\t\t%s, %s\n", temp, src);
+							src = temp;
 						}
 						else
 						{
-							check(bb, ((FuncCallIns)ins).dest);
+							check(bb, ((MovIns)ins).src);
 							src = reg;
 						}
 					}
-					else if(choice == 2)
+					else if(srcc == 2)
 					{
-						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
+						String reg = getReg(bb.ofFunc, ((MovIns)ins).src);
 						if(reg == null)
 						{
-							src = "qword[" + ((FuncCallIns)ins).dest + "]";
+							src = "qword[" + ((MovIns)ins).src + "]";
+							o.printf("\t\tmov\t\t%s, %s\n", temp, src);
+							src = temp;
 						}
 						else
 						{
-							check(bb, ((FuncCallIns)ins).dest);
+							check(bb, ((MovIns)ins).src);
 							src = reg;
 						}
 					}
-					o.printf("\t\tmov\t\t%s, rax\n", src);
-				}
-			}
-			else if(ins instanceof MovIns)
-			{
-				int choice = isReg(((MovIns)ins).dest);
-				int srcc = isReg(((MovIns)ins).src);
-				String src = "", dest = null;
-				
-				if(choice > 0 && srcc > 0)
-				{
-					String regd = getReg(bb.ofFunc, ((MovIns)ins).dest);
-					String regs = getReg(bb.ofFunc, ((MovIns)ins).src);
-					if(regd != null
-							&& regd.equals(regs))
-					{
-						/*
-						//check(bb, ((MovIns)ins).dest);
-						String rR = getReg(bb.ofFunc, vr);
-						String tT = getTake(bb, rR);
-						if(tT == null)
-						{
-							load(bb, vr);
-						}
-						else if(!tT.equals(vr))
-						{
-							//store(bb, rR);
-							load(bb, vr);
-						}
-						return;
-						String nsrc = null;
-						if(isReg(((MovIns)ins).src) == 1)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).src));
-							nsrc = "qword[" + pos + "]";
-						}
-						else if(isReg(((MovIns)ins).src) == 2)
-						{
-							nsrc = "qword[" + ((MovIns)ins).src + "]";
-						}
-						o.printf("\t\tmov\t\t%s, %s\n", regd, nsrc);*/
-						bb.ofFunc.take.put(regd, ((MovIns)ins).dest);
-						continue;
-					}
-				}
-				if(srcc == 0)
-				{
-					src = ((MovIns)ins).src;
-				}
-				else if(srcc == 1)
-				{
-					String reg = getReg(bb.ofFunc, ((MovIns)ins).src);
-					if(reg == null)
-					{
-						String spos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).src));
-						src = "qword[" + spos + "]";
-						o.printf("\t\tmov\t\t%s, %s\n", temp, src);
-						src = temp;
-					}
-					else
-					{
-						check(bb, ((MovIns)ins).src);
-						src = reg;
-					}
-				}
-				else if(srcc == 2)
-				{
-					String reg = getReg(bb.ofFunc, ((MovIns)ins).src);
-					if(reg == null)
-					{
-						src = "qword[" + ((MovIns)ins).src + "]";
-						o.printf("\t\tmov\t\t%s, %s\n", temp, src);
-						src = temp;
-					}
-					else
-					{
-						check(bb, ((MovIns)ins).src);
-						src = reg;
-					}
-				}
-				
-				if(choice == 1)
-				{
-					String reg = getReg(bb.ofFunc, ((MovIns)ins).dest);
-					if(reg == null)
-					{
-						String spos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).dest));
-						dest = "qword[" + spos + "]";
-					}
-					else
-					{
-						check(bb, ((MovIns)ins).dest);
-						//System.err.printf(bb.ofFunc.take.get(getReg(bb.ofFunc, ((MovIns)ins).dest)));
-						dest = reg;
-					}
-					o.printf("\t\tmov\t\t%s, %s\n", dest, src);
-				}
-				else if(choice == 2)
-				{
-					String reg = getReg(bb.ofFunc, ((MovIns)ins).dest);
-					if(reg == null)
-					{
-						dest = "qword[" + ((MovIns)ins).dest + "]";
-					}
-					else
-					{
-						check(bb, ((MovIns)ins).dest);
-						dest = reg;
-					}
-					o.printf("\t\tmov\t\t%s, %s\n", dest, src);
-				}
-			}
-			else if(ins instanceof ArithIns)
-			{
-				if(!((ArithIns)ins).dest.equals(((ArithIns)ins).src1))
-				{
-					System.err.println("$dest is not the same as $src1");
-					exit(1);
-				}
-				if(ins.insName.equals("neg"))
-				{
-					int choice = isReg(((ArithIns)ins).src1);
-					String pos = "";
-					String src1 = null;
+					
 					if(choice == 1)
 					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+						String reg = getReg(bb.ofFunc, ((MovIns)ins).dest);
 						if(reg == null)
 						{
-							pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
-							src1 = "qword[" + pos + "]";
+							String spos = "rbp - " + (8 + bb.ofFunc.memPos.get(((MovIns)ins).dest));
+							dest = "qword[" + spos + "]";
 						}
 						else
 						{
-							check(bb, ((ArithIns)ins).src1);
-							src1 = reg;
+							check(bb, ((MovIns)ins).dest);
+							//System.err.printf(bb.ofFunc.take.get(getReg(bb.ofFunc, ((MovIns)ins).dest)));
+							dest = reg;
 						}
+						o.printf("\t\tmov\t\t%s, %s\n", dest, src);
 					}
 					else if(choice == 2)
 					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+						String reg = getReg(bb.ofFunc, ((MovIns)ins).dest);
 						if(reg == null)
 						{
-							src1 = "qword[" + ((ArithIns)ins).src1 + "]";
+							dest = "qword[" + ((MovIns)ins).dest + "]";
 						}
 						else
 						{
-							check(bb, ((ArithIns)ins).src1);
-							src1 = reg;
+							check(bb, ((MovIns)ins).dest);
+							dest = reg;
 						}
+						o.printf("\t\tmov\t\t%s, %s\n", dest, src);
 					}
-					o.printf("\t\tneg\t\t%s\n", src1);
 				}
-				else if(ins.insName.equals("add")
-						|| ins.insName.equals("sub")
-						|| ins.insName.equals("mul"))
+				else if(ins instanceof ArithIns)
 				{
-					int c1 = isReg(((ArithIns)ins).src1);
-					int c2 = isReg(((ArithIns)ins).src2);
-					String src1 = "", src2 = "", r1 = "";
-					if(c1 == 1)
+					if(!((ArithIns)ins).dest.equals(((ArithIns)ins).src1))
 					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
-						if(reg == null)
+						System.err.println("$dest is not the same as $src1");
+						exit(1);
+					}
+					if(ins.insName.equals("neg"))
+					{
+						int choice = isReg(((ArithIns)ins).src1);
+						String pos = "";
+						String src1 = null;
+						if(choice == 1)
 						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
-							r1 = src1 = "qword[" + pos + "]";
-							if(ins.insName.equals("mul"))
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+							if(reg == null)
 							{
-								o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
-								r1 = temp;
+								pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
+								src1 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src1);
+								src1 = reg;
 							}
 						}
-						else
+						else if(choice == 2)
 						{
-							check(bb, ((ArithIns)ins).src1);
-							r1 = src1 = reg;
-						}
-					}
-					else if(c1 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
-						if(reg == null)
-						{
-							r1 = src1 = "qword[" + ((ArithIns)ins).src1 + "]";
-							if(ins.insName.equals("mul"))
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+							if(reg == null)
 							{
-								o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
-								r1 = temp;
+								src1 = "qword[" + ((ArithIns)ins).src1 + "]";
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src1);
+								src1 = reg;
 							}
 						}
-						else
+						o.printf("\t\tneg\t\t%s\n", src1);
+					}
+					else if(ins.insName.equals("add")
+							|| ins.insName.equals("sub")
+							|| ins.insName.equals("mul"))
+					{
+						int c1 = isReg(((ArithIns)ins).src1);
+						int c2 = isReg(((ArithIns)ins).src2);
+						String src1 = "", src2 = "", r1 = "";
+						if(c1 == 1)
 						{
-							check(bb, ((ArithIns)ins).src1);
-							r1 = src1 = reg;
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
+								r1 = src1 = "qword[" + pos + "]";
+								if(ins.insName.equals("mul"))
+								{
+									o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
+									r1 = temp;
+								}
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src1);
+								r1 = src1 = reg;
+							}
+						}
+						else if(c1 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+							if(reg == null)
+							{
+								r1 = src1 = "qword[" + ((ArithIns)ins).src1 + "]";
+								if(ins.insName.equals("mul"))
+								{
+									o.printf("\t\tmov\t\t%s, %s\n", temp, src1);
+									r1 = temp;
+								}
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src1);
+								r1 = src1 = reg;
+							}
+						}
+						
+						if(c2 == 0)
+						{
+							src2 = ((ArithIns)ins).src2;
+						}
+						else if(c2 == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
+								src2 = "qword[" + pos + "]";
+								o.printf("\t\tmov\t\t%s, %s\n", temp2, src2);
+								src2 = temp2;
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src2);
+								src2 = reg;
+							}
+						}
+						else if(c2 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
+							if(reg == null)
+							{
+								src2 = "qword[" + ((ArithIns)ins).src2 + "]";
+								o.printf("\t\tmov\t\t%s, %s\n", temp2, src2);
+								src2 = temp2;
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src2);
+								src2 = reg;
+							}
+						}
+						
+						String insName = ins.insName;
+						if(insName.equals("mul"))
+							insName = "imul";
+						o.printf("\t\t%s\t\t%s, %s\n", insName, r1, src2);
+						if(r1.equals(temp))
+						{
+							o.printf("\t\tmov\t\t%s, %s\n", src1, temp);
 						}
 					}
-					
-					if(c2 == 0)
+					else if(ins.insName.equals("div")
+							|| ins.insName.equals("rem"))
 					{
-						src2 = ((ArithIns)ins).src2;
-					}
-					else if(c2 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
-						if(reg == null)
+						int choice = isReg(((ArithIns)ins).src1);
+						String pos = null, pos2 = null;
+						String src1 = null, src2 = null;
+						if(choice == 0)
 						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
-							src2 = "qword[" + pos + "]";
-							o.printf("\t\tmov\t\t%s, %s\n", temp2, src2);
-							src2 = temp2;
+							o.printf("\t\tmov\t\trax, %s\n", ((ArithIns)ins).src1);
 						}
-						else
+						else if(choice == 1)
 						{
-							check(bb, ((ArithIns)ins).src2);
-							src2 = reg;
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+							if(reg == null)
+							{
+								pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
+								src1 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src1);
+								src1 = reg;
+							}
+							o.printf("\t\tmov\t\trax, %s\n", src1);
 						}
-					}
-					else if(c2 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
-						if(reg == null)
+						else if(choice == 2)
 						{
-							src2 = "qword[" + ((ArithIns)ins).src2 + "]";
-							o.printf("\t\tmov\t\t%s, %s\n", temp2, src2);
-							src2 = temp2;
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
+							if(reg == null)
+							{
+								src1 = "qword[" + ((ArithIns)ins).src1 + "]";
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src1);
+								src1 = reg;
+							}
+							o.printf("\t\tmov\t\trax, %s\n", src1);
 						}
-						else
+						o.printf("\t\tmov\t\trdx, 0\n");
+						int c2 = isReg(((ArithIns)ins).src2);
+						if(c2 == 0)
 						{
-							check(bb, ((ArithIns)ins).src2);
-							src2 = reg;
+							o.printf("\t\tmov\t\t%s, %s\n", temp, ((ArithIns)ins).src2);
+							o.printf("\t\tdiv\t\t%s\n", temp);
 						}
-					}
-					
-					String insName = ins.insName;
-					if(insName.equals("mul"))
-						insName = "imul";
-					o.printf("\t\t%s\t\t%s, %s\n", insName, r1, src2);
-					if(r1.equals(temp))
-					{
-						o.printf("\t\tmov\t\t%s, %s\n", src1, temp);
+						else if(c2 == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
+							if(reg == null)
+							{
+								pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
+								src2 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src2);
+								src2 = reg;
+							}
+							o.printf("\t\tdiv\t\t%s\n", src2);
+						}
+						else if(c2 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
+							if(reg == null)
+							{
+								src2 = "qword[" + ((ArithIns)ins).src2 + "]";
+							}
+							else
+							{
+								check(bb, ((ArithIns)ins).src2);
+								src2 = reg;
+							}
+							o.printf("\t\tdiv\t\t%s\n", src2);
+						}
+						
+						if(ins.insName.equals("div"))
+						{
+							o.printf("\t\tmov\t\t%s, rax\n", src1);
+						}
+						else if(ins.insName.equals("rem"))
+						{
+							o.printf("\t\tmov\t\t%s, rdx\n", src1);
+						}
 					}
 				}
-				else if(ins.insName.equals("div")
-						|| ins.insName.equals("rem"))
+				else if(ins instanceof BitIns)
 				{
-					int choice = isReg(((ArithIns)ins).src1);
-					String pos = null, pos2 = null;
-					String src1 = null, src2 = null;
-					if(choice == 0)
+					if(ins.insName.equals("not"))
 					{
-						o.printf("\t\tmov\t\trax, %s\n", ((ArithIns)ins).src1);
+						int choice = isReg(((BitIns)ins).src1);
+						String pos = "", src1 = null;
+						if(choice == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+							if(reg == null)
+							{
+								pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
+								src1 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src1);
+								src1 = reg;
+							}
+						}
+						else if(choice == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+							if(reg == null)
+							{
+								src1 = "qword[" + ((BitIns)ins).src1 + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src1);
+								src1 = reg;
+							}
+						}
+						o.printf("\t\tnot\t\t%s\n", src1);
 					}
-					else if(choice == 1)
+					else if(ins.insName.equals("shl")
+							|| ins.insName.equals("shr"))
 					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
-						if(reg == null)
+						int c2 = isReg(((BitIns)ins).src2);
+						String src2 = "";
+						if(c2 == 0)
 						{
-							pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src1));
-							src1 = "qword[" + pos + "]";
+							src2 = ((BitIns)ins).src2;
 						}
-						else
+						else if(c2 == 1)
 						{
-							check(bb, ((ArithIns)ins).src1);
-							src1 = reg;
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src2));
+								src2 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src2);
+								src2 = reg;
+							}
 						}
-						o.printf("\t\tmov\t\trax, %s\n", src1);
+						else if(c2 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
+							if(reg == null)
+							{
+								src2 = "qword[" + ((BitIns)ins).src2 + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src2);
+								src2 = reg;
+							}
+						}
+						o.printf("\t\tmov\t\trcx, %s\n", src2);
+						
+						int c1 = isReg(((BitIns)ins).src1);
+						String src1 = "";
+						if(c1 == 0)
+						{
+							src1 = ((BitIns)ins).src1;
+						}
+						else if(c1 == 1)
+						{
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
+								src1 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src1);
+								src1 = reg;
+							}
+						}
+						else if(c1 == 2)
+						{
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+							if(reg == null)
+							{
+								src1 = "qword[" + ((BitIns)ins).src1 + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src1);
+								src1 = reg;
+							}
+						}
+						
+						o.printf("\t\t%s\t\t%s, cl\n", ins.insName, src1);
 					}
-					else if(choice == 2)
+					else
 					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src1);
-						if(reg == null)
+						int c1 = isReg(((BitIns)ins).src1);
+						int c2 = isReg(((BitIns)ins).src2);
+						String src1 = "", src2 = "";
+						if(c1 == 0)
 						{
-							src1 = "qword[" + ((ArithIns)ins).src1 + "]";
+							src1 = ((BitIns)ins).src1;
 						}
-						else
+						else if(c1 == 1)
 						{
-							check(bb, ((ArithIns)ins).src1);
-							src1 = reg;
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
+								src1 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src1);
+								src1 = reg;
+							}
 						}
-						o.printf("\t\tmov\t\trax, %s\n", src1);
-					}
-					o.printf("\t\tmov\t\trdx, 0\n");
-					int c2 = isReg(((ArithIns)ins).src2);
-					if(c2 == 0)
-					{
-						o.printf("\t\tmov\t\t%s, %s\n", temp, ((ArithIns)ins).src2);
-						o.printf("\t\tdiv\t\t%s\n", temp);
-					}
-					else if(c2 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
-						if(reg == null)
+						else if(c1 == 2)
 						{
-							pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((ArithIns)ins).src2));
-							src2 = "qword[" + pos + "]";
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
+							if(reg == null)
+							{
+								src1 = "qword[" + ((BitIns)ins).src1 + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src1);
+								src1 = reg;
+							}
 						}
-						else
+						
+						if(c2 == 0)
 						{
-							check(bb, ((ArithIns)ins).src2);
-							src2 = reg;
+							src2 = ((BitIns)ins).src2;
 						}
-						o.printf("\t\tdiv\t\t%s\n", src2);
-					}
-					else if(c2 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((ArithIns)ins).src2);
-						if(reg == null)
+						else if(c2 == 1)
 						{
-							src2 = "qword[" + ((ArithIns)ins).src2 + "]";
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
+							if(reg == null)
+							{
+								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src2));
+								src2 = "qword[" + pos + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src2);
+								src2 = reg;
+							}
 						}
-						else
+						else if(c2 == 2)
 						{
-							check(bb, ((ArithIns)ins).src2);
-							src2 = reg;
+							String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
+							if(reg == null)
+							{
+								src2 = "qword[" + ((BitIns)ins).src2 + "]";
+							}
+							else
+							{
+								check(bb, ((BitIns)ins).src2);
+								src2 = reg;
+							}
 						}
-						o.printf("\t\tdiv\t\t%s\n", src2);
+						o.printf("\t\t%s\t\t%s, %s\n", ins.insName, src1, src2);
 					}
-					
-					if(ins.insName.equals("div"))
-					{
-						o.printf("\t\tmov\t\t%s, rax\n", src1);
-					}
-					else if(ins.insName.equals("rem"))
-					{
-						o.printf("\t\tmov\t\t%s, rdx\n", src1);
-					}
+				}
+				else if(ins instanceof CondSetIns)
+				{
+				
 				}
 			}
-			else if(ins instanceof BitIns)
-			{
-				if(ins.insName.equals("not"))
-				{
-					int choice = isReg(((BitIns)ins).src1);
-					String pos = "", src1 = null;
-					if(choice == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
-						if(reg == null)
-						{
-							pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
-							src1 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src1);
-							src1 = reg;
-						}
-					}
-					else if(choice == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
-						if(reg == null)
-						{
-							src1 = "qword[" + ((BitIns)ins).src1 + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src1);
-							src1 = reg;
-						}
-					}
-					o.printf("\t\tnot\t\t%s\n", src1);
-				}
-				else if(ins.insName.equals("shl")
-						|| ins.insName.equals("shr"))
-				{
-					int c2 = isReg(((BitIns)ins).src2);
-					String src2 = "";
-					if(c2 == 0)
-					{
-						src2 = ((BitIns)ins).src2;
-					}
-					else if(c2 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src2));
-							src2 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src2);
-							src2 = reg;
-						}
-					}
-					else if(c2 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
-						if(reg == null)
-						{
-							src2 = "qword[" + ((BitIns)ins).src2 + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src2);
-							src2 = reg;
-						}
-					}
-					o.printf("\t\tmov\t\trcx, %s\n", src2);
-					
-					int c1 = isReg(((BitIns)ins).src1);
-					String src1 = "";
-					if(c1 == 0)
-					{
-						src1 = ((BitIns)ins).src1;
-					}
-					else if(c1 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
-							src1 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src1);
-							src1 = reg;
-						}
-					}
-					else if(c1 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
-						if(reg == null)
-						{
-							src1 = "qword[" + ((BitIns)ins).src1 + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src1);
-							src1 = reg;
-						}
-					}
-					
-					o.printf("\t\t%s\t\t%s, cl\n", ins.insName, src1);
-				}
-				else
-				{
-					int c1 = isReg(((BitIns)ins).src1);
-					int c2 = isReg(((BitIns)ins).src2);
-					String src1 = "", src2 = "";
-					if(c1 == 0)
-					{
-						src1 = ((BitIns)ins).src1;
-					}
-					else if(c1 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src1));
-							src1 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src1);
-							src1 = reg;
-						}
-					}
-					else if(c1 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src1);
-						if(reg == null)
-						{
-							src1 = "qword[" + ((BitIns)ins).src1 + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src1);
-							src1 = reg;
-						}
-					}
-					
-					if(c2 == 0)
-					{
-						src2 = ((BitIns)ins).src2;
-					}
-					else if(c2 == 1)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
-						if(reg == null)
-						{
-							String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((BitIns)ins).src2));
-							src2 = "qword[" + pos + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src2);
-							src2 = reg;
-						}
-					}
-					else if(c2 == 2)
-					{
-						String reg = getReg(bb.ofFunc, ((BitIns)ins).src2);
-						if(reg == null)
-						{
-							src2 = "qword[" + ((BitIns)ins).src2 + "]";
-						}
-						else
-						{
-							check(bb, ((BitIns)ins).src2);
-							src2 = reg;
-						}
-					}
-					o.printf("\t\t%s\t\t%s, %s\n", ins.insName, src1, src2);
-				}
-			}
-			else if(ins instanceof CondSetIns)
-			{
 			
-			}
-		}
-		
-		o.println();
-		
-		//printTake(bb);
-		
-		bb.generated = true;
-		
-		if(printTake)
-		{
-			System.err.println(bb.blockID + ":");
-			for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
+			o.println();
+			//printTake(bb);
+			if(printTake)
 			{
-				String from = entry.getKey();
-				String to = entry.getValue();
-				System.err.println(from + " " + to);
+				System.err.println(bb.blockID + ":");
+				for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
+				{
+					String from = entry.getKey();
+					String to = entry.getValue();
+					System.err.println(from + " " + to);
+				}
 			}
-		}
-		
-		if(bb.to != null && !bb.to.generated)
-		{
-			generate(bb.to);
-		}
-		if(bb.ifFalse != null && !bb.ifFalse.generated)
-		{
-			generate(bb.ifFalse);
-		}
-		if(bb.ifTrue != null && !bb.ifTrue.generated)
-		{
-			generate(bb.ifTrue);
 		}
 	}
 	
 	private void allocMem(FuncBlock fb, BasicBlock bb)
 	{
-		fb.blockList.add(bb);
+		//fb.blockList.add(bb);
 		for(String p : fb.param)
 		{
 			if(p.substring(0, 1).equals("$"))
@@ -2170,15 +2219,6 @@ public class NASMBuilder
 			}
 		}
 		
-		if(printAllocMem)
-		{
-			System.err.printf("Func : %s\n", fb.funcName);
-			for(Map.Entry<String, Integer> entry : fb.memPos.entrySet())
-			{
-				System.err.printf("%s : %d\n", entry.getKey(), -entry.getValue() - 8);
-			}
-		}
-		
 		bb.allocated = true;
 		if(bb.to != null && !bb.to.allocated)
 		{
@@ -2398,6 +2438,8 @@ public class NASMBuilder
 				Ins ins = cur.insList.get(i);
 				def_use(ins);
 			}
+			Ins first = fb.entry.insList.get(0);
+			first.def.addAll(fb.param);
 		}
 		while(true)
 		{
@@ -2711,17 +2753,6 @@ public class NASMBuilder
 				}
 			}
 		}
-		
-		if(printColor)
-		{
-			System.err.println("FUNCTION : " + fb.funcName);
-			System.err.printf("Total : %d, colored : %d, uncolored : %d\n", allNum, canColor, cannotColor);
-			
-			for(Map.Entry<String, Integer> entry : fb.color.entrySet())
-			{
-				System.err.printf("%s : %s\n", entry.getKey(), realReg.get(entry.getValue()));
-			}
-		}
 	}
 	
 	private String getReg(FuncBlock fb, String vr)
@@ -2776,16 +2807,17 @@ public class NASMBuilder
 	private void check(BasicBlock bb, String vr)
 	{
 		String rR = getReg(bb.ofFunc, vr);
-		String tT = getTake(bb, rR);
-		if(tT == null)
+		//String tT = getTake(bb, rR);
+		bb.ofFunc.take.put(getReg(bb.ofFunc, vr), vr);
+		/*if(tT == null)
 		{
-			load(bb, vr);
+			//load(bb, vr);
 		}
 		else if(!tT.equals(vr))
 		{
 			//store(bb, rR);
-			load(bb, vr);
-		}
+			//load(bb, vr);
+		}*/
 		return;
 	}
 	
