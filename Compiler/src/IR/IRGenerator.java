@@ -811,9 +811,11 @@ public class IRGenerator
 				JumpIns ins2 = new JumpIns();
 				ins2.insName = "jump";
 				ins2.target = finalBlock.blockID;
-				nowBlock.insList.add(ins2);
-				nowBlock.to = finalBlock;
-				
+				if(nowBlock.insList.size() > 0 && !nowBlock.insList.get(nowBlock.insList.size() - 1).insName.equals("jump"))
+				{
+					nowBlock.insList.add(ins2);
+					nowBlock.to = finalBlock;
+				}
 				if(((SlctStmtNode)now).haveElse)
 				{
 					BasicBlock eb = new BasicBlock();
@@ -827,8 +829,11 @@ public class IRGenerator
 					JumpIns ins3 = new JumpIns();
 					ins3.insName = "jump";
 					ins3.target = finalBlock.blockID;
-					nowBlock.insList.add(ins3);
-					nowBlock.to = finalBlock;
+					if(nowBlock.insList.size() > 0 && !nowBlock.insList.get(nowBlock.insList.size() - 1).insName.equals("jump"));
+					{
+						nowBlock.insList.add(ins3);
+						nowBlock.to = finalBlock;
+					}
 				}
 				return new Pair<>(null, finalBlock);
 			}
@@ -855,9 +860,11 @@ public class IRGenerator
 				JumpIns ains2 = new JumpIns();
 				ains2.insName = "jump";
 				ains2.target = finalBlock.blockID;
-				nowBlock.insList.add(ains2);
-				nowBlock.to = finalBlock;
-				
+				if(nowBlock.insList.size() > 0 && !nowBlock.insList.get(nowBlock.insList.size() - 1).equals("jump"))
+				{
+					nowBlock.insList.add(ains2);
+					nowBlock.to = finalBlock;
+				}
 				curBlock = afbb;
 
 				int maxSize = ((SlctStmtNode)now).elifExprNode.size();
@@ -894,8 +901,11 @@ public class IRGenerator
 						JumpIns ins3 = new JumpIns();
 						ins3.insName = "jump";
 						ins3.target = finalBlock.blockID;
-						nowBlock.insList.add(ins3);
-						nowBlock.to = finalBlock;
+						if(nowBlock.insList.size() > 0 && !nowBlock.insList.get(nowBlock.insList.size() - 1).equals("jump"))
+						{
+							nowBlock.insList.add(ins3);
+							nowBlock.to = finalBlock;
+						}
 					}
 					else if(i == maxSize - 1)
 					{
@@ -1038,6 +1048,7 @@ public class IRGenerator
 			ins.insName = "jump";
 			ins.target = recHead.ifFalse.blockID;
 			curBlock.insList.add(ins);
+			curBlock.to = recHead.ifFalse;
 			return new Pair<>(null, curBlock);
 		}
 		
@@ -1047,6 +1058,7 @@ public class IRGenerator
 			ins.insName = "jump";
 			ins.target = recHead.ifTrue.blockID;
 			curBlock.insList.add(ins);
+			curBlock.to = recHead.ifTrue;
 			return new Pair<>(null, curBlock);
 		}
 		
