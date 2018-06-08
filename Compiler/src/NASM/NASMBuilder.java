@@ -19,7 +19,7 @@ public class NASMBuilder
 	private String temp = "r15";
 	private String temp2 = "r14";
 	
-	public int regNum = 7; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
+	public int regNum = 4; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
 	
 	
@@ -229,6 +229,7 @@ public class NASMBuilder
 					if(reg != null)
 					{
 						o.printf("\t\tmov\t\t%s, qword[%s]\n", reg, "rbp - " + (8 + bb.ofFunc.memPos.get(p)));
+						fb.take.put(reg, p);
 					}
 				}
 			}
