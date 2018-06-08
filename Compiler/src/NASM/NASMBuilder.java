@@ -633,7 +633,7 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", s2b);
-						if(!s2b.equals(s2))
+						if(s2b.substring(0, 1).equals("r"))
 							fb.dirty.put(s2b, true);
 					}
 					else if(ins.insName.equals("storeStr"))
@@ -835,6 +835,8 @@ public class NASMBuilder
 						else if(size.equals("8"))
 							o.printf("\t\tmov\t\t%s, qword[%s]\n", temp2, temp);
 						o.printf("\t\tmov\t\t%s, %s\n", dest, temp2);
+						if(dest.substring(0, 1).equals("r"))
+							fb.dirty.put(dest, true);
 					}
 				}
 				else if(ins instanceof FuncCallIns)
@@ -1100,7 +1102,7 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(!destb.equals(dest))
+						if(destb.substring(0, 1).equals("r"))
 							fb.dirty.put(destb, true);
 						storeAll(bb);
 						o.printf("\t\tmov\t\trdi, %s\n", dest);
@@ -1193,7 +1195,7 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(!destb.equals(dest))
+						if(destb.substring(0, 1).equals("r"))
 							fb.dirty.put(destb, true);
 						storeAll(bb);
 						o.printf("\t\tmov\t\trdi, rax\n");
@@ -1321,7 +1323,7 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(!destb.equals(dest))
+						if(destb.substring(0, 1).equals("r"))
 							fb.dirty.put(destb, true);
 						storeAll(bb);
 						o.printf("\t\tmov\t\trdi, %s\n", dest);
@@ -1454,7 +1456,7 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tstrcmp\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(!destb.equals(dest))
+						if(destb.substring(0, 1).equals("r"))
 							fb.dirty.put(destb, true);
 					}
 					
@@ -1618,7 +1620,7 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tstrlen\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(!destb.equals(dest))
+						if(destb.substring(0, 1).equals("r"))
 							fb.dirty.put(destb, true);
 					}
 					
@@ -1772,7 +1774,7 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\t%s\n", funcName);
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(!destb.equals(dest))
+						if(destb.substring(0, 1).equals("r"))
 							fb.dirty.put(destb, true);
 					}
 				}

@@ -40,7 +40,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
+            <state relative-caret-position="313">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -52,8 +52,8 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1894">
-              <caret line="2308" column="53" selection-start-line="2308" selection-start-column="53" selection-end-line="2308" selection-end-column="53" />
+            <state relative-caret-position="-10714">
+              <caret line="1776" column="58" selection-start-line="1776" selection-start-column="58" selection-end-line="1776" selection-end-column="58" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
@@ -109,7 +109,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>printColor</find>
       <find>System.err.print</find>
       <find>o.print</find>
       <find>sprintf</find>
@@ -139,6 +138,7 @@
       <find>constnode</find>
       <find>err</find>
       <find>%%</find>
+      <find>malloc</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -469,12 +469,12 @@
       <workItem from="1528195029275" duration="24247000" />
       <workItem from="1528276801968" duration="78665000" />
       <workItem from="1528369347357" duration="39144000" />
-      <workItem from="1528451368945" duration="43231000" />
+      <workItem from="1528451368945" duration="44139000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="628723000" />
+    <option name="totallyTimeSpent" value="629631000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -567,14 +567,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java</url>
-          <line>1816</line>
-          <properties />
-          <option name="timeStamp" value="106" />
-        </line-breakpoint>
-      </breakpoints>
       <option name="time" value="107" />
     </breakpoint-manager>
     <watches-manager>
@@ -949,8 +941,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1894">
-          <caret line="2308" column="53" selection-start-line="2308" selection-start-column="53" selection-end-line="2308" selection-end-column="53" />
+        <state relative-caret-position="-10714">
+          <caret line="1776" column="58" selection-start-line="1776" selection-start-column="58" selection-end-line="1776" selection-end-column="58" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
@@ -983,7 +975,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
+        <state relative-caret-position="313">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
