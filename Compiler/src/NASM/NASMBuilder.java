@@ -2070,8 +2070,8 @@ public class NASMBuilder
 						int c2 = isReg(((ArithIns)ins).src2);
 						if(c2 == 0)
 						{
-							o.printf("\t\tmov\t\trdx, 0\n");
 							o.printf("\t\tmov\t\t%s, %s\n", temp, ((ArithIns)ins).src2);
+							o.printf("\t\tmov\t\trdx, 0\n");
 							o.printf("\t\tdiv\t\t%s\n", temp);
 						}
 						else if(c2 == 1)
@@ -2117,18 +2117,11 @@ public class NASMBuilder
 						}
 						
 						if(ins.insName.equals("div"))
-						{
-							o.printf("\t\tmov\t\t%s, rax\n", src1);
-							//if(src1.substring(0, 1).equals("r"))
-							//	fb.dirty.put(src1, true);
-						}
+							o.printf("\t\tmov\t\t%s, rax\n", temp);
 						else if(ins.insName.equals("rem"))
-						{
-							o.printf("\t\tmov\t\t%s, rdx\n", src1);
-							//if(src1.substring(0, 1).equals("r"))
-							//	fb.dirty.put(src1, true);
-						}
+							o.printf("\t\tmov\t\t%s, rdx\n", temp);
 						o.printf("\t\tpop\t\trdx\n");
+						o.printf("\t\tmov\t\t%s, %s\n", src1, temp);
 					}
 				}
 				else if(ins instanceof BitIns)
