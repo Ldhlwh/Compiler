@@ -117,6 +117,7 @@ public class NASMBuilder
 		o.printf("\t\textern\t\tstrcmp\n");
 		o.printf("\t\textern\t\tord\n");
 		o.printf("\t\textern\t\tstrlen\n");
+		o.printf("\t\textern\t\tsubstring\n");
 		
 		Data dt = new Data();
 		dt.data += "_getInt\t\tdb\t\t\"%lld\", 0\n";
@@ -316,18 +317,6 @@ public class NASMBuilder
 					if(reg != null)
 					{
 						String to = "qword[rbp - " + (8 + bb.ofFunc.memPos.get(p)) + "]";
-						if(i == 0)
-							to = "rdi";
-						else if(i == 1)
-							to = "rsi";
-						else if(i == 2)
-							to = "rdx";
-						else if(i == 3)
-							to = "rcx";
-						else if(i == 4)
-							to = "r8";
-						else if(i == 5)
-							to = "r9";
 						o.printf("\t\tmov\t\t%s, %s\n", reg, to);
 						fb.take.put(reg, p);
 						//fb.dirty.put(reg, false);
