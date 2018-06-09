@@ -22,6 +22,7 @@ public class NASMBuilder
 	
 	public int regNum = 11; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
+	public Map<String, String> getD = new HashMap<>();
 	
 	public Set<String> paramReg = new HashSet<>();
 	public ArrayList<Data> data = new ArrayList<>();
@@ -64,6 +65,17 @@ public class NASMBuilder
 		paramReg.add("rcx");
 		paramReg.add("r8");
 		paramReg.add("r9");
+		
+		for(int i = 8; i < 16; i++)
+			getD.put("r" + i, "r" + i + "d");
+		getD.put("rax", "eax");
+		getD.put("rbx", "ebx");
+		getD.put("rcx", "ecx");
+		getD.put("rdx", "edx");
+		getD.put("rsp", "esp");
+		getD.put("rbp", "ebp");
+		getD.put("rsi", "esi");
+		getD.put("rdi", "edi");
 	}
 	
 	private boolean isParamReg(String reg)
@@ -478,7 +490,7 @@ public class NASMBuilder
 							if(choice == 0)
 							{
 								if(lastIns.insName.length() == 5)
-									o.printf("\t\tcmp\t\t%sd, %s\n", src1, src2);
+									o.printf("\t\tcmp\t\t%s, %s\n", getD.get(src1), src2);
 								else
 									o.printf("\t\tcmp\t\t%s, %s\n", src1, src2);
 							}
@@ -489,7 +501,7 @@ public class NASMBuilder
 								{
 									String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(src2));
 									if(lastIns.insName.length() == 5)
-										o.printf("\t\tcmp\t\t%sd, dword[%s]\n", src1, pos);
+										o.printf("\t\tcmp\t\t%s, dword[%s]\n", getD.get(src1), pos);
 									else
 										o.printf("\t\tcmp\t\t%s, qword[%s]\n", src1, pos);
 								}
@@ -505,7 +517,7 @@ public class NASMBuilder
 								if(reg == null)
 								{
 									if(lastIns.insName.length() == 5)
-										o.printf("\t\tcmp\t\t%sd, dword[%s]\n", src1, src2);
+										o.printf("\t\tcmp\t\t%s, dword[%s]\n", getD.get(src1), src2);
 									else
 										o.printf("\t\tcmp\t\t%s, qword[%s]\n", src1, src2);
 								}
@@ -2024,7 +2036,7 @@ public class NASMBuilder
 						String src1 = null, src2 = null;
 						if(choice == 0)
 						{
-							o.printf("\t\tmov\t\trax, %s\n", ((ArithIns)ins).src1);
+							src1 = ((ArithIns)ins).src1;
 						}
 						else if(choice == 1)
 						{
@@ -2039,7 +2051,6 @@ public class NASMBuilder
 								check(bb, ((ArithIns)ins).src1);
 								src1 = reg;
 							}
-							o.printf("\t\tmov\t\trax, %s\n", src1);
 						}
 						else if(choice == 2)
 						{
@@ -2053,13 +2064,13 @@ public class NASMBuilder
 								check(bb, ((ArithIns)ins).src1);
 								src1 = reg;
 							}
-							o.printf("\t\tmov\t\trax, %s\n", src1);
 						}
+						o.printf("\t\tmov\t\trax, %s\n", src1);
 						o.printf("\t\tpush\t\trdx\n");
-						o.printf("\t\tmov\t\trdx, 0\n");
 						int c2 = isReg(((ArithIns)ins).src2);
 						if(c2 == 0)
 						{
+							o.printf("\t\tmov\t\trdx, 0\n");
 							o.printf("\t\tmov\t\t%s, %s\n", temp, ((ArithIns)ins).src2);
 							o.printf("\t\tdiv\t\t%s\n", temp);
 						}
@@ -2075,7 +2086,13 @@ public class NASMBuilder
 							{
 								check(bb, ((ArithIns)ins).src2);
 								src2 = reg;
+								if(src2.equals("rdx"))
+								{
+									o.printf("\t\tmov\t\t%s, rdx\n", temp);
+									src2 = temp;
+								}
 							}
+							o.printf("\t\tmov\t\trdx, 0\n");
 							o.printf("\t\tdiv\t\t%s\n", src2);
 						}
 						else if(c2 == 2)
@@ -2089,7 +2106,13 @@ public class NASMBuilder
 							{
 								check(bb, ((ArithIns)ins).src2);
 								src2 = reg;
+								if(src2.equals("rdx"))
+								{
+									o.printf("\t\tmov\t\t%s, rdx\n", temp);
+									src2 = temp;
+								}
 							}
+							o.printf("\t\tmov\t\trdx, 0\n");
 							o.printf("\t\tdiv\t\t%s\n", src2);
 						}
 						
@@ -2657,70 +2680,6 @@ public class NASMBuilder
 		return isFullEqual;
 	}
 	
-	private void blockLivenessAnalysis(FuncBlock fb, BasicBlock bb)
-	{
-		for(BasicBlock nowb : fb.blockList)
-		{
-			block_def_use(nowb);
-		}
-		int blockSize = fb.blockList.size();
-		while(true)
-		{
-			for(int i = blockSize - 1; i >= 0; i--)
-			{
-				//System.err.println(i);
-				BasicBlock curBlock = fb.blockList.get(i);
-				curBlock.inp = curBlock.in;
-				curBlock.outp = curBlock.out;
-				curBlock.in = new HashSet<>();
-				curBlock.out = new HashSet<>();
-				
-				if(curBlock.to != null)
-					curBlock.out.addAll(curBlock.to.in);
-				if(curBlock.ifTrue != null)
-					curBlock.out.addAll(curBlock.ifTrue.in);
-				if(curBlock.ifFalse != null)
-					curBlock.out.addAll(curBlock.ifFalse.in);
-				
-				curBlock.in.addAll(curBlock.use);
-				Iterator it = curBlock.out.iterator();
-				while(it.hasNext())
-				{
-					Object temp = it.next();
-					if(!curBlock.def.contains(temp))
-					{
-						curBlock.in.add(temp.toString());
-					}
-				}
-			}
-			boolean flag = true;
-			for(int i = 0; i < blockSize; i++)
-			{
-				BasicBlock curBlock = fb.blockList.get(i);
-				if(!isSetEqual(curBlock.in, curBlock.inp) || !isSetEqual(curBlock.out, curBlock.outp))
-				{
-					flag = false;
-					break;
-				}
-			}
-			if(flag)
-			{
-				break;
-			}
-		}
-		boolean print = false;
-		if(print)
-		{
-			for(int i = 0; i < blockSize; i++)
-			{
-				System.err.printf("[%s]:\n", fb.blockList.get(i).blockID);
-				printSet(fb.blockList.get(i).in);
-				printSet(fb.blockList.get(i).out);
-				System.err.println();
-			}
-		}
-	}
-	
 	private void block_def_use(BasicBlock bb)
 	{
 		for(Ins ins : bb.insList)
@@ -3145,7 +3104,7 @@ public class NASMBuilder
 			
 			// Have not put those with degree > regNum in stack
 		}
-		
+		/*
 		int allNum = fb.deg.size();
 		int canColor = stack.size();
 		int cannotColor = 0;
@@ -3156,8 +3115,10 @@ public class NASMBuilder
 		}
 		for(Map.Entry<String, Integer> entry : fb.deg.entrySet())
 		{
-			fb.inGraph.put(entry.getKey(), false);
-		}
+			if(fb.inGraph.get(entry.getKey()))
+				System.exit(1);
+		}*/
+		
 		
 		while(!stack.empty())
 		{
