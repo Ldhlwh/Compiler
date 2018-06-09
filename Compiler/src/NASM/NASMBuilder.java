@@ -330,7 +330,7 @@ public class NASMBuilder
 							to = "r9";
 						o.printf("\t\tmov\t\t%s, %s\n", reg, to);
 						fb.take.put(reg, p);
-						fb.dirty.put(reg, false);
+						//fb.dirty.put(reg, false);
 					}
 				}
 			}
@@ -633,8 +633,8 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", s2b);
-						if(s2b.substring(0, 1).equals("r"))
-							fb.dirty.put(s2b, true);
+						//if(s2b.substring(0, 1).equals("r"))
+						//	fb.dirty.put(s2b, true);
 					}
 					else if(ins.insName.equals("storeStr"))
 					{
@@ -661,7 +661,7 @@ public class NASMBuilder
 							{
 								check(bb, ((MemAccIns)ins).addr);
 								addr = reg;
-								fb.dirty.put(reg, true);
+								//fb.dirty.put(reg, true);
 							}
 							o.printf("\t\tmov\t\t%s, %s\n", addr, dd.dataID);
 							
@@ -835,8 +835,8 @@ public class NASMBuilder
 						else if(size.equals("8"))
 							o.printf("\t\tmov\t\t%s, qword[%s]\n", temp2, temp);
 						o.printf("\t\tmov\t\t%s, %s\n", dest, temp2);
-						if(dest.substring(0, 1).equals("r"))
-							fb.dirty.put(dest, true);
+						//if(dest.substring(0, 1).equals("r"))
+						//	fb.dirty.put(dest, true);
 					}
 				}
 				else if(ins instanceof FuncCallIns)
@@ -955,8 +955,8 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(destb.substring(0, 1).equals("r"))
-							fb.dirty.put(destb, true);
+						//if(destb.substring(0, 1).equals("r"))
+						//	fb.dirty.put(destb, true);
 						storeAll(bb);
 						o.printf("\t\tmov\t\trdi, _getStr\n");
 						o.printf("\t\tmov\t\trsi, %s\n", dest);
@@ -1102,8 +1102,8 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(destb.substring(0, 1).equals("r"))
-							fb.dirty.put(destb, true);
+						//if(destb.substring(0, 1).equals("r"))
+						//	fb.dirty.put(destb, true);
 						storeAll(bb);
 						o.printf("\t\tmov\t\trdi, %s\n", dest);
 						o.printf("\t\tmov\t\trsi, _getInt\n");
@@ -1195,8 +1195,8 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(destb.substring(0, 1).equals("r"))
-							fb.dirty.put(destb, true);
+						//if(destb.substring(0, 1).equals("r"))
+						//	fb.dirty.put(destb, true);
 						storeAll(bb);
 						o.printf("\t\tmov\t\trdi, rax\n");
 						o.printf("\t\tmov\t\trsi, %s\n", src);
@@ -1323,8 +1323,8 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(destb.substring(0, 1).equals("r"))
-							fb.dirty.put(destb, true);
+						//if(destb.substring(0, 1).equals("r"))
+						//	fb.dirty.put(destb, true);
 						storeAll(bb);
 						o.printf("\t\tmov\t\trdi, %s\n", dest);
 						o.printf("\t\tmov\t\trsi, %s\n", src1);
@@ -1456,8 +1456,8 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tstrcmp\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(destb.substring(0, 1).equals("r"))
-							fb.dirty.put(destb, true);
+						//if(destb.substring(0, 1).equals("r"))
+						//	fb.dirty.put(destb, true);
 					}
 					
 					else if(funcName.equals("string.parseInt"))
@@ -1533,7 +1533,7 @@ public class NASMBuilder
 						{
 							check(bb, ((FuncCallIns)ins).dest);
 							o.printf("\t\tmov\t\t%s, qword[%s]\n", reg, temp);
-							fb.dirty.put(reg, true);
+							//fb.dirty.put(reg, true);
 						}
 					}
 					
@@ -1620,8 +1620,8 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tstrlen\n");
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(destb.substring(0, 1).equals("r"))
-							fb.dirty.put(destb, true);
+						//if(destb.substring(0, 1).equals("r"))
+						//	fb.dirty.put(destb, true);
 					}
 					
 					else
@@ -1774,8 +1774,8 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\t%s\n", funcName);
 						loadAll(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						if(destb.substring(0, 1).equals("r"))
-							fb.dirty.put(destb, true);
+						//if(destb.substring(0, 1).equals("r"))
+						//	fb.dirty.put(destb, true);
 					}
 				}
 				else if(ins instanceof MovIns)
@@ -1817,7 +1817,7 @@ public class NASMBuilder
 							}
 							o.printf("\t\tmov\t\t%s, %s\n", regd, nsrc);*/
 							bb.ofFunc.take.put(regd, ((MovIns)ins).dest);
-							fb.dirty.put(regd, true);
+							//fb.dirty.put(regd, true);
 							continue;
 						}
 					}
@@ -1870,7 +1870,7 @@ public class NASMBuilder
 							check(bb, ((MovIns)ins).dest);
 							//System.err.printf(bb.ofFunc.take.get(getReg(bb.ofFunc, ((MovIns)ins).dest)));
 							dest = reg;
-							fb.dirty.put(dest, true);
+							//fb.dirty.put(dest, true);
 						}
 						o.printf("\t\tmov\t\t%s, %s\n", dest, src);
 					}
@@ -1885,7 +1885,7 @@ public class NASMBuilder
 						{
 							check(bb, ((MovIns)ins).dest);
 							dest = reg;
-							fb.dirty.put(dest, true);
+							//fb.dirty.put(dest, true);
 						}
 						o.printf("\t\tmov\t\t%s, %s\n", dest, src);
 					}
@@ -1930,8 +1930,8 @@ public class NASMBuilder
 							}
 						}
 						o.printf("\t\tneg\t\t%s\n", src1);
-						if(src1.substring(0, 1).equals("r"))
-							fb.dirty.put(src1, true);
+						//if(src1.substring(0, 1).equals("r"))
+						//	fb.dirty.put(src1, true);
 					}
 					else if(ins.insName.equals("add")
 							|| ins.insName.equals("sub")
@@ -2018,13 +2018,13 @@ public class NASMBuilder
 						if(insName.equals("mul"))
 							insName = "imul";
 						o.printf("\t\t%s\t\t%s, %s\n", insName, r1, src2);
-						if(r1.substring(0, 1).equals("r"))
-							fb.dirty.put(r1, true);
+						//if(r1.substring(0, 1).equals("r"))
+						//	fb.dirty.put(r1, true);
 						if(r1.equals(temp))
 						{
 							o.printf("\t\tmov\t\t%s, %s\n", src1, temp);
-							if(src1.substring(0, 1).equals("r"))
-								fb.dirty.put(src1, true);
+							//if(src1.substring(0, 1).equals("r"))
+							//	fb.dirty.put(src1, true);
 						}
 					}
 					else if(ins.insName.equals("div")
@@ -2107,14 +2107,14 @@ public class NASMBuilder
 						if(ins.insName.equals("div"))
 						{
 							o.printf("\t\tmov\t\t%s, rax\n", src1);
-							if(src1.substring(0, 1).equals("r"))
-								fb.dirty.put(src1, true);
+							//if(src1.substring(0, 1).equals("r"))
+							//	fb.dirty.put(src1, true);
 						}
 						else if(ins.insName.equals("rem"))
 						{
 							o.printf("\t\tmov\t\t%s, rdx\n", src1);
-							if(src1.substring(0, 1).equals("r"))
-								fb.dirty.put(src1, true);
+							//if(src1.substring(0, 1).equals("r"))
+							//	fb.dirty.put(src1, true);
 						}
 						o.printf("\t\tpop\t\trdx\n");
 					}
@@ -2153,8 +2153,8 @@ public class NASMBuilder
 							}
 						}
 						o.printf("\t\tnot\t\t%s\n", src1);
-						if(src1.substring(0, 1).equals("r"))
-							fb.dirty.put(src1, true);
+						//if(src1.substring(0, 1).equals("r"))
+						//	fb.dirty.put(src1, true);
 					}
 					else if(ins.insName.equals("shl")
 							|| ins.insName.equals("shr"))
@@ -2228,8 +2228,8 @@ public class NASMBuilder
 						o.printf("\t\tpush\t\trcx\n");
 						o.printf("\t\tmov\t\trcx, %s\n", src2);
 						o.printf("\t\t%s\t\t%s, cl\n", ins.insName, src1);
-						if(src1.substring(0, 1).equals("r"))
-							fb.dirty.put(src1, true);
+						//if(src1.substring(0, 1).equals("r"))
+						//	fb.dirty.put(src1, true);
 						o.printf("\t\tpop\t\trcx\n");
 					}
 					else
@@ -2307,8 +2307,8 @@ public class NASMBuilder
 							src2 = temp;
 						}
 						o.printf("\t\t%s\t\t%s, %s\n", ins.insName, src1, src2);
-						if(src1.substring(0, 1).equals("r"))
-							fb.dirty.put(src1, true);
+						//if(src1.substring(0, 1).equals("r"))
+						//	fb.dirty.put(src1, true);
 					}
 				}
 				else if(ins instanceof CondSetIns)
@@ -3240,13 +3240,13 @@ public class NASMBuilder
 		if(tT == null)
 		{
 			//load(bb, vr);
-			bb.ofFunc.dirty.put(rR, true);
+			//bb.ofFunc.dirty.put(rR, true);
 		}
 		else if(!tT.equals(vr))
 		{
 			//store(bb, rR);
 			//load(bb, vr);
-			bb.ofFunc.dirty.put(rR, true);
+			//bb.ofFunc.dirty.put(rR, true);
 		}
 		return;
 	}
@@ -3255,11 +3255,11 @@ public class NASMBuilder
 	{
 		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
-			if(entry.getValue() != null && bb.ofFunc.dirty.get(entry.getKey()))
+			if(entry.getValue() != null)// && bb.ofFunc.dirty.get(entry.getKey()))
 			{
 				//System.err.printf("%s - value = %s\n", bb.blockID, entry.getValue());
 				store(bb, entry.getKey());
-				bb.ofFunc.dirty.put(entry.getKey(), false);
+				//bb.ofFunc.dirty.put(entry.getKey(), false);
 			}
 		}
 		//System.err.println();
@@ -3269,12 +3269,12 @@ public class NASMBuilder
 	{
 		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
-			if(entry.getValue() != null && !entry.getKey().equals(ex)
-					&& bb.ofFunc.dirty.get(entry.getKey()))
+			if(entry.getValue() != null && !entry.getKey().equals(ex))
+					//&& bb.ofFunc.dirty.get(entry.getKey()))
 			{
 				//System.err.printf("%s - value = %s\n", bb.blockID, entry.getValue());
 				store(bb, entry.getKey());
-				bb.ofFunc.dirty.put(entry.getKey(), false);
+				//bb.ofFunc.dirty.put(entry.getKey(), false);
 			}
 		}
 		//System.err.println();
@@ -3287,7 +3287,7 @@ public class NASMBuilder
 			if(entry.getValue() != null)
 			{
 				load(bb, entry.getValue());
-				bb.ofFunc.dirty.put(entry.getKey(), false);
+				//bb.ofFunc.dirty.put(entry.getKey(), false);
 			}
 		}
 	}
@@ -3301,7 +3301,7 @@ public class NASMBuilder
 					&& !(entry.getKey().equals(ex)))
 			{
 				load(bb, entry.getValue());
-				bb.ofFunc.dirty.put(entry.getKey(), false);
+				//bb.ofFunc.dirty.put(entry.getKey(), false);
 			}
 		}
 	}
