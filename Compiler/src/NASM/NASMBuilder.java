@@ -3124,7 +3124,24 @@ public class NASMBuilder
 				}
 			}
 			if(!flag)
-				break;
+			{
+				
+				boolean deleteOne = false;
+				for(Map.Entry<String, Integer> entry : fb.deg.entrySet())
+				{
+					if(fb.inGraph.get(entry.getKey()))
+					{
+						fb.inGraph.put(entry.getKey(), false);
+						Set<String> temp = fb.itf.get(entry.getKey());
+						for(String str : temp)
+							fb.deg.put(str, fb.deg.get(str) - 1);
+						deleteOne = true;
+						break;
+					}
+				}
+				if(!deleteOne)
+					break;
+			}
 			
 			// Have not put those with degree > regNum in stack
 		}

@@ -54,7 +54,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
+            <state relative-caret-position="420">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -66,13 +66,15 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="46">
-              <caret line="318" column="89" selection-start-line="318" selection-start-column="89" selection-end-line="318" selection-end-column="89" />
+            <state relative-caret-position="3948">
+              <caret line="3127" column="16" lean-forward="true" selection-start-line="3127" selection-start-column="16" selection-end-line="3127" selection-end-column="16" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
+                <element signature="method#generate#0;class#NASMBuilder#0" />
                 <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
                 <element signature="method#makeFrom#0;class#NASMBuilder#0" />
+                <element signature="method#generate#1;class#NASMBuilder#0" />
                 <element signature="method#allocMem#0;class#NASMBuilder#0" />
                 <element signature="method#isReg#0;class#NASMBuilder#0" />
                 <element signature="method#isSetEqual#0;class#NASMBuilder#0" />
@@ -81,7 +83,6 @@
                 <element signature="method#livenessAnalysis#0;class#NASMBuilder#0" />
                 <element signature="method#def_use#0;class#NASMBuilder#0" />
                 <element signature="method#printSet#0;class#NASMBuilder#0" />
-                <element signature="method#regAlloc#0;class#NASMBuilder#0" />
                 <element signature="method#getReg#0;class#NASMBuilder#0" />
                 <element signature="method#store#0;class#NASMBuilder#0" />
                 <element signature="method#load#0;class#NASMBuilder#0" />
@@ -481,12 +482,12 @@
       <workItem from="1528451368945" duration="45647000" />
       <workItem from="1528499546758" duration="340000" />
       <workItem from="1528505514280" duration="1827000" />
-      <workItem from="1528524585734" duration="4851000" />
+      <workItem from="1528524585734" duration="5970000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="638157000" />
+    <option name="totallyTimeSpent" value="639276000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -939,13 +940,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="46">
-          <caret line="318" column="89" selection-start-line="318" selection-start-column="89" selection-end-line="318" selection-end-column="89" />
+        <state relative-caret-position="3948">
+          <caret line="3127" column="16" lean-forward="true" selection-start-line="3127" selection-start-column="16" selection-end-line="3127" selection-end-column="16" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
+            <element signature="method#generate#0;class#NASMBuilder#0" />
             <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
             <element signature="method#makeFrom#0;class#NASMBuilder#0" />
+            <element signature="method#generate#1;class#NASMBuilder#0" />
             <element signature="method#allocMem#0;class#NASMBuilder#0" />
             <element signature="method#isReg#0;class#NASMBuilder#0" />
             <element signature="method#isSetEqual#0;class#NASMBuilder#0" />
@@ -954,7 +957,6 @@
             <element signature="method#livenessAnalysis#0;class#NASMBuilder#0" />
             <element signature="method#def_use#0;class#NASMBuilder#0" />
             <element signature="method#printSet#0;class#NASMBuilder#0" />
-            <element signature="method#regAlloc#0;class#NASMBuilder#0" />
             <element signature="method#getReg#0;class#NASMBuilder#0" />
             <element signature="method#store#0;class#NASMBuilder#0" />
             <element signature="method#load#0;class#NASMBuilder#0" />
@@ -971,7 +973,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
+        <state relative-caret-position="420">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
