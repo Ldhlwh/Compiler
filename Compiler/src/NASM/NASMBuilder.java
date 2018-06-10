@@ -23,6 +23,7 @@ public class NASMBuilder
 	public int regNum = 11; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
 	public Map<String, String> getD = new HashMap<>();
+	public Map<String, String> getB = new HashMap<>();
 	public Set<String>  isCaller = new HashSet<>();
 	
 	public Set<String> paramReg = new HashSet<>();
@@ -68,7 +69,10 @@ public class NASMBuilder
 		paramReg.add("r9");
 		
 		for(int i = 8; i < 16; i++)
+		{
 			getD.put("r" + i, "r" + i + "d");
+			getB.put("r" + i, "r" + i + "b");
+		}
 		getD.put("rax", "eax");
 		getD.put("rbx", "ebx");
 		getD.put("rcx", "ecx");
@@ -77,6 +81,14 @@ public class NASMBuilder
 		getD.put("rbp", "ebp");
 		getD.put("rsi", "esi");
 		getD.put("rdi", "edi");
+		getB.put("rax", "al");
+		getB.put("rbx", "bl");
+		getB.put("rcx", "cl");
+		getB.put("rdx", "dl");
+		getB.put("rsp", "spl");
+		getB.put("rbp", "bpl");
+		getB.put("rsi", "sil");
+		getB.put("rdi", "dil");
 		
 		isCaller.add("rax");
 		isCaller.add("rcx");
@@ -136,7 +148,7 @@ public class NASMBuilder
 		o.printf("\t\textern\t\tscanf\n");
 		//o.printf("\t\textern\t\tsprintf\n");
 		o.printf("\t\textern\t\tsscanf\n");
-		o.printf("\t\textern\t\tstrcpy\n");
+		//o.printf("\t\textern\t\tstrcpy\n");
 		//o.printf("\t\textern\t\tstrcat\n");
 		o.printf("\t\textern\t\tstrcmp\n");
 		o.printf("\t\textern\t\tord\n");
@@ -648,8 +660,6 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadCaller(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", s2b);
-						//if(s2b.substring(0, 1).equals("r"))
-						//	fb.dirty.put(s2b, true);
 					}
 					else if(ins.insName.equals("storeStr"))
 					{
@@ -846,12 +856,14 @@ public class NASMBuilder
 							}
 						}
 						if(size.equals("1"))
-							o.printf("\t\tmov\t\t%sb, [%s]\n", temp2, temp);
+						{
+							o.printf("\t\tmov\t\t%s, 0\n", temp2);
+							String str = getB.get(temp2);
+							o.printf("\t\tmov\t\t%s, [%s]\n", str, temp);
+						}
 						else if(size.equals("8"))
 							o.printf("\t\tmov\t\t%s, qword[%s]\n", temp2, temp);
 						o.printf("\t\tmov\t\t%s, %s\n", dest, temp2);
-						//if(dest.substring(0, 1).equals("r"))
-						//	fb.dirty.put(dest, true);
 					}
 				}
 				else if(ins instanceof FuncCallIns)
@@ -970,8 +982,6 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadCaller(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						//if(destb.substring(0, 1).equals("r"))
-						//	fb.dirty.put(destb, true);
 						storeCaller(bb);
 						o.printf("\t\tmov\t\trdi, _getStr\n");
 						o.printf("\t\tmov\t\trsi, %s\n", dest);
@@ -1113,118 +1123,12 @@ public class NASMBuilder
 								}
 							}
 						}
-						/*
-						storeCaller(bb);
-						o.printf("\t\tmov\t\trdi, 256\n");
-						o.printf("\t\tcall\t\tmalloc\n");
-						loadCaller(bb);
-						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						//if(destb.substring(0, 1).equals("r"))
-						//	fb.dirty.put(destb, true);
-						storeCaller(bb);
-						o.printf("\t\tmov\t\trdi, %s\n", dest);
-						o.printf("\t\tmov\t\trsi, _getInt\n");
-						o.printf("\t\tmov\t\trdx, %s\n", src);
-						o.printf("\t\tmov\t\trax, 0\n");
-						o.printf("\t\tcall\t\tsprintf\n");
-						loadCaller(bb);*/
 						storeCaller(bb);
 						o.printf("\t\tmov\t\trdi, %s\n", src);
 						o.printf("\t\tcall\t\ttoString\n");
 						loadCaller(bb);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
 					}
-					
-					/*else if(funcName.equals("string.copy"))
-					{
-						int cd = isReg(((FuncCallIns)ins).dest);
-						int cs = isReg(((FuncCallIns)ins).ops.get(0));
-						String dest = null, src = null, destb = null;
-						if(cs == 1)
-						{
-							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-							if(reg == null)
-							{
-								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-								src = "qword[" + pos + "]";
-							}
-							else
-							{
-								check(bb, ((FuncCallIns)ins).ops.get(0));
-								src = reg;
-								if(isParamReg(reg))
-								{
-									String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).ops.get(0)));
-									src = "qword[" + pos + "]";
-								}
-							}
-						}
-						else if(cs == 2)
-						{
-							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).ops.get(0));
-							if(reg == null)
-							{
-								src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
-							}
-							else
-							{
-								check(bb, ((FuncCallIns)ins).ops.get(0));
-								src = reg;
-								if(isParamReg(reg))
-								{
-									src = "qword[" + ((FuncCallIns)ins).ops.get(0) + "]";
-								}
-							}
-						}
-						if(cd == 1)
-						{
-							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-							if(reg == null)
-							{
-								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-								destb = dest = "qword[" + pos + "]";
-							}
-							else
-							{
-								check(bb, ((FuncCallIns)ins).dest);
-								destb = dest = reg;
-								if(isParamReg(reg))
-								{
-									String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
-									dest = "qword[" + pos + "]";
-								}
-							}
-						}
-						else if(cd == 2)
-						{
-							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
-							if(reg == null)
-							{
-								destb = dest = "qword[" + ((FuncCallIns)ins).dest + "]";
-							}
-							else
-							{
-								check(bb, ((FuncCallIns)ins).dest);
-								destb = dest = reg;
-								if(isParamReg(reg))
-								{
-									dest = "qword[" + ((FuncCallIns)ins).dest + "]";
-								}
-							}
-						}
-						storeCaller(bb);
-						o.printf("\t\tmov\t\trdi, 256\n");
-						o.printf("\t\tcall\t\tmalloc\n");
-						loadCaller(bb);
-						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						//if(destb.substring(0, 1).equals("r"))
-						//	fb.dirty.put(destb, true);
-						storeCaller(bb);
-						o.printf("\t\tmov\t\trdi, rax\n");
-						o.printf("\t\tmov\t\trsi, %s\n", src);
-						o.printf("\t\tcall\t\tstrcpy\n");
-						loadCaller(bb, dest);
-					}*/
 					
 					else if(funcName.equals("string.cat"))
 					{
@@ -1340,25 +1244,6 @@ public class NASMBuilder
 								}
 							}
 						}
-						/*
-						storeCaller(bb);
-						o.printf("\t\tmov\t\trdi, 256\n");
-						o.printf("\t\tcall\t\tmalloc\n");
-						loadCaller(bb);
-						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						//if(destb.substring(0, 1).equals("r"))
-						//	fb.dirty.put(destb, true);
-						storeCaller(bb);
-						o.printf("\t\tmov\t\trdi, %s\n", dest);
-						o.printf("\t\tmov\t\trsi, %s\n", src1);
-						o.printf("\t\tcall\t\tstrcpy\n");
-						loadCaller(bb);
-						storeCaller(bb);
-						o.printf("\t\tmov\t\trdi, %s\n", dest);
-						o.printf("\t\tmov\t\trsi, %s\n", src2);
-						o.printf("\t\tcall\t\tstrcat\n");
-						loadCaller(bb);
-						*/
 						storeCaller(bb);
 						o.printf("\t\tmov\t\trdi, %s\n", src1);
 						o.printf("\t\tmov\t\trsi, %s\n", src2);
@@ -1543,7 +1428,6 @@ public class NASMBuilder
 						
 						o.printf("\t\tlea\t\t%s, %s\n", temp, dest);
 						o.printf("\t\tpush\t\t%s\n", temp);
-						o.printf("\t\tpush\t\t%s\n", temp2);
 						storeCaller(bb);
 						o.printf("\t\tmov\t\trdi, %s\n", src);
 						o.printf("\t\tmov\t\trsi, _getInt\n");
@@ -1551,7 +1435,6 @@ public class NASMBuilder
 						o.printf("\t\tmov\t\trax, 0\n");
 						o.printf("\t\tcall\t\tsscanf\n");
 						loadCaller(bb);
-						o.printf("\t\tpop\t\t%s\n", temp2);
 						o.printf("\t\tpop\t\t%s\n", temp);
 						
 						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
