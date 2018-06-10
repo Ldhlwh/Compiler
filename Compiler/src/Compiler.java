@@ -18,7 +18,7 @@ import AbstractSyntaxTree.ASTPrinter;
 public class Compiler {
 	public static void main(String[] args) throws IOException
 	{
-		boolean SUBMIT = false;
+		boolean SUBMIT = true;
 		
 		InputStream is;
 		
