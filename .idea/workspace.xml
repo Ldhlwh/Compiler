@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="539" />
+    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="551" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72816ae8-fb79-49b9-8a8d-6f8a5ecaffc8" name="默认" comment="" />
@@ -35,8 +35,8 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="82">
-              <caret line="1515" column="13" lean-forward="true" selection-start-line="1515" selection-start-column="13" selection-end-line="1515" selection-end-column="13" />
+            <state relative-caret-position="21000">
+              <caret line="1495" column="12" selection-start-line="1495" selection-start-column="12" selection-end-line="1495" selection-end-column="12" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#print#0;class#IRGenerator#0" />
@@ -54,7 +54,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="227">
+            <state relative-caret-position="420">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -66,31 +66,26 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2">
-              <caret line="2123" column="68" selection-start-line="2123" selection-start-column="68" selection-end-line="2123" selection-end-column="68" />
+            <state relative-caret-position="399">
+              <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
-                <element signature="method#generate#0;class#NASMBuilder#0" />
-                <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
-                <element signature="method#makeFrom#0;class#NASMBuilder#0" />
-                <element signature="method#allocMem#0;class#NASMBuilder#0" />
-                <element signature="method#isReg#0;class#NASMBuilder#0" />
-                <element signature="method#isSetEqual#0;class#NASMBuilder#0" />
-                <element signature="method#block_def_use#0;class#NASMBuilder#0" />
-                <element signature="method#livenessAnalysis#0;class#NASMBuilder#0" />
+                <element signature="e#1877#1878#0" expanded="true" />
+                <element signature="e#1913#1914#0" expanded="true" />
                 <element signature="method#def_use#0;class#NASMBuilder#0" />
                 <element signature="method#printSet#0;class#NASMBuilder#0" />
+                <element signature="method#regAlloc#0;class#NASMBuilder#0" />
                 <element signature="method#getReg#0;class#NASMBuilder#0" />
                 <element signature="method#getTake#0;class#NASMBuilder#0" />
                 <element signature="method#store#0;class#NASMBuilder#0" />
                 <element signature="method#load#0;class#NASMBuilder#0" />
                 <element signature="method#check#0;class#NASMBuilder#0" />
                 <element signature="method#storeAll#0;class#NASMBuilder#0" />
-                <element signature="method#storeAll#1;class#NASMBuilder#0" />
+                <element signature="method#storeCaller#0;class#NASMBuilder#0" />
                 <element signature="method#loadAll#0;class#NASMBuilder#0" />
                 <element signature="method#loadAll#1;class#NASMBuilder#0" />
-                <element signature="method#loadAll#2;class#NASMBuilder#0" />
+                <element signature="method#loadCaller#0;class#NASMBuilder#0" />
+                <element signature="method#loadCaller#1;class#NASMBuilder#0" />
                 <element signature="method#printTake#0;class#NASMBuilder#0" />
               </folding>
             </state>
@@ -118,16 +113,13 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>println</find>
       <find>isParamReg</find>
-      <find>call</find>
       <find>!dest</find>
       <find>sscanf</find>
-      <find>scanf</find>
       <find>t17</find>
       <find>[bb_26]</find>
       <find>err.prin</find>
-      <find>jump %bb_44</find>
+      <find />
       <find>&quot;jump&quot;</find>
       <find>tostring</find>
       <find>reg</find>
@@ -148,6 +140,9 @@
       <find>sd</find>
       <find>getD</find>
       <find>div</find>
+      <find>def_use</find>
+      <find>scanf</find>
+      <find>call</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -234,9 +229,9 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="562" />
-    <option name="y" value="-14" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
     <option name="width" value="1390" />
     <option name="height" value="1000" />
   </component>
@@ -245,7 +240,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
@@ -278,6 +272,7 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -483,11 +478,12 @@
       <workItem from="1528505514280" duration="1827000" />
       <workItem from="1528524585734" duration="7864000" />
       <workItem from="1528534238634" duration="5999000" />
+      <workItem from="1528592459080" duration="1529000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="647169000" />
+    <option name="totallyTimeSpent" value="649931000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -513,11 +509,11 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.9038031" />
+      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.36465323" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.5156599" visible="true" weight="0.19669509" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.5156599" visible="true" weight="0.141258" />
       <window_info id="设计器" order="3" />
       <window_info anchor="right" id="Database" order="10" weight="0.32995737" />
       <window_info anchor="bottom" x="87" y="202" width="1195" height="468" id="ANTLR Preview" order="13" type="WINDOWED" weight="0.5156599" />
@@ -923,8 +919,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="82">
-          <caret line="1515" column="13" lean-forward="true" selection-start-line="1515" selection-start-column="13" selection-end-line="1515" selection-end-column="13" />
+        <state relative-caret-position="21000">
+          <caret line="1495" column="12" selection-start-line="1495" selection-start-column="12" selection-end-line="1495" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#print#0;class#IRGenerator#0" />
@@ -940,31 +936,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2">
-          <caret line="2123" column="68" selection-start-line="2123" selection-start-column="68" selection-end-line="2123" selection-end-column="68" />
+        <state relative-caret-position="399">
+          <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
-            <element signature="method#generate#0;class#NASMBuilder#0" />
-            <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
-            <element signature="method#makeFrom#0;class#NASMBuilder#0" />
-            <element signature="method#allocMem#0;class#NASMBuilder#0" />
-            <element signature="method#isReg#0;class#NASMBuilder#0" />
-            <element signature="method#isSetEqual#0;class#NASMBuilder#0" />
-            <element signature="method#block_def_use#0;class#NASMBuilder#0" />
-            <element signature="method#livenessAnalysis#0;class#NASMBuilder#0" />
+            <element signature="e#1877#1878#0" expanded="true" />
+            <element signature="e#1913#1914#0" expanded="true" />
             <element signature="method#def_use#0;class#NASMBuilder#0" />
             <element signature="method#printSet#0;class#NASMBuilder#0" />
+            <element signature="method#regAlloc#0;class#NASMBuilder#0" />
             <element signature="method#getReg#0;class#NASMBuilder#0" />
             <element signature="method#getTake#0;class#NASMBuilder#0" />
             <element signature="method#store#0;class#NASMBuilder#0" />
             <element signature="method#load#0;class#NASMBuilder#0" />
             <element signature="method#check#0;class#NASMBuilder#0" />
             <element signature="method#storeAll#0;class#NASMBuilder#0" />
-            <element signature="method#storeAll#1;class#NASMBuilder#0" />
+            <element signature="method#storeCaller#0;class#NASMBuilder#0" />
             <element signature="method#loadAll#0;class#NASMBuilder#0" />
             <element signature="method#loadAll#1;class#NASMBuilder#0" />
-            <element signature="method#loadAll#2;class#NASMBuilder#0" />
+            <element signature="method#loadCaller#0;class#NASMBuilder#0" />
+            <element signature="method#loadCaller#1;class#NASMBuilder#0" />
             <element signature="method#printTake#0;class#NASMBuilder#0" />
           </folding>
         </state>
@@ -972,7 +963,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
+        <state relative-caret-position="420">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
