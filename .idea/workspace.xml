@@ -54,7 +54,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
+            <state relative-caret-position="235">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -66,8 +66,8 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="65058">
-              <caret line="3443" column="38" selection-start-line="3443" selection-start-column="38" selection-end-line="3443" selection-end-column="38" />
+            <state relative-caret-position="110">
+              <caret line="3448" column="38" selection-start-line="3448" selection-start-column="38" selection-end-line="3448" selection-end-column="38" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#regMatch#0;class#NASMBuilder#0" />
@@ -116,7 +116,7 @@
     <findStrings>
       <find>[bb_26]</find>
       <find>err.prin</find>
-      <find>jump %bb_44</find>
+      <find />
       <find>&quot;jump&quot;</find>
       <find>tostring</find>
       <find>reg</find>
@@ -230,7 +230,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="565" />
     <option name="y" value="25" />
     <option name="width" value="1390" />
@@ -479,12 +479,12 @@
       <workItem from="1528505514280" duration="1827000" />
       <workItem from="1528524585734" duration="7864000" />
       <workItem from="1528534238634" duration="5999000" />
-      <workItem from="1528592459080" duration="12016000" />
+      <workItem from="1528592459080" duration="12337000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="660418000" />
+    <option name="totallyTimeSpent" value="660739000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -937,8 +937,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="65058">
-          <caret line="3443" column="38" selection-start-line="3443" selection-start-column="38" selection-end-line="3443" selection-end-column="38" />
+        <state relative-caret-position="110">
+          <caret line="3448" column="38" selection-start-line="3448" selection-start-column="38" selection-end-line="3448" selection-end-column="38" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#regMatch#0;class#NASMBuilder#0" />
@@ -965,7 +965,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
+        <state relative-caret-position="235">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />

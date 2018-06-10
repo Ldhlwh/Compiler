@@ -3334,7 +3334,8 @@ public class NASMBuilder
 		String output = "global string_cat\n" +
 				"global toString\n" +
 				"\n" +
-				"SECTION .text   \n" +
+				"SECTION .text\n" +
+				"\n" +
 				"string_cat:\n" +
 				"        push    rbp\n" +
 				"        push    rbx\n" +
@@ -3376,8 +3377,9 @@ public class NASMBuilder
 				"        pop     rbx\n" +
 				"        pop     rbp\n" +
 				"        ret\n" +
-				"\t\t\n" +
+				"\n" +
 				"ALIGN   8\n" +
+				"\n" +
 				"toString:\n" +
 				"        push    rbx\n" +
 				"        mov     rbx, rdi\n" +
@@ -3385,16 +3387,22 @@ public class NASMBuilder
 				"        call    malloc\n" +
 				"        test    rbx, rbx\n" +
 				"        mov     r9, rax\n" +
-				"        js      L_009\n" +
-				"        je      L_010\n" +
-				"        xor     r10d, r10d\n" +
-				"L_005:  movsxd  rcx, r10d\n" +
+				"        js      L_010\n" +
+				"        jnz     L_005\n" +
+				"        mov     byte [rax], 48\n" +
+				"        mov     byte [rax+1H], 0\n" +
+				"        mov     rax, r9\n" +
+				"        pop     rbx\n" +
+				"        ret\n" +
+				"ALIGN   16\n" +
+				"L_005:  xor     r10d, r10d\n" +
+				"L_006:  movsxd  rcx, r10d\n" +
 				"        mov     edi, r10d\n" +
 				"        mov     r8, qword 6666666666666667H\n" +
 				"        add     rcx, r9\n" +
 				"        mov     rsi, rcx\n" +
 				"ALIGN   8\n" +
-				"L_006:  mov     rax, rbx\n" +
+				"L_007:  mov     rax, rbx\n" +
 				"        add     edi, 1\n" +
 				"        add     rsi, 1\n" +
 				"        imul    r8\n" +
@@ -3409,39 +3417,36 @@ public class NASMBuilder
 				"        mov     byte [rsi-1H], bl\n" +
 				"        test    rdx, rdx\n" +
 				"        mov     rbx, rdx\n" +
-				"        jnz     L_006\n" +
+				"        jnz     L_007\n" +
 				"        mov     eax, edi\n" +
 				"        movsxd  rdi, edi\n" +
 				"        sub     eax, r10d\n" +
 				"        sar     eax, 1\n" +
 				"        mov     edx, eax\n" +
-				"        jz      L_008\n" +
-				"        lea     r8, [rdi-2H]\n" +
+				"        jz      L_009\n" +
 				"        sub     edx, 1\n" +
+				"        mov     rsi, r9\n" +
 				"        lea     rax, [r9+rdi-1H]\n" +
-				"        sub     r8, rdx\n" +
-				"        add     r8, r9\n" +
+				"        sub     rsi, rdx\n" +
+				"        lea     r8, [rsi+rdi-2H]\n" +
 				"ALIGN   8\n" +
-				"L_007:  movzx   edx, byte [rcx]\n" +
+				"L_008:  movzx   edx, byte [rcx]\n" +
 				"        movzx   esi, byte [rax]\n" +
 				"        sub     rax, 1\n" +
 				"        add     rcx, 1\n" +
 				"        mov     byte [rcx-1H], sil\n" +
 				"        mov     byte [rax+1H], dl\n" +
 				"        cmp     r8, rax\n" +
-				"        jnz     L_007\n" +
-				"L_008:  mov     byte [r9+rdi], 0\n" +
+				"        jnz     L_008\n" +
+				"L_009:  mov     byte [r9+rdi], 0\n" +
 				"        mov     rax, r9\n" +
 				"        pop     rbx\n" +
 				"        ret\n" +
 				"ALIGN   8\n" +
-				"L_009:  mov     byte [rax], 45\n" +
+				"L_010:  mov     byte [rax], 45\n" +
 				"        neg     rbx\n" +
 				"        mov     r10d, 1\n" +
-				"        jmp     L_005\n" +
-				"L_010:\n" +
-				"        xor     edi, edi\n" +
-				"        jmp     L_008";
+				"        jmp     L_006";
 		
 		o.println(output);
 	}
