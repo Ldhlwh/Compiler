@@ -1534,8 +1534,9 @@ public class NASMBuilder
 							dest = "[" + ((FuncCallIns)ins).dest + "]";
 						}
 						
-						
 						o.printf("\t\tlea\t\t%s, %s\n", temp, dest);
+						o.printf("\t\tpush\t\t%s\n", temp);
+						o.printf("\t\tpush\t\t%s\n", temp2);
 						storeCaller(bb);
 						o.printf("\t\tmov\t\trdi, %s\n", src);
 						o.printf("\t\tmov\t\trsi, _getInt\n");
@@ -1543,6 +1544,8 @@ public class NASMBuilder
 						o.printf("\t\tmov\t\trax, 0\n");
 						o.printf("\t\tcall\t\tsscanf\n");
 						loadCaller(bb);
+						o.printf("\t\tpop\t\t%s\n", temp2);
+						o.printf("\t\tpop\t\t%s\n", temp);
 						
 						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
 						if(reg == null)
