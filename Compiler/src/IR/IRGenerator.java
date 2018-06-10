@@ -404,10 +404,28 @@ public class IRGenerator
 		f.param.add("$_st");
 		f.param.add("$_ed");
 		
+		MovIns tins = new MovIns();
+		tins.insName = "move";
+		tins.dest = "$_t" + (tempRegNum++);
+		tins.src = "$_ed";
+		entry.insList.add(tins);
+		
+		ArithIns tins2 = new ArithIns();
+		tins2.insName = "sub";
+		tins2.dest = tins2.src1 = tins.dest;
+		tins2.src2 = "$_st";
+		entry.insList.add(tins2);
+		
+		ArithIns tins3 = new ArithIns();
+		tins3.insName = "add";
+		tins3.dest = tins3.src1 = tins2.dest;
+		tins3.src2 = "2";
+		entry.insList.add(tins3);
+		
 		MemAccIns i1 = new MemAccIns();
 		i1.insName = "alloc";
 		i1.dest = "$_dest";
-		i1.size = "256";
+		i1.size = tins3.dest;
 		entry.insList.add(i1);
 		
 		MovIns i2 = new MovIns();
