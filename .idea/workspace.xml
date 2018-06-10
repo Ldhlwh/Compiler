@@ -35,7 +35,7 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="381">
+            <state relative-caret-position="1431">
               <caret line="1757" column="144" selection-start-line="1757" selection-start-column="144" selection-end-line="1757" selection-end-column="144" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -65,8 +65,8 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="189">
-              <caret line="19" column="6" selection-start-line="19" selection-start-column="6" selection-end-line="19" selection-end-column="6" />
+            <state relative-caret-position="315">
+              <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
@@ -133,7 +133,6 @@
       <find>load 1</find>
       <find>load</find>
       <find>shr</find>
-      <find>shl</find>
       <find>slct</find>
       <find>g_</find>
       <find>bb_213</find>
@@ -148,6 +147,7 @@
       <find>$a_8 $g_8</find>
       <find>bb_43</find>
       <find>condset</find>
+      <find>shl</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -213,8 +213,8 @@
         <option value="$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/Data.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
       </list>
     </option>
@@ -484,12 +484,12 @@
       <workItem from="1528524585734" duration="7864000" />
       <workItem from="1528534238634" duration="5999000" />
       <workItem from="1528592459080" duration="21153000" />
-      <workItem from="1528628355715" duration="4279000" />
+      <workItem from="1528628355715" duration="4938000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="673834000" />
+    <option name="totallyTimeSpent" value="674493000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -923,10 +923,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1431">
+          <caret line="1757" column="144" selection-start-line="1757" selection-start-column="144" selection-end-line="1757" selection-end-column="144" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#print#0;class#IRGenerator#0" />
+            <element signature="method#add_alloc#0;class#IRGenerator#0" />
+            <element signature="method#add_int_size#0;class#IRGenerator#0" />
+            <element signature="method#add_string_substring#0;class#IRGenerator#0" />
+            <element signature="method#add_string_ord#0;class#IRGenerator#0" />
+            <element signature="method#passRoot#0;class#IRGenerator#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="19" column="6" selection-start-line="19" selection-start-column="6" selection-end-line="19" selection-end-column="6" />
+        <state relative-caret-position="315">
+          <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
@@ -952,22 +968,6 @@
             <element signature="method#loadCaller#0;class#NASMBuilder#0" />
             <element signature="method#loadCaller#1;class#NASMBuilder#0" />
             <element signature="method#printTake#0;class#NASMBuilder#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="381">
-          <caret line="1757" column="144" selection-start-line="1757" selection-start-column="144" selection-end-line="1757" selection-end-column="144" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#print#0;class#IRGenerator#0" />
-            <element signature="method#add_alloc#0;class#IRGenerator#0" />
-            <element signature="method#add_int_size#0;class#IRGenerator#0" />
-            <element signature="method#add_string_substring#0;class#IRGenerator#0" />
-            <element signature="method#add_string_ord#0;class#IRGenerator#0" />
-            <element signature="method#passRoot#0;class#IRGenerator#0" />
           </folding>
         </state>
       </provider>
