@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="551" />
+    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="553" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72816ae8-fb79-49b9-8a8d-6f8a5ecaffc8" name="默认" comment="" />
@@ -66,12 +66,14 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1216">
-              <caret line="1791" column="68" selection-start-line="1791" selection-start-column="64" selection-end-line="1791" selection-end-column="68" />
+            <state relative-caret-position="65058">
+              <caret line="3443" column="38" selection-start-line="3443" selection-start-column="38" selection-end-line="3443" selection-end-column="38" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1877#1878#0" expanded="true" />
-                <element signature="e#1913#1914#0" expanded="true" />
+                <element signature="method#regMatch#0;class#NASMBuilder#0" />
+                <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
+                <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
+                <element signature="method#makeFrom#0;class#NASMBuilder#0" />
                 <element signature="method#def_use#0;class#NASMBuilder#0" />
                 <element signature="method#printSet#0;class#NASMBuilder#0" />
                 <element signature="method#getReg#0;class#NASMBuilder#0" />
@@ -112,8 +114,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>sscanf</find>
-      <find>t17</find>
       <find>[bb_26]</find>
       <find>err.prin</find>
       <find>jump %bb_44</find>
@@ -139,9 +139,11 @@
       <find>div</find>
       <find>def_use</find>
       <find>scanf</find>
-      <find>string.cat</find>
       <find>call</find>
       <find>temp</find>
+      <find>string.cat</find>
+      <find>sprintf</find>
+      <find>toString</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -229,8 +231,8 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
+    <option name="x" value="565" />
+    <option name="y" value="25" />
     <option name="width" value="1390" />
     <option name="height" value="1000" />
   </component>
@@ -477,12 +479,12 @@
       <workItem from="1528505514280" duration="1827000" />
       <workItem from="1528524585734" duration="7864000" />
       <workItem from="1528534238634" duration="5999000" />
-      <workItem from="1528592459080" duration="7217000" />
+      <workItem from="1528592459080" duration="12016000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="655619000" />
+    <option name="totallyTimeSpent" value="660418000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -508,7 +510,7 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.7829978" />
+      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.5425056" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
@@ -575,7 +577,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="111" />
+      <option name="time" value="112" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
@@ -935,12 +937,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1216">
-          <caret line="1791" column="68" selection-start-line="1791" selection-start-column="64" selection-end-line="1791" selection-end-column="68" />
+        <state relative-caret-position="65058">
+          <caret line="3443" column="38" selection-start-line="3443" selection-start-column="38" selection-end-line="3443" selection-end-column="38" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1877#1878#0" expanded="true" />
-            <element signature="e#1913#1914#0" expanded="true" />
+            <element signature="method#regMatch#0;class#NASMBuilder#0" />
+            <element signature="method#NASMBuilder#0;class#NASMBuilder#0" />
+            <element signature="method#makeBlockList#0;class#NASMBuilder#0" />
+            <element signature="method#makeFrom#0;class#NASMBuilder#0" />
             <element signature="method#def_use#0;class#NASMBuilder#0" />
             <element signature="method#printSet#0;class#NASMBuilder#0" />
             <element signature="method#getReg#0;class#NASMBuilder#0" />
