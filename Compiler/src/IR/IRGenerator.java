@@ -1732,11 +1732,12 @@ public class IRGenerator
 				
 				if(((BinaryNode)now).op.equals("&&"))
 				{
-					Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
-					String outcome = temp.getKey();
-					curBlock = temp.getValue();
 					BasicBlock nb = new BasicBlock();
 					nb.ofFunc = curBlock.ofFunc;
+					Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, nb, falseBlock);
+					String outcome = temp.getKey();
+					curBlock = temp.getValue();
+					
 					
 					JumpIns ains = new JumpIns();
 					ains.insName = "br";
@@ -1752,11 +1753,11 @@ public class IRGenerator
 				}
 				else if(((BinaryNode)now).op.equals("||"))
 				{
-					Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock);
-					String outcome = temp.getKey();
-					curBlock = temp.getValue();
 					BasicBlock nb = new BasicBlock();
 					nb.ofFunc = curBlock.ofFunc;
+					Pair<String, BasicBlock> temp = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, nb);
+					String outcome = temp.getKey();
+					curBlock = temp.getValue();
 					
 					JumpIns ains = new JumpIns();
 					ains.insName = "br";

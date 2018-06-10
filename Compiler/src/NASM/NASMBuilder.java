@@ -17,10 +17,13 @@ public class NASMBuilder
 	public IRGenerator ir;
 	public PrintStream o;
 	
+	//private String temp = "r14";	//r10, r11
+	//private String temp2 = "r15";
+	
 	private String temp = "r10";
 	private String temp2 = "r11";
 	
-	public int regNum = 11; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
+	public int regNum = 0; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
 	public Map<String, String> getD = new HashMap<>();
 	public Map<String, String> getB = new HashMap<>();
