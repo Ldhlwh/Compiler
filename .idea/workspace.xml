@@ -66,15 +66,14 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
+            <state relative-caret-position="1508">
+              <caret line="3152" column="33" selection-start-line="3152" selection-start-column="33" selection-end-line="3152" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1877#1878#0" expanded="true" />
                 <element signature="e#1913#1914#0" expanded="true" />
                 <element signature="method#def_use#0;class#NASMBuilder#0" />
                 <element signature="method#printSet#0;class#NASMBuilder#0" />
-                <element signature="method#regAlloc#0;class#NASMBuilder#0" />
                 <element signature="method#getReg#0;class#NASMBuilder#0" />
                 <element signature="method#getTake#0;class#NASMBuilder#0" />
                 <element signature="method#store#0;class#NASMBuilder#0" />
@@ -113,13 +112,12 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>isParamReg</find>
       <find>!dest</find>
       <find>sscanf</find>
       <find>t17</find>
       <find>[bb_26]</find>
       <find>err.prin</find>
-      <find />
+      <find>jump %bb_44</find>
       <find>&quot;jump&quot;</find>
       <find>tostring</find>
       <find>reg</find>
@@ -143,6 +141,7 @@
       <find>def_use</find>
       <find>scanf</find>
       <find>call</find>
+      <find>string.cat</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -229,7 +228,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="1390" />
@@ -478,12 +477,12 @@
       <workItem from="1528505514280" duration="1827000" />
       <workItem from="1528524585734" duration="7864000" />
       <workItem from="1528534238634" duration="5999000" />
-      <workItem from="1528592459080" duration="1529000" />
+      <workItem from="1528592459080" duration="5269000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="649931000" />
+    <option name="totallyTimeSpent" value="653671000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -509,7 +508,7 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.36465323" />
+      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.7829978" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
@@ -936,15 +935,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
+        <state relative-caret-position="1508">
+          <caret line="3152" column="33" selection-start-line="3152" selection-start-column="33" selection-end-line="3152" selection-end-column="33" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1877#1878#0" expanded="true" />
             <element signature="e#1913#1914#0" expanded="true" />
             <element signature="method#def_use#0;class#NASMBuilder#0" />
             <element signature="method#printSet#0;class#NASMBuilder#0" />
-            <element signature="method#regAlloc#0;class#NASMBuilder#0" />
             <element signature="method#getReg#0;class#NASMBuilder#0" />
             <element signature="method#getTake#0;class#NASMBuilder#0" />
             <element signature="method#store#0;class#NASMBuilder#0" />

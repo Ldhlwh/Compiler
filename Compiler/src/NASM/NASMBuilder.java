@@ -1332,6 +1332,7 @@ public class NASMBuilder
 								}
 							}
 						}
+						
 						storeCaller(bb);
 						o.printf("\t\tmov\t\trdi, 256\n");
 						o.printf("\t\tcall\t\tmalloc\n");
@@ -1349,6 +1350,14 @@ public class NASMBuilder
 						o.printf("\t\tmov\t\trsi, %s\n", src2);
 						o.printf("\t\tcall\t\tstrcat\n");
 						loadCaller(bb);
+						/*
+						storeCaller(bb);
+						o.printf("\t\tmov\t\trdi, %s\n", src1);
+						o.printf("\t\tmov\t\trsi, %s\n", src2);
+						o.printf("\t\tcall\t\tstring_cat\n");
+						loadCaller(bb);
+						o.printf("\t\tmov\t\t%s, rax\n", destb);
+						*/
 					}
 					else if(funcName.equals("string.cmp"))
 					{
@@ -3095,6 +3104,7 @@ public class NASMBuilder
 					if(fb.inGraph.get(entry.getKey()))
 					{
 						fb.inGraph.put(entry.getKey(), false);
+						stack.push(entry.getKey());
 						Set<String> temp = fb.itf.get(entry.getKey());
 						for(String str : temp)
 							fb.deg.put(str, fb.deg.get(str) - 1);
@@ -3139,6 +3149,8 @@ public class NASMBuilder
 			{
 				if(fb.inGraph.get(adj))
 				{
+					if(!fb.color.containsKey(adj))
+						continue;
 					ok[fb.color.get(adj)] = false;
 				}
 			}
@@ -3151,6 +3163,7 @@ public class NASMBuilder
 					break;
 				}
 			}
+			
 		}
 	}
 	
