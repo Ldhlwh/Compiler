@@ -17,8 +17,8 @@ public class NASMBuilder
 	public IRGenerator ir;
 	public PrintStream o;
 	
-	private String temp = "r15";
-	private String temp2 = "r14";
+	private String temp = "r10";
+	private String temp2 = "r11";
 	
 	public int regNum = 11; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
@@ -38,27 +38,27 @@ public class NASMBuilder
 	private void regMatch()
 	{
 		if(regNum > 0)
-			realReg.add("r10");
-		if(regNum > 1)
-			realReg.add("r11");
-		if(regNum > 2)
 			realReg.add("r12");
+		if(regNum > 1)
+			realReg.add("r13");
+		if(regNum > 2)
+			realReg.add("r14");
 		if(regNum > 3)
-			realReg.add("r13");		// Safe : 4
+			realReg.add("r15");		// Safe : 4
 		if(regNum > 4)
-			realReg.add("rdi");
+			realReg.add("rbx");		// Above are Callee-save
 		if(regNum > 5)
-			realReg.add("rsi");
-		if(regNum > 6)
-			realReg.add("r8");
-		if(regNum > 7)
-			realReg.add("r9");		// Parameter Reg : 8
-		if(regNum > 8)
-			realReg.add("rbx");		// Unknown Reg : 9
-		if(regNum > 9)
 			realReg.add("rcx");
+		if(regNum > 6)
+			realReg.add("rdx");
+		if(regNum > 7)
+			realReg.add("rdi");		// Parameter Reg : 8
+		if(regNum > 8)
+			realReg.add("rsi");		// Unknown Reg : 9
+		if(regNum > 9)
+			realReg.add("r8");
 		if(regNum > 10)
-			realReg.add("rdx");		// shl, shr, div, rem : 11
+			realReg.add("r9");		// shl, shr, div, rem : 11
 		
 		paramReg.add("rdi");
 		paramReg.add("rsi");

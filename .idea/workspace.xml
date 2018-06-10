@@ -66,8 +66,8 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1508">
-              <caret line="3152" column="33" selection-start-line="3152" selection-start-column="33" selection-end-line="3152" selection-end-column="33" />
+            <state relative-caret-position="357">
+              <caret line="22" column="26" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1877#1878#0" expanded="true" />
@@ -477,12 +477,12 @@
       <workItem from="1528505514280" duration="1827000" />
       <workItem from="1528524585734" duration="7864000" />
       <workItem from="1528534238634" duration="5999000" />
-      <workItem from="1528592459080" duration="5269000" />
+      <workItem from="1528592459080" duration="6526000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="653671000" />
+    <option name="totallyTimeSpent" value="654928000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -935,8 +935,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1508">
-          <caret line="3152" column="33" selection-start-line="3152" selection-start-column="33" selection-end-line="3152" selection-end-column="33" />
+        <state relative-caret-position="357">
+          <caret line="22" column="26" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1877#1878#0" expanded="true" />
