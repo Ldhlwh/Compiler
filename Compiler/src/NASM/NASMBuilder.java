@@ -2145,7 +2145,10 @@ public class NASMBuilder
 						}
 						o.printf("\t\tpush\t\trcx\n");
 						o.printf("\t\tmov\t\trcx, %s\n", src2);
-						o.printf("\t\t%s\t\t%s, cl\n", ins.insName, src1);
+						if(ins.insName.equals("shl"))
+							o.printf("\t\tshl\t\t%s, cl\n", src1);
+						else
+							o.printf("\t\tsar\t\t%s, cl\n", src1);
 						//if(src1.substring(0, 1).equals("r"))
 						//	fb.dirty.put(src1, true);
 						o.printf("\t\tpop\t\trcx\n");

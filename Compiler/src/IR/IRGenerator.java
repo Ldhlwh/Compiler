@@ -937,8 +937,8 @@ public class IRGenerator
 					{
 						JumpIns ins2 = new JumpIns();
 						ins2.insName = "jump";
-						ins2.target = fbb.blockID;
-						ins2.toBlock = fbb;
+						ins2.target = finalBlock.blockID;
+						ins2.toBlock = finalBlock;
 						nowBlock.insList.add(ins2);
 						nowBlock.to = finalBlock;
 						curBlock = fbb;
