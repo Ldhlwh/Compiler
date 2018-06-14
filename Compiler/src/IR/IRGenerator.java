@@ -757,6 +757,8 @@ public class IRGenerator
 			rIns.insName = "ret";
 			rIns.src = reg;
 			temp.insList.add(rIns);
+			
+			return new Pair<>(null, curBlock);
 		}
 		
 		else if(now instanceof FuncDeclNode)

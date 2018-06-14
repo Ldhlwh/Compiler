@@ -35,8 +35,8 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="43827">
-              <caret line="2092" selection-start-line="2092" selection-end-line="2092" />
+            <state relative-caret-position="265">
+              <caret line="760" column="45" selection-start-line="760" selection-start-column="45" selection-end-line="760" selection-end-column="45" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -83,7 +83,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>alloc</find>
       <find>malloc</find>
       <find>toString</find>
       <find>temp</find>
@@ -113,6 +112,7 @@
       <find>shl</find>
       <find>storeall</find>
       <find>call</find>
+      <find>return new Pair</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -448,7 +448,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="681020000" />
+    <option name="totallyTimeSpent" value="681358000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -914,16 +914,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="43827">
-          <caret line="2092" selection-start-line="2092" selection-end-line="2092" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -933,6 +923,16 @@
             <element signature="e#2561#2562#0" expanded="true" />
             <element signature="e#2597#2598#0" expanded="true" />
             <element signature="e#81752#88332#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="265">
+          <caret line="760" column="45" selection-start-line="760" selection-start-column="45" selection-end-line="760" selection-end-column="45" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
