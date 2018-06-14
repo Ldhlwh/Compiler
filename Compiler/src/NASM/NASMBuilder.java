@@ -23,7 +23,7 @@ public class NASMBuilder
 	private String temp = "r10";
 	private String temp2 = "r11";
 	
-	boolean liveOutOnly = true;
+	boolean liveOutOnly = false;
 	
 	public int regNum = 11; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
@@ -1693,8 +1693,6 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\t%s\n", funcName);
 						loadAll(bb, ins);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						//if(destb.substring(0, 1).equals("r"))
-						//	fb.dirty.put(destb, true);
 					}
 				}
 				else if(ins instanceof MovIns)
@@ -3153,7 +3151,7 @@ public class NASMBuilder
 		{
 			if(entry.getValue() != null)
 			{
-				//if(!liveOutOnly || ins.out.contains(entry.getValue()))
+				if(!liveOutOnly || ins.out.contains(entry.getValue()))
 					store(bb, entry.getKey());
 			}
 		}
@@ -3165,7 +3163,7 @@ public class NASMBuilder
 		{
 			if(entry.getValue() != null && isCaller.contains(entry.getKey()))
 			{
-				//if(!liveOutOnly || ins.out.contains(entry.getValue()))
+				if(!liveOutOnly || ins.out.contains(entry.getValue()))
 					store(bb, entry.getKey());
 			}
 		}
@@ -3189,7 +3187,7 @@ public class NASMBuilder
 		{
 			if(entry.getValue() != null && isCaller.contains(entry.getKey()))
 			{
-				//if(!liveOutOnly || ins.out.contains(entry.getValue()))
+				if(!liveOutOnly || ins.out.contains(entry.getValue()))
 					load(bb, entry.getValue());
 			}
 		}
