@@ -2146,6 +2146,17 @@ public class NASMBuilder
 								src1 = reg;
 							}
 						}
+						if(src1.equals("rcx"))
+						{
+							o.printf("\t\tmov\t\t%s, rcx\n", temp);
+							o.printf("\t\tmov\t\trcx, %s\n", src2);
+							if(ins.insName.equals("shl"))
+								o.printf("\t\tshl\t\t%s, cl\n", temp);
+							else
+								o.printf("\t\tsar\t\t%s, cl\n", temp);
+							o.printf("\t\tmov\t\trcx, %s\n", temp);
+							continue;
+						}
 						o.printf("\t\tpush\t\trcx\n");
 						o.printf("\t\tmov\t\trcx, %s\n", src2);
 						if(ins.insName.equals("shl"))

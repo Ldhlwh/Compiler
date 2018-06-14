@@ -44,7 +44,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="210">
@@ -56,11 +56,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="431">
-              <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
+            <state relative-caret-position="1029">
+              <caret line="54" column="28" selection-start-line="54" selection-start-column="28" selection-end-line="54" selection-end-column="28" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2561#2562#0" expanded="true" />
@@ -84,7 +84,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>tostring</find>
       <find>256</find>
       <find>alloc</find>
       <find>malloc</find>
@@ -113,6 +112,7 @@
       <find>$a_8 $g_8</find>
       <find>bb_43</find>
       <find>condset</find>
+      <find>div</find>
       <find>shl</find>
     </findStrings>
     <replaceStrings>
@@ -180,8 +180,8 @@
         <option value="$PROJECT_DIR$/Compiler/src/NASM/Data.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
       </list>
     </option>
   </component>
@@ -448,7 +448,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="674522000" />
+    <option name="totallyTimeSpent" value="674926000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -474,7 +474,7 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.32997763" />
+      <window_info active="true" anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" visible="true" weight="0.32997763" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
@@ -565,7 +565,15 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="113" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java</url>
+          <line>2148</line>
+          <properties />
+          <option name="timeStamp" value="113" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="114" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
@@ -916,26 +924,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="431">
-          <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
+        <state relative-caret-position="1029">
+          <caret line="54" column="28" selection-start-line="54" selection-start-column="28" selection-end-line="54" selection-end-column="28" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2561#2562#0" expanded="true" />
             <element signature="e#2597#2598#0" expanded="true" />
             <element signature="e#81410#81748#0" />
             <element signature="e#81752#88332#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
