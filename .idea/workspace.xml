@@ -35,8 +35,8 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15288">
-              <caret line="728" column="33" selection-start-line="728" selection-start-column="33" selection-end-line="728" selection-end-column="33" />
+            <state relative-caret-position="43827">
+              <caret line="2092" selection-start-line="2092" selection-end-line="2092" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -178,8 +178,8 @@
         <option value="$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/Data.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
       </list>
     </option>
@@ -200,8 +200,8 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-48" />
-    <option name="y" value="35" />
+    <option name="x" value="542" />
+    <option name="y" value="109" />
     <option name="width" value="1390" />
     <option name="height" value="1000" />
   </component>
@@ -448,7 +448,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="680339000" />
+    <option name="totallyTimeSpent" value="681020000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -916,8 +916,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15288">
-          <caret line="728" column="33" selection-start-line="728" selection-start-column="33" selection-end-line="728" selection-end-column="33" />
+        <state relative-caret-position="43827">
+          <caret line="2092" selection-start-line="2092" selection-end-line="2092" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
