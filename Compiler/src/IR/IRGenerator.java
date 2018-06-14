@@ -26,7 +26,7 @@ public class IRGenerator
 	private Set<String> niFunc = new HashSet<>();
 	
 	public int tempRegNum = 0;
-	private int inlineDepth = 0;
+	private int inlineDepth = 1;
 	//private boolean inlineOutOfMain = false;
 	private int iln = 0;
 	
@@ -723,12 +723,12 @@ public class IRGenerator
 		{
 			FuncBlock A_A = new FuncBlock(((ClassDeclNode)now).id + "." + ((ClassDeclNode)now).id);
 			funcBlock.add(A_A);
-			A_A.param.add("$this_" + ((ClassDeclNode)now).scope.scopeID);
+			A_A.param.add("$this_" + ((ClassDeclNode)now).scope.scopeID + (il ? "_il_" + (iln): ""));
 			BasicBlock A_A_entry = new BasicBlock(((ClassDeclNode)now).id + "." + ((ClassDeclNode)now).id);
 			A_A.entry = A_A_entry;
 			A_A_entry.ofFunc = A_A;
 			
-			String reg = "$this_" + ((ClassDeclNode)now).scope.scopeID;
+			String reg = "$this_" + ((ClassDeclNode)now).scope.scopeID + (il ? "_il_" + (iln): "");
 			BasicBlock temp = A_A_entry;
 			
 			for(ASTNode node : ((ClassDeclNode)now).progSecNode)
@@ -764,7 +764,6 @@ public class IRGenerator
 		else if(now instanceof FuncDeclNode)
 		{
 			Pair<String, BasicBlock> temp = pass(((FuncDeclNode)now).blockStmtNode, ((FuncDeclNode)now).blockStmtNode.scope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
-			System.err.printf("--- %s, cur = %s\n", ((FuncDeclNode)now).id, temp.getValue().blockID);
 			curBlock = temp.getValue();
 			//if(il && curBlock == rtnBlock)
 			//	return new Pair<>(temp.getKey(), rtnBlock);
@@ -806,6 +805,10 @@ public class IRGenerator
 				ji.toBlock = rtnBlock;
 				curBlock.insList.add(ji);
 				return new Pair<>("0", rtnBlock);
+			}
+			else if(il)
+			{
+				return new Pair<>(null, rtnBlock);
 			}
 			else if(!il && (curBlock.insList.size() == 0
 					|| !curBlock.insList.get(curBlock.insList.size() - 1).insName.equals("ret")))
@@ -1348,7 +1351,7 @@ public class IRGenerator
 					String funcName = ((IdNode)((FuncCallNode)now).exprNode).id;
 					MovIns ins = new MovIns();
 					ins.insName = "move";
-					ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
+					ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID + (il ? "_il_" + (iln): "");
 					
 					FuncIns fi = null;
 					for(Map.Entry<String, FuncIns> entry : topScope.funcMap.entrySet())
@@ -1397,7 +1400,7 @@ public class IRGenerator
 					ins.src = temp.getKey();
 					curBlock = temp.getValue();
 					//curBlock.insList.add(ins);
-					return new Pair<>(ins.dest, curBlock);
+					return new Pair<>(ins.dest, rtnto);
 				}
 				else
 				{
@@ -1417,7 +1420,9 @@ public class IRGenerator
 					{
 						for(ASTNode node : ((FuncCallNode)now).paramListNode.exprNode)
 						{
-							ins.ops.add(pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey());
+							Pair<String, BasicBlock> temp = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
+							ins.ops.add(temp.getKey());
+							curBlock = temp.getValue();
 						}
 					}
 					curBlock.insList.add(ins);

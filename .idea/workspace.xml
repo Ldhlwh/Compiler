@@ -35,19 +35,25 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="265">
-              <caret line="760" column="45" selection-start-line="760" selection-start-column="45" selection-end-line="760" selection-end-column="45" />
+            <state relative-caret-position="231">
+              <caret line="11" selection-start-line="11" selection-end-line="11" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="method#IRGenerator#0;class#IRGenerator#0" />
+                <element signature="method#print#0;class#IRGenerator#0" />
+                <element signature="method#add_alloc#0;class#IRGenerator#0" />
+                <element signature="method#add_int_size#0;class#IRGenerator#0" />
+                <element signature="method#add_string_length#0;class#IRGenerator#0" />
+                <element signature="method#add_string_substring#0;class#IRGenerator#0" />
+                <element signature="method#add_string_ord#0;class#IRGenerator#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
+            <state relative-caret-position="210">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -56,11 +62,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="25" column="31" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
+            <state relative-caret-position="54621">
+              <caret line="2731" selection-start-line="2731" selection-end-line="2731" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2561#2562#0" expanded="true" />
@@ -83,10 +89,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>malloc</find>
-      <find>toString</find>
-      <find>temp</find>
-      <find>r15</find>
       <find>push</find>
       <find>\tpush</find>
       <find>r14</find>
@@ -111,8 +113,12 @@
       <find>div</find>
       <find>shl</find>
       <find>storeall</find>
-      <find>call</find>
       <find>return new Pair</find>
+      <find>call</find>
+      <find>scope.scopeid</find>
+      <find>blockstmtnode</find>
+      <find>funcdeclnode</find>
+      <find>funccallnode</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -448,7 +454,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="681358000" />
+    <option name="totallyTimeSpent" value="684868000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -474,7 +480,7 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" visible="true" weight="0.32997763" />
+      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.8702461" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
@@ -572,8 +578,14 @@
           <properties />
           <option name="timeStamp" value="113" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java</url>
+          <line>1399</line>
+          <properties />
+          <option name="timeStamp" value="117" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="114" />
+      <option name="time" value="118" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
@@ -584,13 +596,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/VariDeclNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/BlockStmtNode.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -914,35 +919,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
+    <entry file="jar://D:/jdk1.8.0_171/javafx-src.zip!/javafx/util/Pair.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="441">
+          <caret line="45" column="23" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
-          <caret line="25" column="31" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
+          <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2561#2562#0" expanded="true" />
-            <element signature="e#2597#2598#0" expanded="true" />
-            <element signature="e#81752#88332#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="265">
-          <caret line="760" column="45" selection-start-line="760" selection-start-column="45" selection-end-line="760" selection-end-column="45" />
+        <state relative-caret-position="231">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="method#IRGenerator#0;class#IRGenerator#0" />
+            <element signature="method#print#0;class#IRGenerator#0" />
+            <element signature="method#add_alloc#0;class#IRGenerator#0" />
+            <element signature="method#add_int_size#0;class#IRGenerator#0" />
+            <element signature="method#add_string_length#0;class#IRGenerator#0" />
+            <element signature="method#add_string_substring#0;class#IRGenerator#0" />
+            <element signature="method#add_string_ord#0;class#IRGenerator#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
+    <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
+        <state relative-caret-position="54621">
+          <caret line="2731" selection-start-line="2731" selection-end-line="2731" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#2561#2562#0" expanded="true" />
+            <element signature="e#2597#2598#0" expanded="true" />
+            <element signature="e#81752#88332#0" />
           </folding>
         </state>
       </provider>
