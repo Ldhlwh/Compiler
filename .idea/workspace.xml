@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="568" />
+    <bookmark url="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" line="570" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72816ae8-fb79-49b9-8a8d-6f8a5ecaffc8" name="默认" comment="" />
@@ -47,7 +47,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
+            <state relative-caret-position="315">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -59,13 +59,12 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1029">
-              <caret line="54" column="28" selection-start-line="54" selection-start-column="28" selection-end-line="54" selection-end-column="28" />
+            <state relative-caret-position="1050">
+              <caret line="60" column="48" selection-start-line="60" selection-start-column="48" selection-end-line="60" selection-end-column="48" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2561#2562#0" expanded="true" />
                 <element signature="e#2597#2598#0" expanded="true" />
-                <element signature="e#81410#81748#0" />
                 <element signature="e#81752#88332#0" />
               </folding>
             </state>
@@ -448,7 +447,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="674926000" />
+    <option name="totallyTimeSpent" value="676722000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -568,7 +567,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java</url>
-          <line>2148</line>
+          <line>2150</line>
           <properties />
           <option name="timeStamp" value="113" />
         </line-breakpoint>
@@ -926,13 +925,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1029">
-          <caret line="54" column="28" selection-start-line="54" selection-start-column="28" selection-end-line="54" selection-end-column="28" />
+        <state relative-caret-position="1050">
+          <caret line="60" column="48" selection-start-line="60" selection-start-column="48" selection-end-line="60" selection-end-column="48" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2561#2562#0" expanded="true" />
             <element signature="e#2597#2598#0" expanded="true" />
-            <element signature="e#81410#81748#0" />
             <element signature="e#81752#88332#0" />
           </folding>
         </state>
@@ -940,7 +938,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
+        <state relative-caret-position="315">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />

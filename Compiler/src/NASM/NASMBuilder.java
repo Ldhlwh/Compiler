@@ -23,6 +23,8 @@ public class NASMBuilder
 	private String temp = "r10";
 	private String temp2 = "r11";
 	
+	boolean liveOutOnly = true;
+	
 	public int regNum = 11; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
 	public Map<String, String> getD = new HashMap<>();
@@ -658,10 +660,10 @@ public class NASMBuilder
 								}
 							}
 						}
-						storeCaller(bb);
+						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, %s\n", src);
 						o.printf("\t\tcall\t\tmalloc\n");
-						loadCaller(bb);
+						loadCaller(bb, ins);
 						o.printf("\t\tmov\t\t%s, rax\n", s2b);
 					}
 					else if(ins.insName.equals("storeStr"))
@@ -922,19 +924,19 @@ public class NASMBuilder
 						
 						if(funcName.equals("println"))
 						{
-							storeCaller(bb);
+							storeCaller(bb, ins);
 							o.printf("\t\tmov\t\trdi, %s\n", op);
 							o.printf("\t\tcall\t\tputs\n");
-							loadCaller(bb);
+							loadCaller(bb, ins);
 						}
 						else if(funcName.equals("print"))
 						{
-							storeCaller(bb);
+							storeCaller(bb, ins);
 							o.printf("\t\tmov\t\trdi, _getStr\n");
 							o.printf("\t\tmov\t\trsi, %s\n", op);
 							o.printf("\t\tmov\t\trax, 0\n");
 							o.printf("\t\tcall\t\tprintf\n");
-							loadCaller(bb);
+							loadCaller(bb, ins);
 						}
 					}
 					
@@ -980,17 +982,17 @@ public class NASMBuilder
 								}
 							}
 						}
-						storeCaller(bb);
+						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, 256\n");
 						o.printf("\t\tcall\t\tmalloc\n");
-						loadCaller(bb);
+						loadCaller(bb, ins);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
-						storeCaller(bb);
+						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, _getStr\n");
 						o.printf("\t\tmov\t\trsi, %s\n", dest);
 						o.printf("\t\tmov\t\trax, 0\n");
 						o.printf("\t\tcall\t\tscanf\n");
-						loadCaller(bb);
+						loadCaller(bb, ins);
 						//o.printf("\t\tmov\t\t%s, %s\n", destb, desta);
 					}
 					
@@ -1030,13 +1032,13 @@ public class NASMBuilder
 								fff = true;
 							}
 						}
-						storeCaller(bb);
+						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, _getInt\n");
 						o.printf("\t\tlea\t\trax, %s\n", dest);
 						o.printf("\t\tmov\t\trsi, rax\n");
 						o.printf("\t\tmov\t\trax, 0\n");
 						o.printf("\t\tcall\t\tscanf\n");
-						loadCaller(bb);
+						loadCaller(bb, ins);
 						if(fff)
 						{
 							o.printf("\t\tmov\t\t%s, qword%S\n", getReg(bb.ofFunc, ((FuncCallIns)ins).dest), dest);
@@ -1126,10 +1128,10 @@ public class NASMBuilder
 								}
 							}
 						}
-						storeCaller(bb);
+						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, %s\n", src);
 						o.printf("\t\tcall\t\ttoString\n");
-						loadCaller(bb);
+						loadCaller(bb, ins);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
 					}
 					
@@ -1247,11 +1249,11 @@ public class NASMBuilder
 								}
 							}
 						}
-						storeCaller(bb);
+						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, %s\n", src1);
 						o.printf("\t\tmov\t\trsi, %s\n", src2);
 						o.printf("\t\tcall\t\tstring_cat\n");
-						loadCaller(bb);
+						loadCaller(bb, ins);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
 					}
 					else if(funcName.equals("string.cmp"))
@@ -1368,11 +1370,11 @@ public class NASMBuilder
 								}
 							}
 						}
-						storeCaller(bb);
+						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, %s\n", src1);
 						o.printf("\t\tmov\t\trsi, %s\n", src2);
 						o.printf("\t\tcall\t\tstrcmp\n");
-						loadCaller(bb);
+						loadCaller(bb, ins);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
 					}
 					
@@ -1431,13 +1433,13 @@ public class NASMBuilder
 						
 						o.printf("\t\tlea\t\t%s, %s\n", temp, dest);
 						o.printf("\t\tpush\t\t%s\n", temp);
-						storeCaller(bb);
+						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, %s\n", src);
 						o.printf("\t\tmov\t\trsi, _getInt\n");
 						o.printf("\t\tmov\t\trdx, %s\n", temp);
 						o.printf("\t\tmov\t\trax, 0\n");
 						o.printf("\t\tcall\t\tsscanf\n");
-						loadCaller(bb);
+						loadCaller(bb, ins);
 						o.printf("\t\tpop\t\t%s\n", temp);
 						
 						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
@@ -1532,10 +1534,10 @@ public class NASMBuilder
 								}
 							}
 						}
-						storeCaller(bb);
+						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, %s\n", src);
 						o.printf("\t\tcall\t\tstrlen\n");
-						loadCaller(bb);
+						loadCaller(bb, ins);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
 						//if(destb.substring(0, 1).equals("r"))
 						//	fb.dirty.put(destb, true);
@@ -1593,7 +1595,7 @@ public class NASMBuilder
 							}
 						}
 						int up = (paramNum < 6) ? paramNum : 6;
-						storeAll(bb);
+						storeAll(bb, ins);
 						for(int j = 0; j < up; j++)
 						{
 							String str = ((FuncCallIns)ins).ops.get(j);
@@ -1689,7 +1691,7 @@ public class NASMBuilder
 						if(funcName.equals("main"))
 							funcName = "_main";
 						o.printf("\t\tcall\t\t%s\n", funcName);
-						loadAll(bb);
+						loadAll(bb, ins);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
 						//if(destb.substring(0, 1).equals("r"))
 						//	fb.dirty.put(destb, true);
@@ -3145,88 +3147,52 @@ public class NASMBuilder
 		return;
 	}
 	
-	private void storeAll(BasicBlock bb)
+	private void storeAll(BasicBlock bb, Ins ins)
 	{
 		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
 			if(entry.getValue() != null)
 			{
-				store(bb, entry.getKey());
+				//if(!liveOutOnly || ins.out.contains(entry.getValue()))
+					store(bb, entry.getKey());
 			}
 		}
 	}
 	
-	private void storeCaller(BasicBlock bb)
+	private void storeCaller(BasicBlock bb, Ins ins)
 	{
 		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
 			if(entry.getValue() != null && isCaller.contains(entry.getKey()))
 			{
-				store(bb, entry.getKey());
+				//if(!liveOutOnly || ins.out.contains(entry.getValue()))
+					store(bb, entry.getKey());
 			}
 		}
 	}
 	
-	private void loadAll(BasicBlock bb)
+	private void loadAll(BasicBlock bb, Ins ins)
 	{
 		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
 			if(entry.getValue() != null)
 			{
-				load(bb, entry.getValue());
+				if(!liveOutOnly || ins.out.contains(entry.getValue()))
+					load(bb, entry.getValue());
 			}
 		}
 	}
 	
-	private void loadAll(BasicBlock bb, String ex)
-	{
-		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
-		{
-			if(entry.getValue() != null
-					&& entry.getKey() != null
-					&& !(entry.getKey().equals(ex)))
-			{
-				load(bb, entry.getValue());
-			}
-		}
-	}
-	
-	private void loadCaller(BasicBlock bb)
+	private void loadCaller(BasicBlock bb, Ins ins)
 	{
 		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
 		{
 			if(entry.getValue() != null && isCaller.contains(entry.getKey()))
 			{
-				load(bb, entry.getValue());
+				//if(!liveOutOnly || ins.out.contains(entry.getValue()))
+					load(bb, entry.getValue());
 			}
 		}
-	}
-	
-	private void loadCaller(BasicBlock bb, String ex)
-	{
-		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
-		{
-			if(entry.getValue() != null
-					&& entry.getKey() != null
-					&& !(entry.getKey().equals(ex))
-					&& isCaller.contains(entry.getKey()))
-			{
-				load(bb, entry.getValue());
-			}
-		}
-	}
-	
-	private void printTake(BasicBlock bb)
-	{
-		System.err.println("------ TAKE ------");
-		for(Map.Entry<String, String> entry : bb.ofFunc.take.entrySet())
-		{
-			System.err.printf("%s -> ", entry.getKey());
-			if(entry.getValue() != null)
-				System.err.printf("%s", entry.getValue());
-			System.err.println();
-		}
-		System.err.println();
 	}
 	
 	private void printBuildIn()
