@@ -2729,6 +2729,7 @@ public class NASMBuilder
 					{
 						if(ins.insName.equals("jump"))
 						{
+							//System.err.printf("jump error : %s(%d)\n", cur.blockID, i);//, cur.to.blockID, cur.to.insList.size(), cur.to.insList.get(0).in.size());
 							ins.out.addAll(cur.to.insList.get(0).in);
 						}
 						else if(ins.insName.equals("br"))

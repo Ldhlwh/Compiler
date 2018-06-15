@@ -782,6 +782,7 @@ public class IRGenerator
 					ji.target = rtnBlock.blockID;
 					ji.toBlock = rtnBlock;
 					curBlock.insList.add(ji);
+					curBlock.to = rtnBlock;
 					return new Pair<>("0", rtnBlock);
 				}
 				JumpIns ins = new JumpIns();
@@ -804,6 +805,7 @@ public class IRGenerator
 				ji.target = rtnBlock.blockID;
 				ji.toBlock = rtnBlock;
 				curBlock.insList.add(ji);
+				curBlock.to = rtnBlock;
 				return new Pair<>("0", rtnBlock);
 			}
 			else if(il)
@@ -902,7 +904,9 @@ public class IRGenerator
 				ins2.insName = "jump";
 				ins2.target = finalBlock.blockID;
 				ins2.toBlock = finalBlock;
-				if(nowBlock.insList.size() == 0 || !nowBlock.insList.get(nowBlock.insList.size() - 1).insName.equals("jump"))
+				if(nowBlock.insList.size() == 0
+						|| (!nowBlock.insList.get(nowBlock.insList.size() - 1).insName.equals("jump")
+								&& !nowBlock.insList.get(nowBlock.insList.size() - 1).insName.equals("ret")))
 				{
 					nowBlock.insList.add(ins2);
 					nowBlock.to = finalBlock;
@@ -921,8 +925,11 @@ public class IRGenerator
 					ins3.insName = "jump";
 					ins3.target = finalBlock.blockID;
 					ins3.toBlock = finalBlock;
-					if(nowBlock.insList.size() == 0 || !nowBlock.insList.get(nowBlock.insList.size() - 1).insName.equals("jump"));
+					if(nowBlock.insList.size() == 0
+						|| (!nowBlock.insList.get(nowBlock.insList.size() - 1).insName.equals("jump")
+							&& !nowBlock.insList.get(nowBlock.insList.size() - 1).insName.equals("ret")))
 					{
+						//System.err.printf("%s : in\n", nowBlock.blockID);
 						nowBlock.insList.add(ins3);
 						nowBlock.to = finalBlock;
 					}
@@ -1192,13 +1199,19 @@ public class IRGenerator
 			ins.src = "0";
 			if(il)
 			{
+				MovIns mi = new MovIns();
+				mi.insName = "move";
+				mi.dest = rtnReg;
+				mi.src = ins.src;
+				curBlock.insList.add(mi);
+				
 				JumpIns ji = new JumpIns();
 				ji.insName = "jump";
 				ji.target = rtnBlock.blockID;
 				ji.toBlock = rtnBlock;
 				curBlock.insList.add(ji);
 				curBlock.to = rtnBlock;
-				return new Pair<>(ins.src, rtnBlock);
+				return new Pair<>(ins.src, curBlock);
 			}
 			curBlock.insList.add(ins);
 			curBlock.to = null;
@@ -1324,7 +1337,9 @@ public class IRGenerator
 				{
 					for(ASTNode node : ((FuncCallNode)now).paramListNode.exprNode)
 					{
-						ins.ops.add(pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey());
+						Pair<String, BasicBlock> temp = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
+						ins.ops.add(temp.getKey());
+						curBlock = temp.getValue();
 					}
 				}
 				curBlock.insList.add(ins);
@@ -1337,7 +1352,9 @@ public class IRGenerator
 				ins.insName = "call";
 				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID + (il ? "_il_" + (iln): "");
 				ins.funcName = funcName + "." + funcName;
-				ins.ops.add(pass(((NewNode)((FuncCallNode)now).exprNode).creatorNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey());
+				Pair<String, BasicBlock> temp = pass(((NewNode)((FuncCallNode)now).exprNode).creatorNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
+				ins.ops.add(temp.getKey());
+				curBlock = temp.getValue();
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
@@ -1372,7 +1389,9 @@ public class IRGenerator
 						int cnt = 0;
 						for(ASTNode node : ((FuncCallNode)now).paramListNode.exprNode)
 						{
-							String op = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey();
+							Pair<String, BasicBlock> temp = pass(node, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
+							String op = temp.getKey();
+							curBlock = temp.getValue();
 							if(true)//!op.substring(0, 1).equals("$") && !op.substring(0, 1).equals("@"))
 							{
 								MovIns mi = new MovIns();
@@ -1622,8 +1641,14 @@ public class IRGenerator
 					|| ((BinaryNode)now).op.equals("/")
 					|| ((BinaryNode)now).op.equals("%"))
 			{
-				String s1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey();
-				String s2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey();
+				Pair<String, BasicBlock> temp1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
+				String s1 = temp1.getKey();
+				curBlock = temp1.getValue();
+				
+				Pair<String, BasicBlock> temp2 =  pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
+				String s2 = temp2.getKey();
+				curBlock = temp2.getValue();
+				
 				MovIns mins = new MovIns();
 				mins.insName = "move";
 				mins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID + (il ? "_il_" + (iln): "");
