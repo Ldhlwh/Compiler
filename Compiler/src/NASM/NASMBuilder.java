@@ -103,8 +103,8 @@ public class NASMBuilder
 		//isCaller.add("rsp");
 		isCaller.add("r8");
 		isCaller.add("r9");
-		isCaller.add("r10");
-		isCaller.add("r11");
+		//isCaller.add("r10");
+		//isCaller.add("r11");
 	}
 	
 	private boolean isParamReg(String reg)
@@ -1611,6 +1611,7 @@ public class NASMBuilder
 								}
 							}
 						}
+						String[] ops = new String[6];
 						
 						storeAll(bb, ins);
 						int up = (paramNum < 6) ? paramNum : 6;
@@ -1621,7 +1622,7 @@ public class NASMBuilder
 							String op = null;
 							if(aac == 0)
 							{
-								op = str;
+								ops[j] = op = str;
 							}
 							else if(aac == 1)
 							{
@@ -1629,16 +1630,17 @@ public class NASMBuilder
 								if(reg == null)
 								{
 									String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(str));
-									op = "qword[" + pos + "]";
+									ops[j] = op = "qword[" + pos + "]";
 								}
 								else
 								{
 									check(bb, str);
-									op = reg;
+									ops[j] = op = reg;
 									if(isParamReg(reg))
 									{
 										String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(str));
-										op = "qword[" + pos + "]";
+										ops[j] = op = "qword[" + pos + "]";
+										o.printf("\t\tmov\t\t%s, %s\n", op, reg);
 									}
 								}
 							}
@@ -1647,19 +1649,22 @@ public class NASMBuilder
 								String reg = getReg(bb.ofFunc, str);
 								if(reg == null)
 								{
-									op = "qword[" + str + "]";
+									ops[j] = op = "qword[" + str + "]";
 								}
 								else
 								{
 									check(bb, str);
-									op = reg;
+									ops[j] = op = reg;
 									if(isParamReg(reg))
 									{
-										op = "qword[" + str + "]";
+										ops[j] = op = "qword[" + str + "]";
+										o.printf("\t\tmov\t\t%s, %s\n", op, reg);
 									}
 								}
 							}
-							
+						}
+						for(int j = 0; j < up; j++)
+						{
 							String reg = null;
 							if(j == 0)
 								reg = "rdi";
@@ -1674,7 +1679,7 @@ public class NASMBuilder
 							else if(j == 5)
 								reg = "r9";
 							
-							o.printf("\t\tmov\t\t%s, %s\n", reg, op);
+							o.printf("\t\tmov\t\t%s, %s\n", reg, ops[j]);
 						}
 						if(paramNum > 6)
 						{

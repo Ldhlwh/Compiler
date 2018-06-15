@@ -62,8 +62,8 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2852">
-              <caret line="1614" column="42" selection-start-line="1614" selection-start-column="42" selection-end-line="1614" selection-end-column="42" />
+            <state relative-caret-position="712">
+              <caret line="1656" column="45" selection-start-line="1656" selection-start-column="45" selection-end-line="1656" selection-end-column="45" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2594#2595#0" expanded="true" />
@@ -85,8 +85,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>seq</find>
-      <find>seq $a_8 $g_8</find>
       <find>213</find>
       <find>$a_8 $g_8</find>
       <find>bb_43</find>
@@ -112,9 +110,11 @@
       <find>returnnode</find>
       <find>bb_14</find>
       <find>funcdeclnode</find>
-      <find>pass</find>
       <find>iscaller</find>
+      <find>pass</find>
       <find>call</find>
+      <find>storecaller</find>
+      <find>movins</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -454,7 +454,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="696834000" />
+    <option name="totallyTimeSpent" value="698547000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -575,7 +575,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java</url>
-          <line>2166</line>
+          <line>2171</line>
           <properties />
           <option name="timeStamp" value="113" />
         </line-breakpoint>
@@ -922,8 +922,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2852">
-          <caret line="1614" column="42" selection-start-line="1614" selection-start-column="42" selection-end-line="1614" selection-end-column="42" />
+        <state relative-caret-position="712">
+          <caret line="1656" column="45" selection-start-line="1656" selection-start-column="45" selection-end-line="1656" selection-end-column="45" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2594#2595#0" expanded="true" />
