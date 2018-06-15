@@ -62,8 +62,8 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="712">
-              <caret line="1656" column="45" selection-start-line="1656" selection-start-column="45" selection-end-line="1656" selection-end-column="45" />
+            <state relative-caret-position="208">
+              <caret line="986" column="25" lean-forward="true" selection-start-line="986" selection-start-column="25" selection-end-line="986" selection-end-column="25" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2594#2595#0" expanded="true" />
@@ -85,7 +85,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>213</find>
       <find>$a_8 $g_8</find>
       <find>bb_43</find>
       <find>condset</find>
@@ -115,6 +114,7 @@
       <find>call</find>
       <find>storecaller</find>
       <find>movins</find>
+      <find>malloc</find>
     </findStrings>
     <replaceStrings>
       <replace>ASTNode</replace>
@@ -454,7 +454,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="698547000" />
+    <option name="totallyTimeSpent" value="699764000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -575,7 +575,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java</url>
-          <line>2171</line>
+          <line>2176</line>
           <properties />
           <option name="timeStamp" value="113" />
         </line-breakpoint>
@@ -922,8 +922,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="712">
-          <caret line="1656" column="45" selection-start-line="1656" selection-start-column="45" selection-end-line="1656" selection-end-column="45" />
+        <state relative-caret-position="208">
+          <caret line="986" column="25" lean-forward="true" selection-start-line="986" selection-start-column="25" selection-end-line="986" selection-end-column="25" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2594#2595#0" expanded="true" />

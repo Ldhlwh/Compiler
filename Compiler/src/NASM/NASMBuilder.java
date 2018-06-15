@@ -948,9 +948,9 @@ public class NASMBuilder
 					{
 						int choice = isReg(((FuncCallIns)ins).dest);
 						String dest = null, destb = null, desta = null;
+						String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
 						if(choice == 1)
 						{
-							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
 							if(reg == null)
 							{
 								String pos = "rbp - " + (8 + bb.ofFunc.memPos.get(((FuncCallIns)ins).dest));
@@ -965,13 +965,11 @@ public class NASMBuilder
 								if(isParamReg(reg))
 								{
 									dest = desta;
-									o.printf("\t\tmov\t\t%s, %s\n", desta, reg);
 								}
 							}
 						}
 						else if(choice == 2)
 						{
-							String reg = getReg(bb.ofFunc, ((FuncCallIns)ins).dest);
 							if(reg == null)
 							{
 								desta = destb = dest = "qword[" + ((FuncCallIns)ins).dest + "]";
@@ -984,7 +982,6 @@ public class NASMBuilder
 								if(isParamReg(reg))
 								{
 									dest = desta;
-									o.printf("\t\tmov\t\t%s, %s\n", desta, reg);
 								}
 							}
 						}
@@ -993,12 +990,20 @@ public class NASMBuilder
 						o.printf("\t\tcall\t\tmalloc\n");
 						loadCaller(bb, ins);
 						o.printf("\t\tmov\t\t%s, rax\n", destb);
+						if(reg != null && isParamReg(reg))
+						{
+							o.printf("\t\tmov\t\t%s, %s\n", desta, reg);
+						}
 						storeCaller(bb, ins);
 						o.printf("\t\tmov\t\trdi, _getStr\n");
 						o.printf("\t\tmov\t\trsi, %s\n", dest);
 						o.printf("\t\tmov\t\trax, 0\n");
 						o.printf("\t\tcall\t\tscanf\n");
 						loadCaller(bb, ins);
+						if(isParamReg(reg))
+						{
+							o.printf("\t\tmov\t\t%s, %s\n", reg, dest);
+						}
 					}
 					
 					else if(funcName.equals("getInt"))
