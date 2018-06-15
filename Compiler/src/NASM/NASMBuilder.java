@@ -2316,7 +2316,10 @@ public class NASMBuilder
 			if(ins instanceof JumpIns)
 			{
 				if(bb.to != null)
+				{
+					System.err.printf("%s -> %s\n", bb.blockID, bb.to.blockID);
 					ins.succ.add(bb.to.insList.get(0));
+				}
 				if(bb.ifTrue != null)
 					ins.succ.add(bb.ifTrue.insList.get(0));
 				if(bb.ifFalse != null)

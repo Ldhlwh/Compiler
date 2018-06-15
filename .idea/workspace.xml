@@ -38,8 +38,8 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="189">
-              <caret line="28" column="31" selection-start-line="28" selection-start-column="31" selection-end-line="28" selection-end-column="31" />
+            <state relative-caret-position="-359">
+              <caret line="1647" column="44" lean-forward="true" selection-start-line="1647" selection-start-column="44" selection-end-line="1647" selection-end-column="44" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -62,8 +62,8 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="986" column="25" lean-forward="true" selection-start-line="986" selection-start-column="25" selection-end-line="986" selection-end-column="25" />
+            <state relative-caret-position="502">
+              <caret line="1196" selection-start-line="1196" selection-end-line="1196" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2594#2595#0" expanded="true" />
@@ -85,11 +85,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>$a_8 $g_8</find>
-      <find>bb_43</find>
-      <find>condset</find>
-      <find>div</find>
-      <find>shl</find>
       <find>storeall</find>
       <find>return new Pair</find>
       <find>scope.scopeid</find>
@@ -114,6 +109,11 @@
       <find>storecaller</find>
       <find>movins</find>
       <find>malloc</find>
+      <find>bb_174</find>
+      <find>!=</find>
+      <find>get</find>
+      <find>index</find>
+      <find>indexnode</find>
       <find>pass</find>
     </findStrings>
     <replaceStrings>
@@ -454,7 +454,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="700288000" />
+    <option name="totallyTimeSpent" value="703292000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -582,6 +582,10 @@
       </breakpoints>
       <option name="time" value="122" />
     </breakpoint-manager>
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Compiler/src/AbstractSyntaxTree/Nodes/BlockStmtNode.java">
@@ -912,8 +916,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="986" column="25" lean-forward="true" selection-start-line="986" selection-start-column="25" selection-end-line="986" selection-end-column="25" />
+        <state relative-caret-position="502">
+          <caret line="1196" selection-start-line="1196" selection-end-line="1196" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2594#2595#0" expanded="true" />
@@ -924,8 +928,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="28" column="31" selection-start-line="28" selection-start-column="31" selection-end-line="28" selection-end-column="31" />
+        <state relative-caret-position="-359">
+          <caret line="1647" column="44" lean-forward="true" selection-start-line="1647" selection-start-column="44" selection-end-line="1647" selection-end-column="44" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
