@@ -1372,16 +1372,23 @@ public class IRGenerator
 			}
 			else
 			{
+				String atFunc = null;
 				Scope nowScope = curScope;
 				while(true)
 				{
 					if(nowScope instanceof FuncScope)
 					{
+						atFunc = ((FuncScope)nowScope).name;
 						break;
 					}
-					nowScope = nowScope.fatherScope;
+					if(nowScope.fatherScope != null)
+						nowScope = nowScope.fatherScope;
+					else
+					{
+						atFunc = "HowShouldINameThisString?";
+						break;
+					}
 				}
-				String atFunc = ((FuncScope)nowScope).name;
 				
 				if(depth < inlineDepth && ((FuncCallNode)now).source == null
 						&& !niFunc.contains(((IdNode)((FuncCallNode)now).exprNode).id)
