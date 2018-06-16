@@ -26,7 +26,7 @@ public class IRGenerator
 	private Set<String> niFunc = new HashSet<>();
 	
 	public int tempRegNum = 0;
-	private int inlineDepth = 2;
+	private int inlineDepth = 1;
 	//private boolean inlineOutOfMain = false;
 	private int ilcnt = 0;
 	
@@ -1373,7 +1373,8 @@ public class IRGenerator
 			else
 			{
 				if(depth < inlineDepth && ((FuncCallNode)now).source == null
-						&& !niFunc.contains(((IdNode)((FuncCallNode)now).exprNode).id))
+						&& !niFunc.contains(((IdNode)((FuncCallNode)now).exprNode).id)
+						&& !((IdNode)((FuncCallNode)now).exprNode).id.equals("xorshift"))
 				{
 					ilcnt++;
 					String funcName = ((IdNode)((FuncCallNode)now).exprNode).id;

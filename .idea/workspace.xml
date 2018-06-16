@@ -38,8 +38,8 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="1377" column="25" selection-start-line="1377" selection-start-column="25" selection-end-line="1377" selection-end-column="25" />
+            <state relative-caret-position="2848">
+              <caret line="1401" column="25" lean-forward="true" selection-start-line="1401" selection-start-column="25" selection-end-line="1401" selection-end-column="25" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#add_alloc#0;class#IRGenerator#0" />
@@ -90,12 +90,10 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>&quot;jump&quot;</find>
       <find>bb_17</find>
       <find>returnnode</find>
       <find>bb_14</find>
       <find>iscaller</find>
-      <find>call</find>
       <find>storecaller</find>
       <find>movins</find>
       <find>malloc</find>
@@ -115,10 +113,12 @@
       <find>_init</find>
       <find>System.err</find>
       <find>funcdeclnode</find>
-      <find>pass</find>
       <find>err</find>
       <find>makeblocklist</find>
       <find>bb_</find>
+      <find>pass</find>
+      <find>main</find>
+      <find>call</find>
       <find>funccallnode</find>
     </findStrings>
     <replaceStrings>
@@ -460,7 +460,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="721294000" />
+    <option name="totallyTimeSpent" value="722098000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -486,7 +486,7 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.6689038" />
+      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.99888146" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
@@ -910,8 +910,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="1377" column="25" selection-start-line="1377" selection-start-column="25" selection-end-line="1377" selection-end-column="25" />
+        <state relative-caret-position="2848">
+          <caret line="1401" column="25" lean-forward="true" selection-start-line="1401" selection-start-column="25" selection-end-line="1401" selection-end-column="25" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#add_alloc#0;class#IRGenerator#0" />
