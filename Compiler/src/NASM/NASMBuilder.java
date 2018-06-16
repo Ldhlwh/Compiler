@@ -6,6 +6,7 @@ import IR.IRGenerator;
 import IR.Instructions.*;
 import ScopeCheck.Instances.VariIns;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
@@ -242,12 +243,15 @@ public class NASMBuilder
 	
 	private void makeBlockList(FuncBlock fb, BasicBlock bb)
 	{
-		Queue<BasicBlock> queue = new LinkedList<>();
-		((LinkedList<BasicBlock>)queue).push(fb.entry);
+		//Queue<BasicBlock> queue = new LinkedList<>();
+		//((LinkedList<BasicBlock>)queue).push(fb.entry);
+		Stack<BasicBlock> queue = new Stack<>();
+		queue.push(fb.entry);
 		fb.entry.added = true;
 		while(!queue.isEmpty())
 		{
-			BasicBlock temp = queue.poll();
+			//BasicBlock temp = queue.poll();
+			BasicBlock temp = queue.pop();
 			fb.blockList.add(temp);
 			/*
 			System.err.printf("%s", temp.blockID);
@@ -268,18 +272,21 @@ public class NASMBuilder
 			}
 			if(temp.to != null && !temp.to.added)
 			{
-				((LinkedList<BasicBlock>)queue).push(temp.to);
+				//((LinkedList<BasicBlock>)queue).push(temp.to);
+				queue.push(temp.to);
 				temp.to.added = true;
-			}
-			if(temp.ifFalse != null && !temp.ifFalse.added)
-			{
-				((LinkedList<BasicBlock>)queue).push(temp.ifFalse);
-				temp.ifFalse.added = true;
 			}
 			if(temp.ifTrue != null && !temp.ifTrue.added)
 			{
-				((LinkedList<BasicBlock>)queue).push(temp.ifTrue);
+				//((LinkedList<BasicBlock>)queue).push(temp.ifTrue);
+				queue.push(temp.ifTrue);
 				temp.ifTrue.added = true;
+			}
+			if(temp.ifFalse != null && !temp.ifFalse.added)
+			{
+				//((LinkedList<BasicBlock>)queue).push(temp.ifFalse);
+				queue.push(temp.ifFalse);
+				temp.ifFalse.added = true;
 			}
 		}
 		/*
@@ -320,6 +327,13 @@ public class NASMBuilder
 				o.printf("main:\n");
 			else if(bb.blockID.equals("main"))
 				o.printf("_main:\n");
+			/*else if(now > 0
+					&& bb.from.size() == 1
+					&& fb.blockList.get(now - 1).insList.get(fb.blockList.get(now - 1).insList.size() - 1).insName.equals("jump")
+					&& ((JumpIns)fb.blockList.get(now - 1).insList.get(fb.blockList.get(now - 1).insList.size() - 1)).target.equals(bb.blockID))
+			{
+				//fb.blockList.get(now - 1).insList.remove(fb.blockList.get(now - 1).insList.size() - 1);
+			}*/
 			else
 				o.printf("%s:\n", bb.blockID);
 			
@@ -425,7 +439,16 @@ public class NASMBuilder
 					}
 					else if(ins.insName.equals("jump"))
 					{
-						o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).target);
+						if(now < blockSize - 1)
+						{
+							BasicBlock next = fb.blockList.get(now + 1);
+							if(!next.blockID.equals(((JumpIns)ins).target))
+							{
+								o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).target);
+							}
+						}
+						else
+							o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).target);
 					}
 					else if(ins.insName.equals("br"))
 					{
@@ -438,7 +461,16 @@ public class NASMBuilder
 								o.printf("\t\tmov\t\t%s, %s\n", temp, rtn);
 								o.printf("\t\tcmp\t\t%s, 1\n", temp);
 								o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
-								o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+								if(now < blockSize - 1)
+								{
+									BasicBlock next = fb.blockList.get(now + 1);
+									if(!next.blockID.equals(((JumpIns)ins).ifFalse))
+									{
+										o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+									}
+								}
+								else
+									o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
 							}
 							else if(choice == 1)
 							{
@@ -455,7 +487,16 @@ public class NASMBuilder
 								}
 								
 								o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
-								o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+								if(now < blockSize - 1)
+								{
+									BasicBlock next = fb.blockList.get(now + 1);
+									if(!next.blockID.equals(((JumpIns)ins).ifFalse))
+									{
+										o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+									}
+								}
+								else
+									o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
 							}
 							else if(choice == 2)
 							{
@@ -470,7 +511,16 @@ public class NASMBuilder
 									o.printf("\t\tcmp\t\t%s, 1\n", reg);
 								}
 								o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
-								o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+								if(now < blockSize - 1)
+								{
+									BasicBlock next = fb.blockList.get(now + 1);
+									if(!next.blockID.equals(((JumpIns)ins).ifFalse))
+									{
+										o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+									}
+								}
+								else
+									o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
 							}
 						}
 						else
@@ -580,8 +630,16 @@ public class NASMBuilder
 								o.printf("\t\tje\t\t%s\n", ((JumpIns)ins).ifTrue);
 							else if(type.substring(0, 3).equals("sne"))
 								o.printf("\t\tjne\t\t%s\n", ((JumpIns)ins).ifTrue);
-							
-							o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+							if(now < blockSize - 1)
+							{
+								BasicBlock next = fb.blockList.get(now + 1);
+								if(!next.blockID.equals(((JumpIns)ins).ifFalse))
+								{
+									o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
+								}
+							}
+							else
+								o.printf("\t\tjmp\t\t%s\n", ((JumpIns)ins).ifFalse);
 						}
 					}
 				}

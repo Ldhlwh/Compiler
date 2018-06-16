@@ -26,7 +26,7 @@ public class IRGenerator
 	private Set<String> niFunc = new HashSet<>();
 	
 	public int tempRegNum = 0;
-	private int inlineDepth = 2;
+	private int inlineDepth = 1;
 	//private boolean inlineOutOfMain = false;
 	private int iln = 0;
 	
