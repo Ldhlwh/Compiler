@@ -598,7 +598,7 @@ public class IRGenerator
 			{
 				Pair<String, BasicBlock> temp = pass(node, topScope, curBlock, false, true,
 						null, null, null, 0, null, false, null, null);
-				curBlock = temp.getValue();
+				//curBlock = temp.getValue();
 			}
 		}
 		
