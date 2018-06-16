@@ -1376,7 +1376,6 @@ public class IRGenerator
 						&& !niFunc.contains(((IdNode)((FuncCallNode)now).exprNode).id))
 				{
 					iln++;
-					System.err.println(((IdNode)((FuncCallNode)now).exprNode).id);
 					String funcName = ((IdNode)((FuncCallNode)now).exprNode).id;
 					MovIns ins = new MovIns();
 					ins.insName = "move";

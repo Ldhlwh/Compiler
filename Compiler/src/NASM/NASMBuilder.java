@@ -23,7 +23,7 @@ public class NASMBuilder
 	private String temp = "r10";
 	private String temp2 = "r11";
 	
-	boolean liveOutOnly = false;
+	boolean liveOutOnly = true;
 	
 	public int regNum = 11; // MAXED = 12 (rsp, rbp, r14, r15 excluded)
 	public ArrayList<String> realReg = new ArrayList<>();
@@ -3190,30 +3190,74 @@ public class NASMBuilder
 	
 	private void storeAll(BasicBlock bb, Ins ins)
 	{
+		Set<String> liveOut = new HashSet<>();
+		for(String p : ins.out)
+		{
+			String t = getReg(bb.ofFunc, p);
+			if(t != null)
+				liveOut.add(t);
+		}
 		int s = realReg.size();
 		for(int i = 0; i < s; i++)
-			o.printf("\t\tpush\t\t%s\n", realReg.get(i));
+		{
+			String reg = realReg.get(i);
+			if(!liveOutOnly || liveOut.contains(reg))
+				o.printf("\t\tpush\t\t%s\n", reg);
+		}
 	}
 	
 	private void storeCaller(BasicBlock bb, Ins ins)
 	{
+		Set<String> liveOut = new HashSet<>();
+		for(String p : ins.out)
+		{
+			String t = getReg(bb.ofFunc, p);
+			if(t != null)
+				liveOut.add(t);
+		}
 		int s = isCaller.size();
 		for(int i = 0; i < s; i++)
-			o.printf("\t\tpush\t\t%s\n", isCaller.get(i));
+		{
+			String reg = isCaller.get(i);
+			if(!liveOutOnly || liveOut.contains(reg))
+				o.printf("\t\tpush\t\t%s\n", isCaller.get(i));
+		}
 	}
 	
 	private void loadAll(BasicBlock bb, Ins ins)
 	{
+		Set<String> liveOut = new HashSet<>();
+		for(String p : ins.out)
+		{
+			String t = getReg(bb.ofFunc, p);
+			if(t != null)
+				liveOut.add(t);
+		}
 		int s = realReg.size();
 		for(int i = s - 1; i >= 0; i--)
-			o.printf("\t\tpop\t\t%s\n", realReg.get(i));
+		{
+			String reg = realReg.get(i);
+			if(!liveOutOnly || liveOut.contains(reg))
+				o.printf("\t\tpop\t\t%s\n", realReg.get(i));
+		}
 	}
 	
 	private void loadCaller(BasicBlock bb, Ins ins)
 	{
+		Set<String> liveOut = new HashSet<>();
+		for(String p : ins.out)
+		{
+			String t = getReg(bb.ofFunc, p);
+			if(t != null)
+				liveOut.add(t);
+		}
 		int s = isCaller.size();
 		for(int i = s - 1; i >= 0; i--)
-			o.printf("\t\tpop\t\t%s\n", isCaller.get(i));
+		{
+			String reg = isCaller.get(i);
+			if(!liveOutOnly || liveOut.contains(reg))
+				o.printf("\t\tpop\t\t%s\n", isCaller.get(i));
+		}
 	}
 	
 	private void printBuildIn()
