@@ -38,8 +38,8 @@
       <file leaf-file-name="IRGenerator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="11">
-              <caret line="600" column="18" selection-start-line="600" selection-start-column="18" selection-end-line="600" selection-end-column="18" />
+            <state relative-caret-position="2835">
+              <caret line="600" selection-start-line="600" selection-end-line="600" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#add_alloc#0;class#IRGenerator#0" />
@@ -55,7 +55,7 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
+            <state relative-caret-position="21">
               <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -67,8 +67,8 @@
       <file leaf-file-name="NASMBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="271">
-              <caret line="2747" column="14" selection-start-line="2747" selection-start-column="14" selection-end-line="2747" selection-end-column="14" />
+            <state relative-caret-position="55125">
+              <caret line="2748" selection-start-line="2748" selection-end-line="2748" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -111,11 +111,11 @@
       <find>bb_16</find>
       <find>bb_18</find>
       <find>bb_12</find>
-      <find>funcdeclnode</find>
       <find>bb_70</find>
       <find>makeblockli</find>
       <find>_init</find>
       <find>System.err</find>
+      <find>funcdeclnode</find>
       <find>err</find>
       <find>pass</find>
     </findStrings>
@@ -183,8 +183,8 @@
         <option value="$PROJECT_DIR$/Compiler/src/IR/Instructions/Ins.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/Data.java" />
         <option value="$PROJECT_DIR$/Compiler/src/IR/FuncBlock.java" />
-        <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
         <option value="$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java" />
+        <option value="$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java" />
         <option value="$PROJECT_DIR$/Compiler/src/Compiler.java" />
       </list>
     </option>
@@ -453,12 +453,12 @@
       <workItem from="1528993906908" duration="502000" />
       <workItem from="1529040016765" duration="1394000" />
       <workItem from="1529042909588" duration="3492000" />
-      <workItem from="1529114643588" duration="6348000" />
+      <workItem from="1529114643588" duration="6914000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="713322000" />
+    <option name="totallyTimeSpent" value="713888000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -484,7 +484,7 @@
       <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
-      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.8724832" />
+      <window_info anchor="bottom" x="77" y="260" width="1876" height="739" id="Run" order="5" sideWeight="0.70149255" weight="0.590604" />
       <window_info anchor="right" id="调色板" order="7" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32997763" />
       <window_info id="Capture Tool" order="2" />
@@ -560,7 +560,7 @@
           <option name="timeStamp" value="113" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="124" />
+      <option name="time" value="125" />
     </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
@@ -896,8 +896,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/NASM/NASMBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="2747" column="14" selection-start-line="2747" selection-start-column="14" selection-end-line="2747" selection-end-column="14" />
+        <state relative-caret-position="55125">
+          <caret line="2748" selection-start-line="2748" selection-end-line="2748" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -906,8 +906,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/IR/IRGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11">
-          <caret line="600" column="18" selection-start-line="600" selection-start-column="18" selection-end-line="600" selection-end-column="18" />
+        <state relative-caret-position="2835">
+          <caret line="600" selection-start-line="600" selection-end-line="600" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#add_alloc#0;class#IRGenerator#0" />
@@ -921,7 +921,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Compiler/src/Compiler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
+        <state relative-caret-position="21">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />

@@ -594,11 +594,16 @@ public class IRGenerator
 				Pair<String, BasicBlock> temp = pass(node, ((FuncDeclNode)node).scope, entry, false, true,
 						null, null, null, 0, null, false, null, null);
 			}
+			else if(node instanceof ClassDeclNode)
+			{
+				Pair<String, BasicBlock> temp = pass(node, topScope, curBlock, false, true,
+						null, null, null, 0, null, false, null, null);
+			}
 			else
 			{
 				Pair<String, BasicBlock> temp = pass(node, topScope, curBlock, false, true,
 						null, null, null, 0, null, false, null, null);
-				//curBlock = temp.getValue();
+				curBlock = temp.getValue();
 			}
 		}
 		
