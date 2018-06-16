@@ -749,7 +749,8 @@ public class IRGenerator
 					BasicBlock A_entry = new BasicBlock(((ClassDeclNode)now).id + "." + ((FuncDeclNode)node).id);
 					A_.entry = A_entry;
 					A_entry.ofFunc = A_;
-					pass(node, ((FuncDeclNode)node).scope, A_entry, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
+					Pair<String, BasicBlock> temp1 = pass(node, ((FuncDeclNode)node).scope, A_entry, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
+					curBlock = temp1.getValue();
 				}
 			}
 			
@@ -810,6 +811,7 @@ public class IRGenerator
 			}
 			else if(il)
 			{
+				//curBlock.to = rtnBlock;
 				return new Pair<>(null, rtnBlock);
 			}
 			else if(!il && (curBlock.insList.size() == 0
@@ -1724,7 +1726,7 @@ public class IRGenerator
 				if(((BinaryNode)now).op.equals("^"))
 					ins.insName = "xor";
 				ins.dest = ins.src1 = mins.dest; //"$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey();
+				ins.src2 = s2;
 				curBlock.insList.add(ins);
 				return new Pair<>(ins.dest, curBlock);
 			}
@@ -1989,19 +1991,6 @@ public class IRGenerator
 					
 					return pass(((BinaryNode)now).rightExprNode, curScope, nb, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
 				}
-				
-				/*
-				BitIns ins = new BitIns();
-				if(((BinaryNode)now).op.equals("&&"))
-					ins.insName = "and";
-				if(((BinaryNode)now).op.equals("||"))
-					ins.insName = "or";
-				ins.dest = "$_t" + (tempRegNum++) + "_" + curScope.scopeID;
-				ins.src1 = pass(((BinaryNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey();
-				ins.src2 = pass(((BinaryNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey();
-				curBlock.insList.add(ins);
-				return new Pair<>(ins.dest, curBlock);
-				*/
 			}
 		}
 		
@@ -2018,14 +2007,9 @@ public class IRGenerator
 				ins.dest = pass(((AssignNode)now).leftExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey();
 				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
 				ins.src = temp.getKey();
-				/*if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
-				{
-					Ins last = temp.getValue().insList.get(temp.getValue().insList.size() - 1);
-					((FuncCallIns)last).dest = ins.dest;
-					return new Pair<>(null, temp.getValue());
-				}*/
-				temp.getValue().insList.add(ins);
-				return new Pair<>(null, temp.getValue());
+				curBlock = temp.getValue();
+				curBlock.insList.add(ins);
+				return new Pair<>(null, curBlock);
 			}
 			else if(((AssignNode)now).leftExprNode instanceof IdNode
 					&& !(((IdNode)((AssignNode)now).leftExprNode).ofScope instanceof ClassScope))
@@ -2035,14 +2019,9 @@ public class IRGenerator
 				ins.dest = pass(((AssignNode)now).leftExprNode, curScope, curBlock, true, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey();
 				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
 				ins.src = temp.getKey();
-				/*if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
-				{
-					Ins last = temp.getValue().insList.get(temp.getValue().insList.size() - 1);
-					((FuncCallIns)last).dest = ins.dest;
-					return new Pair<>(null, temp.getValue());
-				}*/
-				temp.getValue().insList.add(ins);
-				return new Pair<>(null, temp.getValue());
+				curBlock = temp.getValue();
+				curBlock.insList.add(ins);
+				return new Pair<>(null, curBlock);
 			}
 			else
 			{
@@ -2051,16 +2030,11 @@ public class IRGenerator
 				ins.addr = pass(((AssignNode)now).leftExprNode, curScope, curBlock, true, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg).getKey();
 				Pair<String, BasicBlock> temp = pass(((AssignNode)now).rightExprNode, curScope, curBlock, false, true, recHead, trueBlock, falseBlock, depth, inlineVari, il, rtnBlock, rtnReg);
 				ins.src = temp.getKey();
-				/*if(((AssignNode)now).rightExprNode instanceof FuncCallNode)
-				{
-					Ins last = temp.getValue().insList.get(temp.getValue().insList.size() - 1);
-					((FuncCallIns)last).dest = ins.dest;
-					return new Pair<>(null, temp.getValue());
-				}*/
+				curBlock = temp.getValue();
 				ins.size = bytes.get("addr") + "";
 				ins.offset = 0;
-				temp.getValue().insList.add(ins);
-				return new Pair<>(null, temp.getValue());
+				curBlock.insList.add(ins);
+				return new Pair<>(null, curBlock);
 			}
 		}
 		

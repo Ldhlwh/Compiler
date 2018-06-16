@@ -119,7 +119,7 @@ public class NASMBuilder
 		if(submit)
 		{
 			o = System.out;
-			printTake = printAllocMem = printColor = printInOutDefUse = false;
+			printTake = printAllocMem = printColor = printInOutDefUse = printTime = false;
 		}
 		else
 		{
@@ -249,6 +249,15 @@ public class NASMBuilder
 		{
 			BasicBlock temp = queue.poll();
 			fb.blockList.add(temp);
+			/*
+			System.err.printf("%s", temp.blockID);
+			if(temp.to != null)
+				System.err.printf("\tto : %s", temp.to.blockID);
+			if(temp.ifTrue != null)
+				System.err.printf("\tifT : %s", temp.ifTrue.blockID);
+			if(temp.ifFalse != null)
+				System.err.printf("\tifF : %s", temp.ifFalse.blockID);
+			System.err.println("\n");*/
 			
 			int insSize = temp.insList.size();
 			if(insSize > 1 && temp.insList.get(insSize - 1).insName.equals("jump")
@@ -2317,7 +2326,7 @@ public class NASMBuilder
 			{
 				if(bb.to != null)
 				{
-					System.err.printf("%s -> %s\n", bb.blockID, bb.to.blockID);
+					//System.err.printf("%s -> %s\n", bb.blockID, bb.to.blockID);
 					ins.succ.add(bb.to.insList.get(0));
 				}
 				if(bb.ifTrue != null)
@@ -2736,6 +2745,7 @@ public class NASMBuilder
 				Ins ins = cur.insList.get(i);
 				def_use(ins);
 			}
+			//System.err.printf("First Error | func = %s, entry = %s\n", fb.funcName, fb.entry.blockID);
 			Ins first = fb.entry.insList.get(0);
 			first.def.addAll(fb.param);
 		}
